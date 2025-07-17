@@ -866,7 +866,7 @@ function setupTypeInputBehavior() {
         const directMatches = getUniqueActivityTypes(
             preFiltered.filter(service => 
                 (service["Вид деятельности"] || "").toLowerCase().includes(inputText)
-        );
+        ));
         
         // Объединяем и убираем дубликаты
         const allTypes = [...new Set([...uniqueTypes, ...directMatches])]
