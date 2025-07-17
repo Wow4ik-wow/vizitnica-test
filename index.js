@@ -431,15 +431,7 @@ function applyFilters() {
 function populateAllLists() {
   populateList("listProfile", allServices, "Профиль деятельности");
   populateDatalist("listRegion", getUniqueValues(allServices, "Область"));
-  populateDatalist("listType", 
-    getUniqueValues(
-        allServices.filter(s => 
-            (!regionValue || (s["Область"] || "").includes(regionValue)) &&
-            (!cityValue || (s["Населённый пункт"] || "").includes(cityValue))
-        , 
-        "Вид деятельности"
-    )
-));
+  populateDatalist("listType", getUniqueValues(allServices, "Вид деятельности"));
   populateDatalist("listDistrict", getUniqueValues(allServices, "Район"));
   populateList("listName", allServices, "Имя", true);
   populateDependentLists(allServices);
@@ -864,43 +856,23 @@ function setupTypeInputBehavior() {
             return;
         }
 
-        // 1. Ищем по тегам (основной поиск)
+        // Ищем по тегам
         const tagFiltered = searchByTags(inputText, preFiltered);
         
-        // 2. Собираем ВСЕ виды деятельности из найденных услуг
-        const allTypes = new Map(); // Используем Map для устранения дубликатов
+        // Собираем уникальные виды деятельности
+        const uniqueTypes = getUniqueActivityTypes(tagFiltered);
         
-        // Добавляем виды деятельности из услуг с совпадающими тегами
-        tagFiltered.forEach(service => {
-            (service["Вид деятельности"] || "").split(',')
-                .map(t => t.trim())
-                .filter(t => t)
-                .forEach(t => {
-                    const lowerType = t.toLowerCase();
-                    if (!allTypes.has(lowerType)) {
-                        allTypes.set(lowerType, t); // Сохраняем оригинальное написание
-                    }
-                });
-        });
-
-        // 3. Добавляем прямые совпадения в названии (без дублирования)
-        preFiltered.forEach(service => {
-            (service["Вид деятельности"] || "").split(',')
-                .map(t => t.trim())
-                .filter(t => t.toLowerCase().includes(inputText))
-                .forEach(t => {
-                    const lowerType = t.toLowerCase();
-                    if (!allTypes.has(lowerType)) {
-                        allTypes.set(lowerType, t);
-                    }
-                });
-        });
-
-        // Преобразуем в массив с оригинальными названиями и сортируем
-        const uniqueTypes = Array.from(allTypes.values())
+        // Добавляем прямые совпадения в названии
+        const directMatches = getUniqueActivityTypes(
+            preFiltered.filter(service => 
+                (service["Вид деятельности"] || "").toLowerCase().includes(inputText)
+        );
+        
+        // Объединяем и убираем дубликаты
+        const allTypes = [...new Set([...uniqueTypes, ...directMatches])]
             .sort((a, b) => a.localeCompare(b, "ru"));
-
-        updateTypeDatalist(uniqueTypes);
+        
+        updateTypeDatalist(allTypes);
     });
 }
 
@@ -929,6 +901,24 @@ function updateTypeDatalist(types) {
         option.value = type;
         datalist.appendChild(option);
     });
+}
+
+function getUniqueActivityTypes(services) {
+    const types = new Map();
+    
+    services.forEach(service => {
+        (service["Вид деятельности"] || "").split(',')
+            .map(t => t.trim())
+            .filter(t => t)
+            .forEach(t => {
+                const lowerType = t.toLowerCase();
+                if (!types.has(lowerType)) {
+                    types.set(lowerType, t); // Сохраняем оригинальное написание
+                }
+            });
+    });
+    
+    return Array.from(types.values()).sort((a, b) => a.localeCompare(b, "ru"));
 }
 
 window.onload = () => {
