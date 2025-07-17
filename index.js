@@ -7,18 +7,6 @@ let currentUser = null;
 
 let allServices = [];
 
-// ===== Функция для поиска по тегам =====
-function filterByTags(inputText, services) {
-  if (!inputText.trim()) return services;
-  
-  const searchWord = inputText.toLowerCase().trim();
-  
-  return services.filter(service => {
-    const tags = (service['Теги'] || '').toLowerCase().split(/,\s*/);
-    return tags.some(tag => tag.startsWith(searchWord));
-  });
-}
-
 async function loadServices() {
   const CACHE_KEY = "services_cache";
   const CACHE_TIME = 3600000; // 1 час в миллисекундах
@@ -435,47 +423,56 @@ function populateAllLists() {
 }
 populateAllLists();
 
-function populateList(listId, services, fieldName, useLowerCase = true, filterFields = {}) {
+function populateList(
+  listId,
+  services,
+  fieldName,
+  useLowerCase = true,
+  filterFields = {}
+) {
   const datalist = document.getElementById(listId);
-  datalist.innerHTML = '';
+  datalist.innerHTML = "";
+  const valuesSet = new Set();
 
-  // Особый случай для "Вид деятельности"
-  if (listId === 'listType') {
-    const inputText = document.getElementById('filterType').value.trim();
-    let filtered = services;
-
-    if (inputText) {
-      filtered = filterByTags(inputText, services);
-    }
-
-    const allTypes = [...new Set(
-      filtered.flatMap(service => 
-        (service['Вид деятельности'] || '')
-          .split(',')
-          .map(t => t.trim())
-          .filter(Boolean)
-      )
-    )];
-
-    allTypes.forEach(type => {
-      const option = document.createElement('option');
-      option.value = type;
-      datalist.appendChild(option);
-    });
-    return;
+  // Получаем текущие значения фильтров и нормализуем их
+  const filterValues = {};
+  for (const key in filterFields) {
+    const val = filterFields[key];
+    filterValues[key] = useLowerCase ? val.trim().toLowerCase() : val.trim();
   }
 
-  // Стандартная обработка для других полей
-  const valuesSet = new Set();
   services.forEach((service) => {
+    // Для каждого фильтра получаем массив значений (сплитим по запятой, убираем пробелы и нормализуем)
+    const matchesFilters = Object.entries(filterValues).every(
+      ([filterField, filterVal]) => {
+        if (!filterVal) return true;
+
+        const serviceFieldVal = service[filterField] || "";
+        const serviceFieldArr = serviceFieldVal
+          .split(",")
+          .map((s) => (useLowerCase ? s.trim().toLowerCase() : s.trim()));
+
+        return serviceFieldArr.includes(filterVal);
+      }
+    );
+
+    if (!matchesFilters) return;
+
     let valueToAdd = service[fieldName];
+
     if (!valueToAdd) return;
 
-    if (fieldName === "Имя" || fieldName === "Компания") {
-      const name = (service["Имя"] || "").trim();
-      const company = (service["Компания"] || "").trim();
-      if (name) valuesSet.add(name);
-      if (company) valuesSet.add(company);
+    if (fieldName === "Вид деятельности") {
+      // Сплитим и добавляем каждое отдельно, убираем пустые
+      valueToAdd
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s)
+        .forEach((v) => valuesSet.add(useLowerCase ? v.toLowerCase() : v));
+    } else if (fieldName === "Имя" || fieldName === "Компания") {
+      // Для списка имён объединяем Имя и Компания
+      // Но эта функция вызывается отдельно для listName с объединением ниже
+      // Здесь игнорируем, чтобы не дублировать
     } else {
       valuesSet.add(
         useLowerCase ? valueToAdd.trim().toLowerCase() : valueToAdd.trim()
@@ -483,7 +480,39 @@ function populateList(listId, services, fieldName, useLowerCase = true, filterFi
     }
   });
 
-  const sortedValues = Array.from(valuesSet).sort((a, b) => a.localeCompare(b, "ru"));
+  // Особая обработка для listName - объединяем Имя и Компания из services
+  if (listId === "listName") {
+    // Собираем уникальные Имя и Компания по фильтрам отдельно
+    services.forEach((service) => {
+      // Проверка фильтров повторяется, можно было оптимизировать, но оставим так
+      const matchesFilters = Object.entries(filterValues).every(
+        ([filterField, filterVal]) => {
+          if (!filterVal) return true;
+
+          const serviceFieldVal = service[filterField] || "";
+          const serviceFieldArr = serviceFieldVal
+            .split(",")
+            .map((s) => (useLowerCase ? s.trim().toLowerCase() : s.trim()));
+
+          return serviceFieldArr.includes(filterVal);
+        }
+      );
+
+      if (!matchesFilters) return;
+
+      const name = (service["Имя"] || "").trim();
+      const company = (service["Компания"] || "").trim();
+
+      if (name) valuesSet.add(name);
+      if (company) valuesSet.add(company);
+    });
+  }
+
+  // Преобразуем в массив и сортируем по-русски, с учетом регистра для читаемости
+  const sortedValues = Array.from(valuesSet).sort((a, b) =>
+    a.localeCompare(b, "ru")
+  );
+
   sortedValues.forEach((val) => {
     if (val) {
       const option = document.createElement("option");
@@ -703,69 +732,8 @@ const filterFields = [
   "filterName",
 ];
 
-// Добавляем функцию фильтрации по тегам в начало файла (после let allServices = [];)
-function filterByTags(inputText, services) {
-  if (!inputText.trim()) return services;
-  
-  const searchWord = inputText.toLowerCase().trim();
-  
-  return services.filter(service => {
-    const tags = (service['Теги'] || '').toLowerCase().split(/,\s*/);
-    return tags.some(tag => tag.includes(searchWord));
-  });
-}
-
-// Полностью заменяем обработчик filterType
-document.getElementById('filterType').addEventListener('input', function(e) {
-  const inputText = e.target.value.trim();
-  const region = document.getElementById('filterRegion').value.trim();
-  const city = document.getElementById('filterCity').value.trim();
-
-  if (!region || !city) {
-    showNotification('Сначала выберите область и город');
-    return;
-  }
-
-  // Фильтр по региону и городу
-  let filtered = allServices.filter(service => {
-    const regions = (service['Область'] || '').split(',').map(r => r.trim());
-    const cities = (service['Населённый пункт'] || '').split(',').map(c => c.trim());
-    return regions.includes(region) && cities.includes(city);
-  });
-
-  // Фильтр по тегам
-  if (inputText) {
-    filtered = filterByTags(inputText, filtered);
-  }
-
-  // Получаем уникальные виды деятельности
-  const datalist = document.getElementById('listType');
-  datalist.innerHTML = '';
-  
-  const uniqueTypes = [...new Set(
-    filtered.flatMap(service => 
-      (service['Вид деятельности'] || '')
-        .split(',')
-        .map(t => t.trim())
-        .filter(Boolean)
-    )
-  )];
-
-  uniqueTypes.forEach(type => {
-    const option = document.createElement('option');
-    option.value = type;
-    datalist.appendChild(option);
-  });
-});
-
-// Модифицируем общий обработчик (оставляя остальные поля без изменений)
 filterFields.forEach((id) => {
   const el = document.getElementById(id);
-  
-  if (id === 'filterType') {
-    // Для filterType уже есть отдельный обработчик
-    return;
-  }
 
   el.addEventListener("focus", () => {
     el.value = "";
@@ -779,11 +747,140 @@ filterFields.forEach((id) => {
       populateDependentLists(allServices);
     } else if (id === "filterRegion") {
       populateAllLists();
+    } else if (
+      id === "filterProfile" ||
+      id === "filterType" ||
+      id === "filterDistrict" ||
+      id === "filterName"
+    ) {
+      const regionVal = document
+        .getElementById("filterRegion")
+        .value.trim()
+        .toLowerCase();
+      const cityVal = document
+        .getElementById("filterCity")
+        .value.trim()
+        .toLowerCase();
+      const profileVal = document
+        .getElementById("filterProfile")
+        .value.trim()
+        .toLowerCase();
+      const typeVal = document
+        .getElementById("filterType")
+        .value.trim()
+        .toLowerCase();
+      const districtVal = document
+        .getElementById("filterDistrict")
+        .value.trim()
+        .toLowerCase();
+      const nameVal = document
+        .getElementById("filterName")
+        .value.trim()
+        .toLowerCase();
+
+      const filtered = allServices.filter((service) => {
+        const regions = (service["Область"] || "")
+          .split(",")
+          .map((s) => s.trim().toLowerCase());
+        const cities = (service["Населённый пункт"] || "")
+          .split(",")
+          .map((s) => s.trim().toLowerCase());
+        const profile = (service["Профиль деятельности"] || "").toLowerCase();
+        const type = (service["Вид деятельности"] || "").toLowerCase();
+        const district = (service["Район"] || "").toLowerCase();
+        const name = (
+          (service["Имя"] || "") +
+          " " +
+          (service["Компания"] || "")
+        ).toLowerCase();
+
+        return (
+          (!regionVal || regions.includes(regionVal)) &&
+          (!cityVal || cities.includes(cityVal)) &&
+          (!profileVal || profile.includes(profileVal)) &&
+          (!typeVal || type.includes(typeVal)) &&
+          (!districtVal || district.includes(districtVal)) &&
+          (!nameVal || name.includes(nameVal))
+        );
+      });
+
+      if (id === "filterProfile")
+        populateList("listProfile", filtered, "Профиль деятельности");
+      else if (id === "filterType") {
+  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
+  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
+  const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
+  const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
+  const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
+  const query = document.getElementById("filterType").value.trim().toLowerCase();
+  const queryWords = query.split(/[\s.,!?;:()]+/).filter(Boolean);
+
+  const filtered = allServices.filter((service) => {
+    const regions = (service["Область"] || "").toLowerCase().split(",").map(s => s.trim());
+    const cities = (service["Населённый пункт"] || "").toLowerCase().split(",").map(s => s.trim());
+    const profile = (service["Профиль деятельности"] || "").toLowerCase();
+    const district = (service["Район города"] || "").toLowerCase();
+    const name = ((service["Имя"] || "") + " " + (service["Компания"] || "")).toLowerCase();
+
+    return (
+      (!regionVal || regions.includes(regionVal)) &&
+      (!cityVal || cities.includes(cityVal)) &&
+      (!profileVal || profile.includes(profileVal)) &&
+      (!districtVal || district.includes(districtVal)) &&
+      (!nameVal || name.includes(nameVal))
+    );
+  });
+
+  const matchedTypes = new Set();
+
+  filtered.forEach(service => {
+    const tags = (service["Теги"] || "")
+      .toLowerCase()
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+    const types = (service["Вид деятельности"] || "")
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+
+    const matchAll = queryWords.every(word =>
+      tags.some(tag => word.includes(tag) || tag.includes(word))
+    );
+
+    if (matchAll) {
+      types.forEach(type => matchedTypes.add(type));
+    }
+  });
+
+  const datalist = document.getElementById("listType");
+  datalist.innerHTML = "";
+
+  if (query && matchedTypes.size === 0) {
+    const option = document.createElement("option");
+    option.value = "Ничего не найдено — измените запрос";
+    datalist.appendChild(option);
+    return;
+  }
+
+  Array.from(matchedTypes)
+    .sort((a, b) => a.localeCompare(b, "ru"))
+    .forEach(type => {
+      const option = document.createElement("option");
+      option.value = type;
+      datalist.appendChild(option);
+    });
+}
+
+      else if (id === "filterDistrict")
+        populateList("listDistrict", filtered, "Район");
+      else if (id === "filterName")
+        populateList("listName", filtered, "Имя", true);
     }
   });
 
   el.addEventListener("change", () => {
-    el.blur();
+    el.blur(); // при выборе из списка закрываем его
   });
 });
 
