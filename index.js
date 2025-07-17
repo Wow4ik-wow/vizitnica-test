@@ -7,6 +7,22 @@ let currentUser = null;
 
 let allServices = [];
 
+function searchByTags(inputText, services) {
+    if (!inputText.trim()) return services;
+
+    const words = inputText.toLowerCase().split(/[\s,]+/).filter(Boolean);
+    if (words.length === 0) return services;
+
+    return services.filter(service => {
+        if (!service.Теги) return false;
+        
+        const serviceTags = service.Теги.toLowerCase().split(',').map(tag => tag.trim());
+        return words.some(word => 
+            serviceTags.some(tag => word.includes(tag) || tag.includes(word))
+        );
+    });
+}
+
 async function loadServices() {
   const CACHE_KEY = "services_cache";
   const CACHE_TIME = 3600000; // 1 час в миллисекундах
@@ -356,7 +372,9 @@ function applyFilters() {
     const regionMatch = области.some((r) => r.includes(region));
     const cityMatch = города.some((c) => c.includes(city));
     const profileMatch = !profile || профиль.includes(profile);
-    const typeMatch = !type || вид.includes(type);
+    const typeMatch = !type || 
+    вид.toLowerCase().includes(type.toLowerCase()) || 
+    service.Теги.toLowerCase().includes(type.toLowerCase());
     const districtMatch = !district || район.includes(district);
     const nameMatch = !name || (имя + " " + компания).includes(name);
 
@@ -413,10 +431,15 @@ function applyFilters() {
 function populateAllLists() {
   populateList("listProfile", allServices, "Профиль деятельности");
   populateDatalist("listRegion", getUniqueValues(allServices, "Область"));
-  populateDatalist(
-    "listType",
-    getUniqueValues(allServices, "Вид деятельности")
-  );
+  populateDatalist("listType", 
+    getUniqueValues(
+        allServices.filter(s => 
+            (!regionValue || (s["Область"] || "").includes(regionValue)) &&
+            (!cityValue || (s["Населённый пункт"] || "").includes(cityValue))
+        , 
+        "Вид деятельности"
+    )
+));
   populateDatalist("listDistrict", getUniqueValues(allServices, "Район"));
   populateList("listName", allServices, "Имя", true);
   populateDependentLists(allServices);
@@ -829,9 +852,89 @@ function showNotification(message) {
   }, 5000);
 }
 
+function setupTypeInputBehavior() {
+    const typeInput = document.getElementById("filterType");
+    
+    typeInput.addEventListener("input", function(e) {
+        const inputText = e.target.value.trim().toLowerCase();
+        const preFiltered = getPreFilteredServices();
+        
+        if (!inputText) {
+            updateTypeDatalist(getUniqueActivityTypes(preFiltered));
+            return;
+        }
+
+        // 1. Ищем по тегам (основной поиск)
+        const tagFiltered = searchByTags(inputText, preFiltered);
+        
+        // 2. Собираем ВСЕ виды деятельности из найденных услуг
+        const allTypes = new Map(); // Используем Map для устранения дубликатов
+        
+        // Добавляем виды деятельности из услуг с совпадающими тегами
+        tagFiltered.forEach(service => {
+            (service["Вид деятельности"] || "").split(',')
+                .map(t => t.trim())
+                .filter(t => t)
+                .forEach(t => {
+                    const lowerType = t.toLowerCase();
+                    if (!allTypes.has(lowerType)) {
+                        allTypes.set(lowerType, t); // Сохраняем оригинальное написание
+                    }
+                });
+        });
+
+        // 3. Добавляем прямые совпадения в названии (без дублирования)
+        preFiltered.forEach(service => {
+            (service["Вид деятельности"] || "").split(',')
+                .map(t => t.trim())
+                .filter(t => t.toLowerCase().includes(inputText))
+                .forEach(t => {
+                    const lowerType = t.toLowerCase();
+                    if (!allTypes.has(lowerType)) {
+                        allTypes.set(lowerType, t);
+                    }
+                });
+        });
+
+        // Преобразуем в массив с оригинальными названиями и сортируем
+        const uniqueTypes = Array.from(allTypes.values())
+            .sort((a, b) => a.localeCompare(b, "ru"));
+
+        updateTypeDatalist(uniqueTypes);
+    });
+}
+
+function getPreFilteredServices() {
+    const region = document.getElementById("filterRegion").value.trim();
+    const city = document.getElementById("filterCity").value.trim();
+    const profile = document.getElementById("filterProfile").value.trim();
+    
+    return allServices.filter(service => {
+        const serviceRegions = (service["Область"] || "").split(',').map(r => r.trim());
+        const serviceCities = (service["Населённый пункт"] || "").split(',').map(c => c.trim());
+        const serviceProfile = (service["Профиль деятельности"] || "").trim();
+        
+        return (!region || serviceRegions.includes(region)) &&
+               (!city || serviceCities.includes(city)) &&
+               (!profile || serviceProfile === profile);
+    });
+}
+
+function updateTypeDatalist(types) {
+    const datalist = document.getElementById("listType");
+    datalist.innerHTML = "";
+    
+    types.forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        datalist.appendChild(option);
+    });
+}
+
 window.onload = () => {
   restoreRegionCity();
   loadServices();
+  setupTypeInputBehavior();
   document.getElementById("logoutBtn").onclick = () => {
     logout();
   };
