@@ -851,28 +851,48 @@ function setupTypeInputBehavior() {
         const inputText = e.target.value.trim().toLowerCase();
         const preFiltered = getPreFilteredServices();
         
+        // Если поле пустое - показываем все варианты
         if (!inputText) {
             updateTypeDatalist(getUniqueActivityTypes(preFiltered));
             return;
         }
 
-        // Ищем по тегам
+        // 1. Ищем услуги, где есть совпадение по тегам
         const tagFiltered = searchByTags(inputText, preFiltered);
         
-        // Собираем уникальные виды деятельности
-        const uniqueTypes = getUniqueActivityTypes(tagFiltered);
-        
-        // Добавляем прямые совпадения в названии
-        const directMatches = getUniqueActivityTypes(
-            preFiltered.filter(service => 
-                (service["Вид деятельности"] || "").toLowerCase().includes(inputText)
-        ));
-        
-        // Объединяем и убираем дубликаты
-        const allTypes = [...new Set([...uniqueTypes, ...directMatches])]
+        // 2. Получаем ВСЕ виды деятельности из найденных услуг
+        const allTypes = new Map();
+        tagFiltered.forEach(service => {
+            const serviceTypes = (service["Вид деятельности"] || "").split(',')
+                .map(t => t.trim())
+                .filter(t => t);
+                
+            serviceTypes.forEach(type => {
+                const lowerType = type.toLowerCase();
+                if (!allTypes.has(lowerType)) {
+                    allTypes.set(lowerType, type); // Сохраняем оригинальное написание
+                }
+            });
+        });
+
+        // 3. Добавляем прямые совпадения в названии вида деятельности
+        preFiltered.forEach(service => {
+            (service["Вид деятельности"] || "").split(',')
+                .map(t => t.trim())
+                .filter(t => t.toLowerCase().includes(inputText))
+                .forEach(t => {
+                    const lowerType = t.toLowerCase();
+                    if (!allTypes.has(lowerType)) {
+                        allTypes.set(lowerType, t);
+                    }
+                });
+        });
+
+        // Сортируем и обновляем список
+        const sortedTypes = Array.from(allTypes.values())
             .sort((a, b) => a.localeCompare(b, "ru"));
         
-        updateTypeDatalist(allTypes);
+        updateTypeDatalist(sortedTypes);
     });
 }
 
