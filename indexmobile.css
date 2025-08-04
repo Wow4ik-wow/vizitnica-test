@@ -187,3 +187,26 @@ html.mobile-device #cards {
   position: sticky;
   bottom: 20px;
 }
+
+/* Для всех dropdown-элементов (включая "Вид") */
+.custom-dropdown div, 
+#customTypeDropdown div {
+  font-size: 15px !important; /* Единый размер шрифта */
+  padding: 10px 15px !important; /* Увеличенные отступы */
+}
+
+/* Увеличение высоты списка */
+.custom-dropdown,
+#customTypeDropdown {
+  max-height: 400px !important; /* В 2 раза больше */
+}
+
+/* ТОЛЬКО для поля "Вид" */
+#customTypeDropdown {
+  font-size: 15px !important; /* Шрифт как у других */
+  max-height: 400px !important; /* Увеличенная высота */
+}
+
+#customTypeDropdown div {
+  padding: 10px 15px !important; /* Отступы как у других */
+}

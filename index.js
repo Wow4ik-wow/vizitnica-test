@@ -377,7 +377,6 @@ function applyFilters() {
   countElem.innerText = `Найдено совпадений: ${filtered.length}`;
 
   populateList("listProfile", filtered, "Профиль деятельности");
-  populateList("listType", filtered, "Вид деятельности");
   populateList("listDistrict", filtered, "Район");
   populateList("listName", filtered, "Имя", true);
 
@@ -413,10 +412,6 @@ function applyFilters() {
 function populateAllLists() {
   populateList("listProfile", allServices, "Профиль деятельности");
   populateDatalist("listRegion", getUniqueValues(allServices, "Область"));
-  populateDatalist(
-    "listType",
-    getUniqueValues(allServices, "Вид деятельности")
-  );
   populateDatalist("listDistrict", getUniqueValues(allServices, "Район"));
   populateList("listName", allServices, "Имя", true);
   populateDependentLists(allServices);
@@ -804,78 +799,34 @@ filterFields.forEach((id) => {
         );
       });
 
-      if (id === "filterProfile")
-        populateList("listProfile", filtered, "Профиль деятельности");
-      else if (id === "filterType") {
-  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
-  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
-  const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
-  const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
-  const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
-  const query = document.getElementById("filterType").value.trim().toLowerCase();
-  const queryWords = query.split(/[\s.,!?;:()]+/).filter(Boolean);
+      if (id === "filterProfile") {
+  populateList("listProfile", filtered, "Профиль деятельности");
+} else if (id === "filterType") {
+  const list = document.getElementById("listType");
+  list.innerHTML = "";
 
-  const filtered = allServices.filter((service) => {
-    const regions = (service["Область"] || "").toLowerCase().split(",").map(s => s.trim());
-    const cities = (service["Населённый пункт"] || "").toLowerCase().split(",").map(s => s.trim());
-    const profile = (service["Профиль деятельности"] || "").toLowerCase();
-    const district = (service["Район города"] || "").toLowerCase();
-    const name = ((service["Имя"] || "") + " " + (service["Компания"] || "")).toLowerCase();
-
-    return (
-      (!regionVal || regions.includes(regionVal)) &&
-      (!cityVal || cities.includes(cityVal)) &&
-      (!profileVal || profile.includes(profileVal)) &&
-      (!districtVal || district.includes(districtVal)) &&
-      (!nameVal || name.includes(nameVal))
-    );
-  });
-
-  const matchedTypes = new Set();
-
-  filtered.forEach(service => {
-    const tags = (service["Теги"] || "")
-      .toLowerCase()
-      .split(",")
-      .map(t => t.trim())
-      .filter(Boolean);
+  const valuesSet = new Set();
+  filtered.forEach((service) => {
     const types = (service["Вид деятельности"] || "")
       .split(",")
-      .map(t => t.trim())
+      .map((t) => t.trim())
       .filter(Boolean);
-
-    const matchAll = queryWords.every(word =>
-      tags.some(tag => word.includes(tag) || tag.includes(word))
-    );
-
-    if (matchAll) {
-      types.forEach(type => matchedTypes.add(type));
-    }
+    types.forEach((t) => valuesSet.add(t));
   });
 
-  const datalist = document.getElementById("listType");
-  datalist.innerHTML = "";
-
-  if (query && matchedTypes.size === 0) {
-    const option = document.createElement("option");
-    option.value = "Ничего не найдено — измените запрос";
-    datalist.appendChild(option);
-    return;
-  }
-
-  Array.from(matchedTypes)
+  Array.from(valuesSet)
     .sort((a, b) => a.localeCompare(b, "ru"))
-    .forEach(type => {
+    .forEach((val) => {
       const option = document.createElement("option");
-      option.value = type;
-      datalist.appendChild(option);
+      option.value = val;
+      list.appendChild(option);
     });
+} else if (id === "filterDistrict") {
+  populateList("listDistrict", filtered, "Район");
+} else if (id === "filterName") {
+  populateList("listName", filtered, "Имя", true);
 }
 
-      else if (id === "filterDistrict")
-        populateList("listDistrict", filtered, "Район");
-      else if (id === "filterName")
-        populateList("listName", filtered, "Имя", true);
     }
   });
 
@@ -1063,3 +1014,157 @@ function updateAuthUI() {
     roleInfo.innerText = "Вы не авторизованы";
   }
 }
+(function setupCustomTypeDropdown() {
+  const input = document.getElementById("filterType");
+
+  const dropdown = document.createElement("div");
+  dropdown.id = "customTypeDropdown";
+  dropdown.style.position = "absolute";
+  dropdown.style.background = "#fff";
+  dropdown.style.border = "1px solid #ccc";
+  dropdown.style.borderRadius = "4px";
+  dropdown.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
+  dropdown.style.maxHeight = "200px";
+  dropdown.style.overflowY = "auto";
+  dropdown.style.zIndex = "1000";
+  dropdown.style.display = "none";
+
+  document.body.appendChild(dropdown);
+
+  function updateCustomTypeDropdown() {
+  const query = input.value.trim().toLowerCase();
+  dropdown.innerHTML = "";
+
+  const matched = new Set();
+
+  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
+  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
+  const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
+  const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
+  const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
+
+  allServices.forEach((s) => {
+    const tags = (s["Теги"] || "").toLowerCase();
+    const types = (s["Вид деятельности"] || "").split(",");
+
+    const regions = (s["Область"] || "").toLowerCase().split(",").map((x) => x.trim());
+    const cities = (s["Населённый пункт"] || "").toLowerCase().split(",").map((x) => x.trim());
+    const profile = (s["Профиль деятельности"] || "").toLowerCase();
+    const district = (s["Район"] || "").toLowerCase();
+    const name = ((s["Имя"] || "") + " " + (s["Компания"] || "")).toLowerCase();
+
+    const match =
+      (!regionVal || regions.includes(regionVal)) &&
+      (!cityVal || cities.includes(cityVal)) &&
+      (!profileVal || profile.includes(profileVal)) &&
+      (!districtVal || district.includes(districtVal)) &&
+      (!nameVal || name.includes(nameVal));
+
+    if (match && (query === "" || tags.includes(query))) {
+      types.forEach((t) => {
+        const clean = t.trim();
+        if (clean) matched.add(clean);
+      });
+    }
+  });
+
+  if (matched.size === 0) {
+    dropdown.style.display = "none";
+    return;
+  }
+
+  Array.from(matched)
+    .sort((a, b) => a.localeCompare(b, "ru"))
+    .forEach((val) => {
+      const div = document.createElement("div");
+      div.textContent = val;
+      div.style.padding = "6px 10px";
+      div.style.cursor = "pointer";
+      div.addEventListener("mouseover", () => {
+        div.style.background = "#f0f0f0";
+      });
+      div.addEventListener("mouseout", () => {
+        div.style.background = "#fff";
+      });
+      div.addEventListener("click", () => {
+        input.value = val;
+        dropdown.style.display = "none";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      dropdown.appendChild(div);
+    });
+
+  const rect = input.getBoundingClientRect();
+  dropdown.style.left = rect.left + window.scrollX + "px";
+  dropdown.style.top = rect.bottom + window.scrollY + "px";
+  dropdown.style.width = rect.width + "px";
+  dropdown.style.display = "block";
+}
+
+input.addEventListener("input", updateCustomTypeDropdown);
+input.addEventListener("focus", () => {
+  updateCustomTypeDropdown();
+});
+
+
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target) && e.target !== input) {
+      dropdown.style.display = "none";
+    }
+  });
+})();
+// Функция для создания единого dropdown
+function initCommonDropdown(inputId) {
+  const input = document.getElementById(inputId);
+  const datalistId = 'list' + inputId.replace('filter', '');
+  if (!datalistId) return;
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'dropdown-common-style';
+  document.body.appendChild(dropdown);
+
+  // Обновление dropdown
+  const updateDropdown = () => {
+    const value = input.value.toLowerCase();
+    dropdown.innerHTML = '';
+    
+    const options = Array.from(document.getElementById(datalistId).options)
+      .filter(opt => opt.value.toLowerCase().includes(value))
+      .sort((a, b) => a.value.localeCompare(b.value, 'ru'));
+
+    options.forEach(opt => {
+      const item = document.createElement('div');
+      item.textContent = opt.value;
+      item.addEventListener('click', () => {
+        input.value = opt.value;
+        dropdown.style.display = 'none';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      dropdown.appendChild(item);
+    });
+
+    if (options.length > 0) {
+      const rect = input.getBoundingClientRect();
+      dropdown.style.left = `${rect.left}px`;
+      dropdown.style.top = `${rect.bottom}px`;
+      dropdown.style.width = `${rect.width}px`;
+      dropdown.style.display = 'block';
+    } else {
+      dropdown.style.display = 'none';
+    }
+  };
+
+  // Обработчики событий
+  input.addEventListener('focus', updateDropdown);
+  input.addEventListener('input', updateDropdown);
+
+  // Скрытие при клике вне поля
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+}
+
+// Инициализация для всех полей
+['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);

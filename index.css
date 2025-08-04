@@ -175,3 +175,55 @@ input::placeholder {
   padding: 12px 16px;
   display: block; /* Чтобы занимала всю ширину контейнера */
 }
+
+/* Общие стили для всех dropdown */
+.dropdown-common-style {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  max-height: 400px; /* Увеличили высоту в 2 раза */
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  padding: 5px 0;
+  width: auto; /* Автоподбор ширины */
+  min-width: 250px; /* Минимальная ширина */
+}
+
+/* Стилизация элементов списка */
+.dropdown-common-style div {
+  padding: 10px 15px; /* Увеличили отступы */
+  cursor: pointer;
+  font-size: 15px; /* Единый размер шрифта */
+  transition: background 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-common-style div:hover {
+  background: #f5f5f5;
+}
+
+/* Специфичные стили для поля "Вид" */
+#filterType + .dropdown-common-style {
+  font-size: 15px !important; /* Выравниваем с остальными */
+}
+
+/* Полоса прокрутки */
+.dropdown-common-style::-webkit-scrollbar {
+  width: 8px;
+}
+.dropdown-common-style::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+/* ТОЛЬКО для поля "Вид" */
+#customTypeDropdown {
+  font-size: 15px !important; /* Шрифт как у других */
+  max-height: 400px !important; /* Увеличенная высота */
+}
+
+#customTypeDropdown div {
+  padding: 10px 15px !important; /* Отступы как у других */
+}
