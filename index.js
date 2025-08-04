@@ -1017,45 +1017,51 @@ function updateAuthUI() {
 (function setupCustomTypeDropdown() {
   const input = document.getElementById("filterType");
 
+  // 1. Создаем элементы
   const dropdown = document.createElement("div");
   dropdown.id = "customTypeDropdown";
-  dropdown.style.position = "absolute";
-  dropdown.style.background = "#fff";
-  dropdown.style.border = "1px solid #ccc";
-  dropdown.style.borderRadius = "4px";
-  dropdown.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
-  dropdown.style.maxHeight = "400px";
-  dropdown.style.overflowY = "auto";
-  dropdown.style.zIndex = "1000";
-  dropdown.style.display = "none";
-  dropdown.style.overscrollBehavior = "contain";
-  dropdown.style.touchAction = "pan-y";
-  dropdown.style.WebkitOverflowScrolling = "touch";
+  
+  // 2. Настройка стилей
+  Object.assign(dropdown.style, {
+    position: "absolute",
+    background: "#fff",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    maxHeight: "400px",
+    overflowY: "auto",
+    zIndex: "1000",
+    display: "none",
+    overscrollBehavior: "contain",
+    touchAction: "none",
+    WebkitOverflowScrolling: "touch"
+  });
 
   document.body.appendChild(dropdown);
 
+  // 3. Мобильная прокрутка
   const isMobile = /Android|webOS|iPhone|iPad/i.test(navigator.userAgent);
-  let touchStartY = 0;
+  let startY = 0;
 
   if (isMobile) {
     dropdown.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-      document.documentElement.classList.add('dropdown-open');
+      startY = e.touches[0].clientY;
     }, { passive: true });
 
     dropdown.addEventListener('touchmove', (e) => {
-      const touchY = e.touches[0].clientY;
-      const isScrollingUp = touchStartY - touchY > 0;
+      const y = e.touches[0].clientY;
+      const isScrollingUp = startY - y > 0;
       const isAtTop = dropdown.scrollTop === 0;
       const isAtBottom = dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight;
 
       if ((isScrollingUp && isAtTop) || (!isScrollingUp && isAtBottom)) {
         e.preventDefault();
       }
-      touchStartY = touchY;
+      startY = y;
     }, { passive: false });
   }
 
+  // 4. Ваш оригинальный код (без изменений)
   function updateCustomTypeDropdown() {
     const query = input.value.trim().toLowerCase();
     dropdown.innerHTML = "";
@@ -1114,7 +1120,6 @@ function updateAuthUI() {
         div.addEventListener("click", () => {
           input.value = val;
           dropdown.style.display = "none";
-          if (isMobile) document.documentElement.classList.remove('dropdown-open');
           input.dispatchEvent(new Event("input", { bubbles: true }));
         });
         dropdown.appendChild(div);
@@ -1127,16 +1132,13 @@ function updateAuthUI() {
     dropdown.style.display = "block";
   }
 
+  // 5. Обработчики событий
   input.addEventListener("input", updateCustomTypeDropdown);
-  input.addEventListener("focus", () => {
-    updateCustomTypeDropdown();
-    if (isMobile) document.documentElement.classList.add('dropdown-open');
-  });
+  input.addEventListener("focus", updateCustomTypeDropdown);
 
   document.addEventListener("click", (e) => {
     if (!dropdown.contains(e.target) && e.target !== input) {
       dropdown.style.display = "none";
-      if (isMobile) document.documentElement.classList.remove('dropdown-open');
     }
   });
 })();
