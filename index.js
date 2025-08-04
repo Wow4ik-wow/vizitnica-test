@@ -1024,92 +1024,119 @@ function updateAuthUI() {
   dropdown.style.border = "1px solid #ccc";
   dropdown.style.borderRadius = "4px";
   dropdown.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
-  dropdown.style.maxHeight = "200px";
+  dropdown.style.maxHeight = "400px";
   dropdown.style.overflowY = "auto";
   dropdown.style.zIndex = "1000";
   dropdown.style.display = "none";
+  dropdown.style.overscrollBehavior = "contain";
+  dropdown.style.touchAction = "pan-y";
+  dropdown.style.WebkitOverflowScrolling = "touch";
 
   document.body.appendChild(dropdown);
 
-  function updateCustomTypeDropdown() {
-  const query = input.value.trim().toLowerCase();
-  dropdown.innerHTML = "";
+  const isMobile = /Android|webOS|iPhone|iPad/i.test(navigator.userAgent);
+  let touchStartY = 0;
 
-  const matched = new Set();
+  if (isMobile) {
+    dropdown.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      document.documentElement.classList.add('dropdown-open');
+    }, { passive: true });
 
-  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
-  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
-  const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
-  const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
-  const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
+    dropdown.addEventListener('touchmove', (e) => {
+      const touchY = e.touches[0].clientY;
+      const isScrollingUp = touchStartY - touchY > 0;
+      const isAtTop = dropdown.scrollTop === 0;
+      const isAtBottom = dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight;
 
-  allServices.forEach((s) => {
-    const tags = (s["Теги"] || "").toLowerCase();
-    const types = (s["Вид деятельности"] || "").split(",");
-
-    const regions = (s["Область"] || "").toLowerCase().split(",").map((x) => x.trim());
-    const cities = (s["Населённый пункт"] || "").toLowerCase().split(",").map((x) => x.trim());
-    const profile = (s["Профиль деятельности"] || "").toLowerCase();
-    const district = (s["Район"] || "").toLowerCase();
-    const name = ((s["Имя"] || "") + " " + (s["Компания"] || "")).toLowerCase();
-
-    const match =
-      (!regionVal || regions.includes(regionVal)) &&
-      (!cityVal || cities.includes(cityVal)) &&
-      (!profileVal || profile.includes(profileVal)) &&
-      (!districtVal || district.includes(districtVal)) &&
-      (!nameVal || name.includes(nameVal));
-
-    if (match && (query === "" || tags.includes(query))) {
-      types.forEach((t) => {
-        const clean = t.trim();
-        if (clean) matched.add(clean);
-      });
-    }
-  });
-
-  if (matched.size === 0) {
-    dropdown.style.display = "none";
-    return;
+      if ((isScrollingUp && isAtTop) || (!isScrollingUp && isAtBottom)) {
+        e.preventDefault();
+      }
+      touchStartY = touchY;
+    }, { passive: false });
   }
 
-  Array.from(matched)
-    .sort((a, b) => a.localeCompare(b, "ru"))
-    .forEach((val) => {
-      const div = document.createElement("div");
-      div.textContent = val;
-      div.style.padding = "6px 10px";
-      div.style.cursor = "pointer";
-      div.addEventListener("mouseover", () => {
-        div.style.background = "#f0f0f0";
-      });
-      div.addEventListener("mouseout", () => {
-        div.style.background = "#fff";
-      });
-      div.addEventListener("click", () => {
-        input.value = val;
-        dropdown.style.display = "none";
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      });
-      dropdown.appendChild(div);
+  function updateCustomTypeDropdown() {
+    const query = input.value.trim().toLowerCase();
+    dropdown.innerHTML = "";
+
+    const matched = new Set();
+
+    const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
+    const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
+    const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
+    const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
+    const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
+
+    allServices.forEach((s) => {
+      const tags = (s["Теги"] || "").toLowerCase();
+      const types = (s["Вид деятельности"] || "").split(",");
+
+      const regions = (s["Область"] || "").toLowerCase().split(",").map((x) => x.trim());
+      const cities = (s["Населённый пункт"] || "").toLowerCase().split(",").map((x) => x.trim());
+      const profile = (s["Профиль деятельности"] || "").toLowerCase();
+      const district = (s["Район"] || "").toLowerCase();
+      const name = ((s["Имя"] || "") + " " + (s["Компания"] || "")).toLowerCase();
+
+      const match =
+        (!regionVal || regions.includes(regionVal)) &&
+        (!cityVal || cities.includes(cityVal)) &&
+        (!profileVal || profile.includes(profileVal)) &&
+        (!districtVal || district.includes(districtVal)) &&
+        (!nameVal || name.includes(nameVal));
+
+      if (match && (query === "" || tags.includes(query))) {
+        types.forEach((t) => {
+          const clean = t.trim();
+          if (clean) matched.add(clean);
+        });
+      }
     });
 
-  const rect = input.getBoundingClientRect();
-  dropdown.style.left = rect.left + window.scrollX + "px";
-  dropdown.style.top = rect.bottom + window.scrollY + "px";
-  dropdown.style.width = rect.width + "px";
-  dropdown.style.display = "block";
-}
+    if (matched.size === 0) {
+      dropdown.style.display = "none";
+      return;
+    }
 
-input.addEventListener("input", updateCustomTypeDropdown);
-input.addEventListener("focus", () => {
-  updateCustomTypeDropdown();
-});
+    Array.from(matched)
+      .sort((a, b) => a.localeCompare(b, "ru"))
+      .forEach((val) => {
+        const div = document.createElement("div");
+        div.textContent = val;
+        div.style.padding = "10px 15px";
+        div.style.cursor = "pointer";
+        div.addEventListener("mouseover", () => {
+          div.style.background = "#f0f0f0";
+        });
+        div.addEventListener("mouseout", () => {
+          div.style.background = "#fff";
+        });
+        div.addEventListener("click", () => {
+          input.value = val;
+          dropdown.style.display = "none";
+          if (isMobile) document.documentElement.classList.remove('dropdown-open');
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+        dropdown.appendChild(div);
+      });
 
+    const rect = input.getBoundingClientRect();
+    dropdown.style.left = rect.left + window.scrollX + "px";
+    dropdown.style.top = rect.bottom + window.scrollY + "px";
+    dropdown.style.width = rect.width + "px";
+    dropdown.style.display = "block";
+  }
+
+  input.addEventListener("input", updateCustomTypeDropdown);
+  input.addEventListener("focus", () => {
+    updateCustomTypeDropdown();
+    if (isMobile) document.documentElement.classList.add('dropdown-open');
+  });
 
   document.addEventListener("click", (e) => {
     if (!dropdown.contains(e.target) && e.target !== input) {
       dropdown.style.display = "none";
+      if (isMobile) document.documentElement.classList.remove('dropdown-open');
     }
   });
 })();
