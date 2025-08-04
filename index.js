@@ -1016,21 +1016,19 @@ function updateAuthUI() {
 }
 (function setupCustomTypeDropdown() {
   const input = document.getElementById("filterType");
-
-  // 1. Создаем элементы
   const dropdown = document.createElement("div");
   dropdown.id = "customTypeDropdown";
   
-  // 2. Настройка стилей
+  // Основные стили (десктоп + мобильные)
   Object.assign(dropdown.style, {
     position: "absolute",
     background: "#fff",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    border: "1px solid #ddd",
+    borderRadius: "6px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
     maxHeight: "400px",
     overflowY: "auto",
-    zIndex: "1000",
+    zIndex: "10000",
     display: "none",
     overscrollBehavior: "contain",
     touchAction: "none",
@@ -1039,25 +1037,13 @@ function updateAuthUI() {
 
   document.body.appendChild(dropdown);
 
-  // 3. Мобильная прокрутка
+  // Фикс прокрутки для мобильных
   const isMobile = /Android|webOS|iPhone|iPad/i.test(navigator.userAgent);
-  let startY = 0;
-
   if (isMobile) {
-    dropdown.addEventListener('touchstart', (e) => {
-      startY = e.touches[0].clientY;
-    }, { passive: true });
-
     dropdown.addEventListener('touchmove', (e) => {
-      const y = e.touches[0].clientY;
-      const isScrollingUp = startY - y > 0;
-      const isAtTop = dropdown.scrollTop === 0;
-      const isAtBottom = dropdown.scrollTop + dropdown.clientHeight >= dropdown.scrollHeight;
-
-      if ((isScrollingUp && isAtTop) || (!isScrollingUp && isAtBottom)) {
+      if (dropdown.scrollHeight > dropdown.clientHeight) {
         e.preventDefault();
       }
-      startY = y;
     }, { passive: false });
   }
 
@@ -1133,7 +1119,7 @@ function updateAuthUI() {
   }
 
   // 5. Обработчики событий
-  input.addEventListener("input", updateCustomTypeDropdown);
+input.addEventListener("input", updateCustomTypeDropdown);
   input.addEventListener("focus", updateCustomTypeDropdown);
 
   document.addEventListener("click", (e) => {
