@@ -188,55 +188,43 @@ html.mobile-device #cards {
   bottom: 20px;
 }
 
-/* Общие стили для всех dropdown */
-.dropdown-common-style {
+/* Основные стили для всех dropdown */
+.mobile-dropdown-container {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 5%;
   width: 90%;
-  max-height: 60vh;
+  max-height: 50vh;
   background: white;
   border: 1px solid #ddd;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   z-index: 10010;
-  overflow-y: auto;
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   padding: 0;
+  top: var(--dropdown-top, 100px);
+  transform: none !important;
 }
 
-/* Стили для элементов списка */
-.dropdown-common-style div {
-  padding: 14px 16px;
+/* Элементы списка */
+.mobile-dropdown-container div {
+  padding: 12px 16px;
   font-size: 16px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 /* Анимация при нажатии */
-.dropdown-common-style div:active {
+.mobile-dropdown-container div:active {
   background: #f0f0f0;
 }
 
-/* Специальные стили для поля "Вид" */
-#customTypeDropdown {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-height: 60vh;
-  z-index: 10020; /* Выше обычных dropdown */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Блокировка скролла страницы при открытом dropdown */
-body.dropdown-open {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
+/* Фикс для iOS */
+@supports (-webkit-touch-callout: none) {
+  .mobile-dropdown-container {
+    overscroll-behavior: none;
+  }
 }
 
 /* Элементы списка */

@@ -1,3 +1,18 @@
+function setupDropdownPosition() {
+  const inputs = ['filterRegion','filterCity','filterProfile','filterType','filterDistrict','filterName'];
+  inputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener('focus', function() {
+        const rect = this.getBoundingClientRect();
+        const dropdownTop = rect.bottom + window.scrollY + 5;
+        document.documentElement.style.setProperty('--dropdown-top', `${dropdownTop}px`);
+        document.body.classList.add('dropdown-open');
+      });
+    }
+  });
+}
+
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 
@@ -1174,12 +1189,15 @@ function initCommonDropdown(inputId) {
   input.addEventListener('input', updateDropdown);
 
   // Скрытие при клике вне поля
-  document.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.style.display = 'none';
     }
   });
 }
 
-// Инициализация для всех полей
-['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
+document.addEventListener('DOMContentLoaded', function() {
+  setupDropdownPosition();
+  ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
+  initCommonDropdown('filterType');
+});
