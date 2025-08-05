@@ -1,18 +1,3 @@
-function setupDropdownPosition() {
-  const inputs = ['filterRegion','filterCity','filterProfile','filterType','filterDistrict','filterName'];
-  inputs.forEach(id => {
-    const input = document.getElementById(id);
-    if (input) {
-      input.addEventListener('focus', function() {
-        const rect = this.getBoundingClientRect();
-        const dropdownTop = rect.bottom + window.scrollY + 5;
-        document.documentElement.style.setProperty('--dropdown-top', `${dropdownTop}px`);
-        document.body.classList.add('dropdown-open');
-      });
-    }
-  });
-}
-
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 
@@ -1031,111 +1016,96 @@ function updateAuthUI() {
 }
 (function setupCustomTypeDropdown() {
   const input = document.getElementById("filterType");
+
   const dropdown = document.createElement("div");
   dropdown.id = "customTypeDropdown";
-  
-  // Основные стили (десктоп + мобильные)
-  Object.assign(dropdown.style, {
-    position: "absolute",
-    background: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "6px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    maxHeight: "400px",
-    overflowY: "auto",
-    zIndex: "10000",
-    display: "none",
-    overscrollBehavior: "contain",
-    touchAction: "none",
-    WebkitOverflowScrolling: "touch"
-  });
+  dropdown.style.position = "absolute";
+  dropdown.style.background = "#fff";
+  dropdown.style.border = "1px solid #ccc";
+  dropdown.style.borderRadius = "4px";
+  dropdown.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
+  dropdown.style.maxHeight = "200px";
+  dropdown.style.overflowY = "auto";
+  dropdown.style.zIndex = "1000";
+  dropdown.style.display = "none";
 
   document.body.appendChild(dropdown);
 
-  // Фикс прокрутки для мобильных
-  const isMobile = /Android|webOS|iPhone|iPad/i.test(navigator.userAgent);
-  if (isMobile) {
-    dropdown.addEventListener('touchmove', (e) => {
-      if (dropdown.scrollHeight > dropdown.clientHeight) {
-        e.preventDefault();
-      }
-    }, { passive: false });
+  function updateCustomTypeDropdown() {
+  const query = input.value.trim().toLowerCase();
+  dropdown.innerHTML = "";
+
+  const matched = new Set();
+
+  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
+  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
+  const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
+  const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
+  const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
+
+  allServices.forEach((s) => {
+    const tags = (s["Теги"] || "").toLowerCase();
+    const types = (s["Вид деятельности"] || "").split(",");
+
+    const regions = (s["Область"] || "").toLowerCase().split(",").map((x) => x.trim());
+    const cities = (s["Населённый пункт"] || "").toLowerCase().split(",").map((x) => x.trim());
+    const profile = (s["Профиль деятельности"] || "").toLowerCase();
+    const district = (s["Район"] || "").toLowerCase();
+    const name = ((s["Имя"] || "") + " " + (s["Компания"] || "")).toLowerCase();
+
+    const match =
+      (!regionVal || regions.includes(regionVal)) &&
+      (!cityVal || cities.includes(cityVal)) &&
+      (!profileVal || profile.includes(profileVal)) &&
+      (!districtVal || district.includes(districtVal)) &&
+      (!nameVal || name.includes(nameVal));
+
+    if (match && (query === "" || tags.includes(query))) {
+      types.forEach((t) => {
+        const clean = t.trim();
+        if (clean) matched.add(clean);
+      });
+    }
+  });
+
+  if (matched.size === 0) {
+    dropdown.style.display = "none";
+    return;
   }
 
-  // 4. Ваш оригинальный код (без изменений)
-  function updateCustomTypeDropdown() {
-    const query = input.value.trim().toLowerCase();
-    dropdown.innerHTML = "";
-
-    const matched = new Set();
-
-    const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
-    const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
-    const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
-    const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
-    const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
-
-    allServices.forEach((s) => {
-      const tags = (s["Теги"] || "").toLowerCase();
-      const types = (s["Вид деятельности"] || "").split(",");
-
-      const regions = (s["Область"] || "").toLowerCase().split(",").map((x) => x.trim());
-      const cities = (s["Населённый пункт"] || "").toLowerCase().split(",").map((x) => x.trim());
-      const profile = (s["Профиль деятельности"] || "").toLowerCase();
-      const district = (s["Район"] || "").toLowerCase();
-      const name = ((s["Имя"] || "") + " " + (s["Компания"] || "")).toLowerCase();
-
-      const match =
-        (!regionVal || regions.includes(regionVal)) &&
-        (!cityVal || cities.includes(cityVal)) &&
-        (!profileVal || profile.includes(profileVal)) &&
-        (!districtVal || district.includes(districtVal)) &&
-        (!nameVal || name.includes(nameVal));
-
-      if (match && (query === "" || tags.includes(query))) {
-        types.forEach((t) => {
-          const clean = t.trim();
-          if (clean) matched.add(clean);
-        });
-      }
+  Array.from(matched)
+    .sort((a, b) => a.localeCompare(b, "ru"))
+    .forEach((val) => {
+      const div = document.createElement("div");
+      div.textContent = val;
+      div.style.padding = "6px 10px";
+      div.style.cursor = "pointer";
+      div.addEventListener("mouseover", () => {
+        div.style.background = "#f0f0f0";
+      });
+      div.addEventListener("mouseout", () => {
+        div.style.background = "#fff";
+      });
+      div.addEventListener("click", () => {
+        input.value = val;
+        dropdown.style.display = "none";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      dropdown.appendChild(div);
     });
 
-    if (matched.size === 0) {
-      dropdown.style.display = "none";
-      return;
-    }
+  const rect = input.getBoundingClientRect();
+  dropdown.style.left = rect.left + window.scrollX + "px";
+  dropdown.style.top = rect.bottom + window.scrollY + "px";
+  dropdown.style.width = rect.width + "px";
+  dropdown.style.display = "block";
+}
 
-    Array.from(matched)
-      .sort((a, b) => a.localeCompare(b, "ru"))
-      .forEach((val) => {
-        const div = document.createElement("div");
-        div.textContent = val;
-        div.style.padding = "10px 15px";
-        div.style.cursor = "pointer";
-        div.addEventListener("mouseover", () => {
-          div.style.background = "#f0f0f0";
-        });
-        div.addEventListener("mouseout", () => {
-          div.style.background = "#fff";
-        });
-        div.addEventListener("click", () => {
-          input.value = val;
-          dropdown.style.display = "none";
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-        });
-        dropdown.appendChild(div);
-      });
-
-    const rect = input.getBoundingClientRect();
-    dropdown.style.left = rect.left + window.scrollX + "px";
-    dropdown.style.top = rect.bottom + window.scrollY + "px";
-    dropdown.style.width = rect.width + "px";
-    dropdown.style.display = "block";
-  }
-
-  // 5. Обработчики событий
 input.addEventListener("input", updateCustomTypeDropdown);
-  input.addEventListener("focus", updateCustomTypeDropdown);
+input.addEventListener("focus", () => {
+  updateCustomTypeDropdown();
+});
+
 
   document.addEventListener("click", (e) => {
     if (!dropdown.contains(e.target) && e.target !== input) {
@@ -1143,6 +1113,7 @@ input.addEventListener("input", updateCustomTypeDropdown);
     }
   });
 })();
+
 // Функция для создания единого dropdown
 function initCommonDropdown(inputId) {
   const input = document.getElementById(inputId);
@@ -1189,58 +1160,12 @@ function initCommonDropdown(inputId) {
   input.addEventListener('input', updateDropdown);
 
   // Скрытие при клике вне поля
-    document.addEventListener('click', (e) => {
+  document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.style.display = 'none';
     }
   });
 }
 
-// ===== Fullscreen режим ===== //
-// Fullscreen элементы
-const fullscreenDropdown = document.getElementById('fullscreenDropdown');
-const fullscreenInput = document.getElementById('fullscreenInput');
-const fullscreenList = document.querySelector('.fullscreen-list');
-const fullscreenClose = document.querySelector('.fullscreen-close');
-
-// Функция открытия
-function openFullscreenDropdown(originalInput) {
-  if (!fullscreenDropdown || !fullscreenInput || !fullscreenList) return;
-  
-  fullscreenInput.value = originalInput.value || '';
-  fullscreenInput.placeholder = originalInput.placeholder || 'Поиск...';
-  fullscreenDropdown.style.display = 'flex';
-  fullscreenInput.focus();
-
-  // Фильтрация (замените на ваш реальный фильтр)
-  const searchValue = originalInput.value.toLowerCase();
-  const filteredItems = allServices.filter(item => 
-    item.name.toLowerCase().includes(searchValue)
-  );
-
-  // Очистка и заполнение списка
-  fullscreenList.innerHTML = '';
-  filteredItems.forEach(item => {
-    const div = document.createElement('div');
-    div.textContent = item.name;
-    div.addEventListener('click', () => {
-      originalInput.value = item.name;
-      fullscreenDropdown.style.display = 'none';
-    });
-    fullscreenList.appendChild(div);
-  });
-}
-
-// Закрытие
-if (fullscreenClose) {
-  fullscreenClose.addEventListener('click', () => {
-    fullscreenDropdown.style.display = 'none';
-  });
-}
-
-// Обработчики для всех полей ввода
-document.querySelectorAll('#filterRegion, #filterCity, #filterProfile, #filterType, #filterDistrict, #filterName').forEach(input => {
-  input.addEventListener('focus', function() {
-    openFullscreenDropdown(this);
-  });
-});
+// Инициализация для всех полей
+['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);

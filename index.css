@@ -218,6 +218,40 @@ input::placeholder {
   border-radius: 4px;
 }
 
+/* Стили для dropdown поля "Вид" */
+#customTypeDropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  max-height: 400px; /* Увеличиваем высоту */
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  padding: 5px 0;
+  width: auto;
+  min-width: 250px;
+}
+
+#customTypeDropdown div {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 15px; /* Единый размер шрифта */
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#customTypeDropdown div:hover {
+  background: #f5f5f5;
+}
+
+#customTypeDropdown::-webkit-scrollbar {
+  width: 8px;
+}
+#customTypeDropdown::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
 /* ТОЛЬКО для поля "Вид" */
 #customTypeDropdown {
   font-size: 15px !important; /* Шрифт как у других */
