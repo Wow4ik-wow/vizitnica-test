@@ -1196,8 +1196,51 @@ function initCommonDropdown(inputId) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  setupDropdownPosition();
-  ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
-  initCommonDropdown('filterType');
+// ===== Fullscreen режим ===== //
+// Fullscreen элементы
+const fullscreenDropdown = document.getElementById('fullscreenDropdown');
+const fullscreenInput = document.getElementById('fullscreenInput');
+const fullscreenList = document.querySelector('.fullscreen-list');
+const fullscreenClose = document.querySelector('.fullscreen-close');
+
+// Функция открытия
+function openFullscreenDropdown(originalInput) {
+  if (!fullscreenDropdown || !fullscreenInput || !fullscreenList) return;
+  
+  fullscreenInput.value = originalInput.value || '';
+  fullscreenInput.placeholder = originalInput.placeholder || 'Поиск...';
+  fullscreenDropdown.style.display = 'flex';
+  fullscreenInput.focus();
+
+  // Фильтрация (замените на ваш реальный фильтр)
+  const searchValue = originalInput.value.toLowerCase();
+  const filteredItems = allServices.filter(item => 
+    item.name.toLowerCase().includes(searchValue)
+  );
+
+  // Очистка и заполнение списка
+  fullscreenList.innerHTML = '';
+  filteredItems.forEach(item => {
+    const div = document.createElement('div');
+    div.textContent = item.name;
+    div.addEventListener('click', () => {
+      originalInput.value = item.name;
+      fullscreenDropdown.style.display = 'none';
+    });
+    fullscreenList.appendChild(div);
+  });
+}
+
+// Закрытие
+if (fullscreenClose) {
+  fullscreenClose.addEventListener('click', () => {
+    fullscreenDropdown.style.display = 'none';
+  });
+}
+
+// Обработчики для всех полей ввода
+document.querySelectorAll('#filterRegion, #filterCity, #filterProfile, #filterType, #filterDistrict, #filterName').forEach(input => {
+  input.addEventListener('focus', function() {
+    openFullscreenDropdown(this);
+  });
 });
