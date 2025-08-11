@@ -257,8 +257,8 @@ html.mobile-device #cards {
   padding: 10px 15px !important; /* Отступы как у других */
 }
 
-/* Фиксированное поле ввода */
-.mobile-input-fixed {
+/* Фиксированное поле */
+.input-fixed-top {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -268,12 +268,11 @@ html.mobile-device #cards {
   padding: 15px !important;
   margin: 0 !important;
   width: 100% !important;
-  box-sizing: border-box !important;
   box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
 }
 
 /* Список подсказок */
-.mobile-suggestions {
+.mobile-dropdown-list {
   position: fixed !important;
   top: 60px !important;
   left: 0 !important;

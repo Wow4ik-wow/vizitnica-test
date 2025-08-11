@@ -1166,51 +1166,55 @@ function initCommonDropdown(inputId) {
     }
   });
 // Фиксация полей на мобильных
+// Фиксация полей на мобильных
 if (isMobile) {
-  const inputs = document.querySelectorAll('input[list]');
-  
-  inputs.forEach(input => {
-    // Создаем контейнер для подсказок
-    const suggestions = document.createElement('div');
-    suggestions.className = 'mobile-suggestions';
-    document.body.appendChild(suggestions);
-    
+  // Создаем глобальный контейнер для подсказок
+  const dropdownList = document.createElement('div');
+  dropdownList.className = 'mobile-dropdown-list';
+  document.body.appendChild(dropdownList);
+
+  document.querySelectorAll('input[list]').forEach(input => {
     input.addEventListener('focus', function() {
       // Фиксируем поле
-      this.classList.add('mobile-input-fixed');
+      this.classList.add('input-fixed-top');
       
       // Прокручиваем страницу вверх
       window.scrollTo({top: 0, behavior: 'smooth'});
       
-      // Заполняем подсказки
-      const datalist = document.getElementById(this.getAttribute('list'));
+      // Получаем соответствующий datalist
+      const datalistId = this.getAttribute('list');
+      const datalist = document.getElementById(datalistId);
+      
       if (datalist) {
-        suggestions.innerHTML = '';
+        dropdownList.innerHTML = '';
         Array.from(datalist.options).forEach(option => {
-          const div = document.createElement('div');
-          div.textContent = option.value;
-          div.style.padding = '12px 15px';
-          div.style.borderBottom = '1px solid #eee';
-          div.addEventListener('click', () => {
+          const item = document.createElement('div');
+          item.textContent = option.value;
+          item.style.padding = '12px';
+          item.style.borderBottom = '1px solid #eee';
+          item.addEventListener('click', () => {
             input.value = option.value;
-            suggestions.style.display = 'none';
-            input.classList.remove('mobile-input-fixed');
+            dropdownList.style.display = 'none';
+            input.classList.remove('input-fixed-top');
           });
-          suggestions.appendChild(div);
+          dropdownList.appendChild(item);
         });
-        suggestions.style.display = 'block';
-      }
-    });
-    
-    // Закрытие при клике вне поля
-    document.addEventListener('click', (e) => {
-      if (!input.contains(e.target) && !suggestions.contains(e.target)) {
-        suggestions.style.display = 'none';
-        input.classList.remove('mobile-input-fixed');
+        dropdownList.style.display = 'block';
       }
     });
   });
-}}
+
+  // Закрытие при клике вне поля
+  document.addEventListener('click', (e) => {
+    if (!e.target.matches('input[list]') && !e.target.closest('.mobile-dropdown-list')) {
+      dropdownList.style.display = 'none';
+      document.querySelectorAll('input').forEach(input => {
+        input.classList.remove('input-fixed-top');
+      });
+    }
+  });
+}
+}
 
 // Инициализация для всех полей
 ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
