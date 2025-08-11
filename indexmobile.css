@@ -263,3 +263,31 @@ html.mobile-device #cards {
   gap: 10px;
   flex-wrap: wrap;
 }
+
+/* Фикс для полей ввода */
+input {
+  width: 100% !important;
+  min-height: 44px !important; /* Минимальная высота для удобного тапа */
+  font-size: 16px !important; /* Увеличиваем шрифт */
+  padding: 12px 15px !important;
+  background: #eec0c0 !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 8px !important;
+}
+
+/* Фикс для выпадающих списков */
+datalist {
+  display: none !important; /* Скрываем стандартные списки */
+}
+
+.dropdown-common-style {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-height: 50vh !important;
+  overflow-y: auto !important;
+  z-index: 10000 !important;
+  background: white !important;
+  border-top: 2px solid #3b82f6 !important;
+}

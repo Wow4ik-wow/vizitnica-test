@@ -6,6 +6,19 @@ const API_USER_URL =
 let currentUser = null;
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+// Фикс для мобильных полей ввода
+if (isMobile) {
+  document.querySelectorAll('input').forEach(input => {
+    input.removeAttribute('list'); // Убираем привязку к datalist
+    input.autocomplete = 'off'; // Отключаем авто-заполнение
+    
+    input.addEventListener('focus', function() {
+      setTimeout(() => {
+        this.scrollIntoView({behavior: 'smooth', block: 'center'});
+      }, 300);
+    });
+  });
+}
 
 let allServices = [];
 
