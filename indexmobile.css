@@ -311,3 +311,17 @@ html.mobile-device #cards {
   right: 10px !important;
   width: auto !important;
 }
+
+/* Только фиксация поля */
+.input-fixed-absolute {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important;
+  background: #f0cda6 !important;
+  padding: 15px !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+}

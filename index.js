@@ -1166,45 +1166,22 @@ function initCommonDropdown(inputId) {
     }
   });
 // Фиксация полей на мобильных
-// Мобильный фикс (без ошибок)
 if (isMobile) {
-  // Функция для фиксации поля
-  const fixInput = (input) => {
-    input.classList.add('mobile-fixed-input');
-    window.scrollTo(0, 0);
-  };
-
-  // Обычные поля с datalist
-  const inputsWithDatalist = document.querySelectorAll('input[list]');
-  inputsWithDatalist.forEach(input => {
+  document.querySelectorAll('input').forEach(input => {
     input.addEventListener('focus', function() {
-      fixInput(this);
+      // Просто добавляем класс
+      this.classList.add('input-fixed-absolute');
+      // Прокрутка вверх
+      window.scrollTo(0, 0);
+    });
+
+    input.addEventListener('blur', function() {
+      // Убираем класс
+      this.classList.remove('input-fixed-absolute');
     });
   });
-
-  // Поле "Вид" (особая обработка)
-  const typeInput = document.getElementById('filterType');
-  if (typeInput) {
-    typeInput.addEventListener('focus', function() {
-      fixInput(this);
-      const customDropdown = document.getElementById('customTypeDropdown');
-      if (customDropdown) {
-        customDropdown.style.top = '50px';
-        customDropdown.style.left = '10px';
-        customDropdown.style.right = '10px';
-      }
-    });
-  }
-
-  // Сброс при клике вне поля
-  document.addEventListener('click', (e) => {
-    if (!e.target.matches('input')) {
-      document.querySelectorAll('.mobile-fixed-input').forEach(el => {
-        el.classList.remove('mobile-fixed-input');
-      });
-    }
-  });
-}}
+}
+}
 
 // Инициализация для всех полей
 ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
