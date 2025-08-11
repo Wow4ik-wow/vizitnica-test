@@ -205,89 +205,66 @@ html.mobile-device #cards {
   background: #f0f0f0;
 }
 
-/* Общие стили для всех dropdown (мобильная версия) */
+/* Общие стили для всех dropdown */
 .dropdown-common-style {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
+  position: absolute;
   background: white;
   border: 1px solid #ddd;
-  max-height: 40vh !important; /* 40% высоты экрана */
+  max-height: 400px; /* Увеличили высоту в 2 раза */
   overflow-y: auto;
-  z-index: 10000 !important;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-  border-radius: 10px 10px 0 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 6px;
   padding: 5px 0;
-  width: 100% !important;
-  -webkit-overflow-scrolling: touch; /* Плавная прокрутка на iOS */
+  width: auto; /* Автоподбор ширины */
+  min-width: 250px; /* Минимальная ширина */
 }
 
-/* Элементы списка (мобильные) */
+/* Стилизация элементов списка */
 .dropdown-common-style div {
-  padding: 12px 15px !important;
+  padding: 10px 15px; /* Увеличили отступы */
   cursor: pointer;
-  font-size: 16px !important;
+  font-size: 15px; /* Единый размер шрифта */
+  transition: background 0.2s;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.dropdown-common-style div:active {
-  background: #f0f0f0 !important; /* Акцент при нажатии */
+.dropdown-common-style div:hover {
+  background: #f5f5f5;
 }
 
-/* Полоса прокрутки (толще для мобильных) */
+/* Специфичные стили для поля "Вид" */
+#filterType + .dropdown-common-style {
+  font-size: 15px !important; /* Выравниваем с остальными */
+}
+
+/* Полоса прокрутки */
 .dropdown-common-style::-webkit-scrollbar {
-  width: 10px !important;
+  width: 8px;
 }
 .dropdown-common-style::-webkit-scrollbar-thumb {
-  background: #aaa !important;
-  border-radius: 5px !important;
+  background: #ccc;
+  border-radius: 4px;
 }
 
-/* Фикс для поля "Вид" */
+/* ТОЛЬКО для поля "Вид" */
 #customTypeDropdown {
-  font-size: 16px !important;
-  max-height: 40vh !important;
-  bottom: 0 !important;
+  font-size: 15px !important; /* Шрифт как у других */
+  max-height: 400px !important; /* Увеличенная высота */
 }
 
-/* Восстановление кнопок */
-.btn {
-  display: inline-block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+#customTypeDropdown div {
+  padding: 10px 15px !important; /* Отступы как у других */
 }
 
-.auth-buttons {
-  display: flex !important;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* Фикс для полей ввода */
+/* Фикс для мобильных полей */
 input {
-  width: 100% !important;
-  min-height: 44px !important; /* Минимальная высота для удобного тапа */
-  font-size: 16px !important; /* Увеличиваем шрифт */
-  padding: 12px 15px !important;
-  background: #eec0c0 !important;
-  border: 1px solid #a0a0a0 !important;
-  border-radius: 8px !important;
+  min-height: 44px;
+  font-size: 16px;
 }
 
-/* Фикс для выпадающих списков */
-datalist {
-  display: none !important; /* Скрываем стандартные списки */
-}
-
-.dropdown-common-style {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  max-height: 50vh !important;
-  overflow-y: auto !important;
-  z-index: 10000 !important;
-  background: white !important;
-  border-top: 2px solid #3b82f6 !important;
+/* Фикс для кнопок */
+.btn {
+  min-height: 44px;
+  display: inline-block !important;
 }

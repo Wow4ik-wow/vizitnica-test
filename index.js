@@ -5,20 +5,25 @@ const API_USER_URL =
   "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
 let currentUser = null;
 
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-// Фикс для мобильных полей ввода
-if (isMobile) {
+// Фикс для мобильного ввода
+const fixMobileInputs = () => {
+  if (!isMobile) return;
+  
   document.querySelectorAll('input').forEach(input => {
-    input.removeAttribute('list'); // Убираем привязку к datalist
-    input.autocomplete = 'off'; // Отключаем авто-заполнение
-    
+    // Улучшаем отображение клавиатуры
     input.addEventListener('focus', function() {
       setTimeout(() => {
         this.scrollIntoView({behavior: 'smooth', block: 'center'});
       }, 300);
     });
+    
+    // Фикс для Samsung Internet
+    input.removeAttribute('list');
   });
-}
+};
+
+// Вызов после загрузки
+document.addEventListener('DOMContentLoaded', fixMobileInputs);
 
 let allServices = [];
 
@@ -1184,66 +1189,3 @@ function initCommonDropdown(inputId) {
 
 // Инициализация для всех полей
 ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
-
-function initMobileDropdowns() {
-  if (!isMobile) return;
-
-  const fields = ['filterRegion', 'filterCity', 'filterProfile', 'filterType', 'filterDistrict', 'filterName'];
-  
-  fields.forEach(fieldId => {
-    const input = document.getElementById(fieldId);
-    if (!input) return;
-    
-    const dropdown = document.createElement('div');
-    dropdown.className = 'dropdown-common-style';
-    document.body.appendChild(dropdown);
-
-    input.addEventListener('focus', function() {
-      setTimeout(() => {
-        input.scrollIntoView({behavior: 'smooth', block: 'center'});
-        updateDropdown();
-      }, 300);
-    });
-
-    input.addEventListener('input', updateDropdown);
-
-    function updateDropdown() {
-      const datalist = document.getElementById('list' + fieldId.replace('filter', ''));
-      if (!datalist) return;
-      
-      dropdown.innerHTML = '';
-      const value = input.value.toLowerCase();
-      const options = Array.from(datalist.options)
-        .filter(opt => opt.value.toLowerCase().includes(value))
-        .sort((a, b) => a.value.localeCompare(b.value, 'ru'));
-      
-      options.forEach(opt => {
-        const item = document.createElement('div');
-        item.textContent = opt.value;
-        item.addEventListener('click', () => {
-          input.value = opt.value;
-          dropdown.style.display = 'none';
-        });
-        dropdown.appendChild(item);
-      });
-      
-      dropdown.style.display = options.length ? 'block' : 'none';
-    }
-  });
-}
-
-// Инициализация после загрузки
-document.addEventListener('DOMContentLoaded', function() {
-  initMobileDropdowns();
-  // Восстановление других функций
-  if (typeof loadServices === 'function') loadServices();
-  if (typeof restoreRegionCity === 'function') restoreRegionCity();
-// Мобильные dropdown
-if (isMobile) {
-  document.querySelectorAll('input[list]').forEach(input => {
-    input.addEventListener('focus', function() {
-      setTimeout(() => this.scrollIntoView({block: 'center'}), 300);
-    });
-  });
-}
-});
