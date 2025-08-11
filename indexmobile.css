@@ -250,3 +250,16 @@ html.mobile-device #cards {
   max-height: 40vh !important;
   bottom: 0 !important;
 }
+
+/* Восстановление кнопок */
+.btn {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.auth-buttons {
+  display: flex !important;
+  gap: 10px;
+  flex-wrap: wrap;
+}
