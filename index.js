@@ -1169,3 +1169,51 @@ function initCommonDropdown(inputId) {
 
 // Инициализация для всех полей
 ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
+
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+function setupMobileDropdowns() {
+  if (!isMobile) return;
+
+  const fields = ['filterRegion', 'filterCity', 'filterProfile', 'filterType', 'filterDistrict', 'filterName'];
+  
+  fields.forEach(fieldId => {
+    const input = document.getElementById(fieldId);
+    const dropdown = document.createElement('div');
+    dropdown.className = 'dropdown-common-style';
+    document.body.appendChild(dropdown);
+
+    input.addEventListener('focus', function() {
+      setTimeout(() => input.scrollIntoView({behavior: 'smooth', block: 'center'}), 300);
+      updateMobileDropdown(input, dropdown);
+    });
+
+    input.addEventListener('input', () => updateMobileDropdown(input, dropdown));
+  });
+
+  function updateMobileDropdown(input, dropdown) {
+    const datalistId = 'list' + input.id.replace('filter', '');
+    const datalist = document.getElementById(datalistId);
+    if (!datalist) return;
+
+    dropdown.innerHTML = '';
+    const value = input.value.toLowerCase();
+    const options = Array.from(datalist.options)
+      .filter(opt => opt.value.toLowerCase().includes(value))
+      .sort((a, b) => a.value.localeCompare(b.value, 'ru'));
+
+    options.forEach(opt => {
+      const item = document.createElement('div');
+      item.textContent = opt.value;
+      item.addEventListener('click', () => {
+        input.value = opt.value;
+        dropdown.style.display = 'none';
+      });
+      dropdown.appendChild(item);
+    });
+
+    dropdown.style.display = options.length ? 'block' : 'none';
+  }
+}
+
+setupMobileDropdowns();
