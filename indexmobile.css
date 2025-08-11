@@ -257,8 +257,40 @@ html.mobile-device #cards {
   padding: 10px 15px !important; /* Отступы как у других */
 }
 
-/* Фиксированное поле */
-.input-fixed-top {
+/* Фиксированное поле - абсолютно надежное */
+.input-sticky-top {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important;
+  background: #f0cda6 !important;
+  padding: 15px !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  transform: translateZ(0) !important; /* Аппаратное ускорение */
+  will-change: transform !important; /* Оптимизация */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+}
+
+/* Контейнер для подсказок */
+.mobile-suggestions-container {
+  position: fixed !important;
+  top: 60px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow-y: auto !important;
+  background: white !important;
+  z-index: 9999 !important;
+  padding: 10px !important;
+  -webkit-overflow-scrolling: touch !important; /* Плавный скролл на iOS */
+  transform: translateZ(0) !important;
+}
+
+/* Фиксация поля */
+.input-sticky {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -271,16 +303,11 @@ html.mobile-device #cards {
   box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
 }
 
-/* Список подсказок */
-.mobile-dropdown-list {
-  position: fixed !important;
+/* Стили для кастомного dropdown поля "Вид" */
+#customTypeDropdown.mobile-dropdown {
   top: 60px !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  overflow-y: auto !important;
-  background: white !important;
-  z-index: 9999 !important;
-  padding: 10px !important;
-  display: none !important;
+  max-height: 60vh !important;
+  left: 10px !important;
+  right: 10px !important;
+  width: auto !important;
 }

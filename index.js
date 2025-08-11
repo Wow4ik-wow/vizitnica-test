@@ -1166,55 +1166,45 @@ function initCommonDropdown(inputId) {
     }
   });
 // Фиксация полей на мобильных
-// Фиксация полей на мобильных
+// Мобильный фикс (без ошибок)
 if (isMobile) {
-  // Создаем глобальный контейнер для подсказок
-  const dropdownList = document.createElement('div');
-  dropdownList.className = 'mobile-dropdown-list';
-  document.body.appendChild(dropdownList);
+  // Функция для фиксации поля
+  const fixInput = (input) => {
+    input.classList.add('mobile-fixed-input');
+    window.scrollTo(0, 0);
+  };
 
-  document.querySelectorAll('input[list]').forEach(input => {
+  // Обычные поля с datalist
+  const inputsWithDatalist = document.querySelectorAll('input[list]');
+  inputsWithDatalist.forEach(input => {
     input.addEventListener('focus', function() {
-      // Фиксируем поле
-      this.classList.add('input-fixed-top');
-      
-      // Прокручиваем страницу вверх
-      window.scrollTo({top: 0, behavior: 'smooth'});
-      
-      // Получаем соответствующий datalist
-      const datalistId = this.getAttribute('list');
-      const datalist = document.getElementById(datalistId);
-      
-      if (datalist) {
-        dropdownList.innerHTML = '';
-        Array.from(datalist.options).forEach(option => {
-          const item = document.createElement('div');
-          item.textContent = option.value;
-          item.style.padding = '12px';
-          item.style.borderBottom = '1px solid #eee';
-          item.addEventListener('click', () => {
-            input.value = option.value;
-            dropdownList.style.display = 'none';
-            input.classList.remove('input-fixed-top');
-          });
-          dropdownList.appendChild(item);
-        });
-        dropdownList.style.display = 'block';
-      }
+      fixInput(this);
     });
   });
 
-  // Закрытие при клике вне поля
+  // Поле "Вид" (особая обработка)
+  const typeInput = document.getElementById('filterType');
+  if (typeInput) {
+    typeInput.addEventListener('focus', function() {
+      fixInput(this);
+      const customDropdown = document.getElementById('customTypeDropdown');
+      if (customDropdown) {
+        customDropdown.style.top = '50px';
+        customDropdown.style.left = '10px';
+        customDropdown.style.right = '10px';
+      }
+    });
+  }
+
+  // Сброс при клике вне поля
   document.addEventListener('click', (e) => {
-    if (!e.target.matches('input[list]') && !e.target.closest('.mobile-dropdown-list')) {
-      dropdownList.style.display = 'none';
-      document.querySelectorAll('input').forEach(input => {
-        input.classList.remove('input-fixed-top');
+    if (!e.target.matches('input')) {
+      document.querySelectorAll('.mobile-fixed-input').forEach(el => {
+        el.classList.remove('mobile-fixed-input');
       });
     }
   });
-}
-}
+}}
 
 // Инициализация для всех полей
 ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
