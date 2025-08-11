@@ -8,17 +8,49 @@ let currentUser = null;
 // Фикс для мобильного ввода
 const fixMobileInputs = () => {
   if (!isMobile) return;
-  
+
   document.querySelectorAll('input').forEach(input => {
-    // Улучшаем отображение клавиатуры
+    const dropdown = document.createElement('div');
+    dropdown.className = 'dropdown-container';
+    dropdown.style.display = 'none';
+    document.body.appendChild(dropdown);
+
     input.addEventListener('focus', function() {
+      // Фиксируем поле вверху
+      this.classList.add('fixed-input');
+      
+      // Показываем список
+      const datalist = document.getElementById(this.getAttribute('list'));
+      if (datalist) {
+        dropdown.innerHTML = '';
+        Array.from(datalist.options).forEach(option => {
+          const item = document.createElement('div');
+          item.textContent = option.value;
+          item.style.padding = '10px';
+          item.style.borderBottom = '1px solid #eee';
+          item.addEventListener('click', () => {
+            input.value = option.value;
+            dropdown.style.display = 'none';
+            input.classList.remove('fixed-input');
+          });
+          dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+      }
+      
+      // Прокручиваем поле в зону видимости
       setTimeout(() => {
-        this.scrollIntoView({behavior: 'smooth', block: 'center'});
+        input.scrollIntoView({behavior: 'smooth', block: 'nearest'});
       }, 300);
     });
-    
-    // Фикс для Samsung Internet
-    input.removeAttribute('list');
+
+    // Закрытие при клике вне поля
+    document.addEventListener('click', (e) => {
+      if (e.target !== input && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+        input.classList.remove('fixed-input');
+      }
+    });
   });
 };
 

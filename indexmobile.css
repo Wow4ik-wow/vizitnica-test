@@ -268,3 +268,29 @@ input {
   min-height: 44px;
   display: inline-block !important;
 }
+
+/* Фиксированное поле ввода */
+.fixed-input {
+  position: fixed !important;
+  top: 10px !important;
+  left: 10px !important;
+  right: 10px !important;
+  z-index: 10000 !important;
+  width: calc(100% - 20px) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+}
+
+/* Контейнер для списка */
+.dropdown-container {
+  position: fixed !important;
+  top: 70px !important;
+  left: 10px !important;
+  right: 10px !important;
+  bottom: 0 !important;
+  overflow-y: auto !important;
+  background: white !important;
+  z-index: 9999 !important;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+}
