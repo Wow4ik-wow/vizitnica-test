@@ -6,56 +6,58 @@ const API_USER_URL =
 let currentUser = null;
 
 // Фикс для мобильного ввода
-const fixMobileInputs = () => {
+// Фиксирование поля ввода
+function setupMobileInputs() {
   if (!isMobile) return;
 
   document.querySelectorAll('input').forEach(input => {
     const dropdown = document.createElement('div');
-    dropdown.className = 'dropdown-container';
+    dropdown.className = 'mobile-dropdown';
     dropdown.style.display = 'none';
     document.body.appendChild(dropdown);
 
     input.addEventListener('focus', function() {
       // Фиксируем поле вверху
-      this.classList.add('fixed-input');
+      this.classList.add('input-fixed-top');
       
-      // Показываем список
-      const datalist = document.getElementById(this.getAttribute('list'));
-      if (datalist) {
+      // Прокручиваем в начало страницы
+      window.scrollTo(0, 0);
+      
+      // Заполняем список
+      const datalistId = this.getAttribute('list');
+      if (datalistId) {
+        const datalist = document.getElementById(datalistId);
         dropdown.innerHTML = '';
+        
         Array.from(datalist.options).forEach(option => {
           const item = document.createElement('div');
           item.textContent = option.value;
-          item.style.padding = '10px';
+          item.style.padding = '12px';
           item.style.borderBottom = '1px solid #eee';
           item.addEventListener('click', () => {
             input.value = option.value;
             dropdown.style.display = 'none';
-            input.classList.remove('fixed-input');
+            input.classList.remove('input-fixed-top');
           });
           dropdown.appendChild(item);
         });
+        
         dropdown.style.display = 'block';
       }
-      
-      // Прокручиваем поле в зону видимости
-      setTimeout(() => {
-        input.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-      }, 300);
     });
 
     // Закрытие при клике вне поля
     document.addEventListener('click', (e) => {
       if (e.target !== input && !dropdown.contains(e.target)) {
         dropdown.style.display = 'none';
-        input.classList.remove('fixed-input');
+        input.classList.remove('input-fixed-top');
       }
     });
   });
-};
+}
 
-// Вызов после загрузки
-document.addEventListener('DOMContentLoaded', fixMobileInputs);
+// Инициализация
+document.addEventListener('DOMContentLoaded', setupMobileInputs);
 
 let allServices = [];
 
