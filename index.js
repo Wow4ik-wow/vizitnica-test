@@ -294,12 +294,11 @@ function renderCards(services) {
     });
 
     container.appendChild(card);
-    
   });
   // Добавляем кнопку "ВЕРНУТЬСЯ НАВЕРХ" после всех карточек
-const backToTopContainer = document.getElementById("backToTopContainer");
-  backToTopContainer.innerHTML = ''; // Очищаем перед добавлением
-  
+  const backToTopContainer = document.getElementById("backToTopContainer");
+  backToTopContainer.innerHTML = ""; // Очищаем перед добавлением
+
   const backToTopBtn = document.createElement("button");
   backToTopBtn.className = "btn back-to-top";
   backToTopBtn.textContent = "ВЕРНУТЬСЯ НАВЕРХ";
@@ -383,27 +382,28 @@ function applyFilters() {
   // Прокрутка к результатам (после ВСЕХ операций с DOM)
   setTimeout(() => {
     const scrollToResults = () => {
-      const target = document.getElementById('scrollTarget');
+      const target = document.getElementById("scrollTarget");
       if (!target) return;
-      
+
       // Получаем позицию кнопки ПОИСК
-      const searchBtn = document.querySelector('.search-btn');
+      const searchBtn = document.querySelector(".search-btn");
       const searchBtnHeight = searchBtn ? searchBtn.offsetHeight : 0;
-      
+
       // Вычисляем позицию с учётом высоты кнопки
       const targetPosition = target.getBoundingClientRect().top;
-      const offsetPosition = targetPosition + window.pageYOffset - searchBtnHeight - 10;
-      
+      const offsetPosition =
+        targetPosition + window.pageYOffset - searchBtnHeight - 10;
+
       // Плавная прокрутка
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     };
 
     // Первая попытка
     scrollToResults();
-    
+
     // Страховка на случай если DOM не обновился
     setTimeout(scrollToResults, 50);
   }, 100);
@@ -800,33 +800,32 @@ filterFields.forEach((id) => {
       });
 
       if (id === "filterProfile") {
-  populateList("listProfile", filtered, "Профиль деятельности");
-} else if (id === "filterType") {
-  const list = document.getElementById("listType");
-  list.innerHTML = "";
+        populateList("listProfile", filtered, "Профиль деятельности");
+      } else if (id === "filterType") {
+        const list = document.getElementById("listType");
+        list.innerHTML = "";
 
-  const valuesSet = new Set();
-  filtered.forEach((service) => {
-    const types = (service["Вид деятельности"] || "")
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-    types.forEach((t) => valuesSet.add(t));
-  });
+        const valuesSet = new Set();
+        filtered.forEach((service) => {
+          const types = (service["Вид деятельности"] || "")
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
+          types.forEach((t) => valuesSet.add(t));
+        });
 
-  Array.from(valuesSet)
-    .sort((a, b) => a.localeCompare(b, "ru"))
-    .forEach((val) => {
-      const option = document.createElement("option");
-      option.value = val;
-      list.appendChild(option);
-    });
-} else if (id === "filterDistrict") {
-  populateList("listDistrict", filtered, "Район");
-} else if (id === "filterName") {
-  populateList("listName", filtered, "Имя", true);
-}
-
+        Array.from(valuesSet)
+          .sort((a, b) => a.localeCompare(b, "ru"))
+          .forEach((val) => {
+            const option = document.createElement("option");
+            option.value = val;
+            list.appendChild(option);
+          });
+      } else if (id === "filterDistrict") {
+        populateList("listDistrict", filtered, "Район");
+      } else if (id === "filterName") {
+        populateList("listName", filtered, "Имя", true);
+      }
     }
   });
 
@@ -1032,80 +1031,104 @@ function updateAuthUI() {
   document.body.appendChild(dropdown);
 
   function updateCustomTypeDropdown() {
-  const query = input.value.trim().toLowerCase();
-  dropdown.innerHTML = "";
+    const query = input.value.trim().toLowerCase();
+    dropdown.innerHTML = "";
 
-  const matched = new Set();
+    const matched = new Set();
 
-  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
-  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
-  const profileVal = document.getElementById("filterProfile").value.trim().toLowerCase();
-  const districtVal = document.getElementById("filterDistrict").value.trim().toLowerCase();
-  const nameVal = document.getElementById("filterName").value.trim().toLowerCase();
+    const regionVal = document
+      .getElementById("filterRegion")
+      .value.trim()
+      .toLowerCase();
+    const cityVal = document
+      .getElementById("filterCity")
+      .value.trim()
+      .toLowerCase();
+    const profileVal = document
+      .getElementById("filterProfile")
+      .value.trim()
+      .toLowerCase();
+    const districtVal = document
+      .getElementById("filterDistrict")
+      .value.trim()
+      .toLowerCase();
+    const nameVal = document
+      .getElementById("filterName")
+      .value.trim()
+      .toLowerCase();
 
-  allServices.forEach((s) => {
-    const tags = (s["Теги"] || "").toLowerCase();
-    const types = (s["Вид деятельности"] || "").split(",");
+    allServices.forEach((s) => {
+      const tags = (s["Теги"] || "").toLowerCase();
+      const types = (s["Вид деятельности"] || "").split(",");
 
-    const regions = (s["Область"] || "").toLowerCase().split(",").map((x) => x.trim());
-    const cities = (s["Населённый пункт"] || "").toLowerCase().split(",").map((x) => x.trim());
-    const profile = (s["Профиль деятельности"] || "").toLowerCase();
-    const district = (s["Район"] || "").toLowerCase();
-    const name = ((s["Имя"] || "") + " " + (s["Компания"] || "")).toLowerCase();
+      const regions = (s["Область"] || "")
+        .toLowerCase()
+        .split(",")
+        .map((x) => x.trim());
+      const cities = (s["Населённый пункт"] || "")
+        .toLowerCase()
+        .split(",")
+        .map((x) => x.trim());
+      const profile = (s["Профиль деятельности"] || "").toLowerCase();
+      const district = (s["Район"] || "").toLowerCase();
+      const name = (
+        (s["Имя"] || "") +
+        " " +
+        (s["Компания"] || "")
+      ).toLowerCase();
 
-    const match =
-      (!regionVal || regions.includes(regionVal)) &&
-      (!cityVal || cities.includes(cityVal)) &&
-      (!profileVal || profile.includes(profileVal)) &&
-      (!districtVal || district.includes(districtVal)) &&
-      (!nameVal || name.includes(nameVal));
+      const match =
+        (!regionVal || regions.includes(regionVal)) &&
+        (!cityVal || cities.includes(cityVal)) &&
+        (!profileVal || profile.includes(profileVal)) &&
+        (!districtVal || district.includes(districtVal)) &&
+        (!nameVal || name.includes(nameVal));
 
-    if (match && (query === "" || tags.includes(query))) {
-      types.forEach((t) => {
-        const clean = t.trim();
-        if (clean) matched.add(clean);
-      });
-    }
-  });
-
-  if (matched.size === 0) {
-    dropdown.style.display = "none";
-    return;
-  }
-
-  Array.from(matched)
-    .sort((a, b) => a.localeCompare(b, "ru"))
-    .forEach((val) => {
-      const div = document.createElement("div");
-      div.textContent = val;
-      div.style.padding = "6px 10px";
-      div.style.cursor = "pointer";
-      div.addEventListener("mouseover", () => {
-        div.style.background = "#f0f0f0";
-      });
-      div.addEventListener("mouseout", () => {
-        div.style.background = "#fff";
-      });
-      div.addEventListener("click", () => {
-        input.value = val;
-        dropdown.style.display = "none";
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      });
-      dropdown.appendChild(div);
+      if (match && (query === "" || tags.includes(query))) {
+        types.forEach((t) => {
+          const clean = t.trim();
+          if (clean) matched.add(clean);
+        });
+      }
     });
 
-  const rect = input.getBoundingClientRect();
-  dropdown.style.left = rect.left + window.scrollX + "px";
-  dropdown.style.top = rect.bottom + window.scrollY + "px";
-  dropdown.style.width = rect.width + "px";
-  dropdown.style.display = "block";
-}
+    if (matched.size === 0) {
+      dropdown.style.display = "none";
+      return;
+    }
 
-input.addEventListener("input", updateCustomTypeDropdown);
-input.addEventListener("focus", () => {
-  updateCustomTypeDropdown();
-});
+    Array.from(matched)
+      .sort((a, b) => a.localeCompare(b, "ru"))
+      .forEach((val) => {
+        const div = document.createElement("div");
+        div.textContent = val;
+        div.style.padding = "6px 10px";
+        div.style.cursor = "pointer";
+        div.addEventListener("mouseover", () => {
+          div.style.background = "#f0f0f0";
+        });
+        div.addEventListener("mouseout", () => {
+          div.style.background = "#fff";
+        });
+        div.addEventListener("click", () => {
+          input.value = val;
+          dropdown.style.display = "none";
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+        dropdown.appendChild(div);
+      });
 
+    const rect = input.getBoundingClientRect();
+    dropdown.style.left = rect.left + window.scrollX + "px";
+    dropdown.style.top = rect.bottom + window.scrollY + "px";
+    dropdown.style.width = rect.width + "px";
+    dropdown.style.display = "block";
+  }
+
+  input.addEventListener("input", updateCustomTypeDropdown);
+  input.addEventListener("focus", () => {
+    updateCustomTypeDropdown();
+  });
 
   document.addEventListener("click", (e) => {
     if (!dropdown.contains(e.target) && e.target !== input) {
@@ -1117,29 +1140,29 @@ input.addEventListener("focus", () => {
 // Функция для создания единого dropdown
 function initCommonDropdown(inputId) {
   const input = document.getElementById(inputId);
-  const datalistId = 'list' + inputId.replace('filter', '');
+  const datalistId = "list" + inputId.replace("filter", "");
   if (!datalistId) return;
 
-  const dropdown = document.createElement('div');
-  dropdown.className = 'dropdown-common-style';
+  const dropdown = document.createElement("div");
+  dropdown.className = "dropdown-common-style";
   document.body.appendChild(dropdown);
 
   // Обновление dropdown
   const updateDropdown = () => {
     const value = input.value.toLowerCase();
-    dropdown.innerHTML = '';
-    
-    const options = Array.from(document.getElementById(datalistId).options)
-      .filter(opt => opt.value.toLowerCase().includes(value))
-      .sort((a, b) => a.value.localeCompare(b.value, 'ru'));
+    dropdown.innerHTML = "";
 
-    options.forEach(opt => {
-      const item = document.createElement('div');
+    const options = Array.from(document.getElementById(datalistId).options)
+      .filter((opt) => opt.value.toLowerCase().includes(value))
+      .sort((a, b) => a.value.localeCompare(b.value, "ru"));
+
+    options.forEach((opt) => {
+      const item = document.createElement("div");
       item.textContent = opt.value;
-      item.addEventListener('click', () => {
+      item.addEventListener("click", () => {
         input.value = opt.value;
-        dropdown.style.display = 'none';
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+        dropdown.style.display = "none";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
       });
       dropdown.appendChild(item);
     });
@@ -1149,39 +1172,98 @@ function initCommonDropdown(inputId) {
       dropdown.style.left = `${rect.left}px`;
       dropdown.style.top = `${rect.bottom}px`;
       dropdown.style.width = `${rect.width}px`;
-      dropdown.style.display = 'block';
+      dropdown.style.display = "block";
     } else {
-      dropdown.style.display = 'none';
+      dropdown.style.display = "none";
     }
   };
 
   // Обработчики событий
-  input.addEventListener('focus', updateDropdown);
-  input.addEventListener('input', updateDropdown);
+  input.addEventListener("focus", updateDropdown);
+  input.addEventListener("input", updateDropdown);
 
   // Скрытие при клике вне поля
-  document.addEventListener('click', (e) => {
+  document.addEventListener("click", (e) => {
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.style.display = 'none';
+      dropdown.style.display = "none";
     }
   });
-// Фиксация полей на мобильных
-if (isMobile) {
-  document.querySelectorAll('input').forEach(input => {
-    input.addEventListener('focus', function() {
-      // Просто добавляем класс
-      this.classList.add('input-fixed-absolute');
-      // Прокрутка вверх
-      window.scrollTo(0, 0);
-    });
+  // Фиксация полей на мобильных
+  if (isMobile) {
+    document.querySelectorAll("input").forEach((input) => {
+      input.addEventListener("focus", function () {
+        // Просто добавляем класс
+        this.classList.add("input-fixed-absolute");
+        // Прокрутка вверх
+        window.scrollTo(0, 0);
+      });
 
-    input.addEventListener('blur', function() {
-      // Убираем класс
-      this.classList.remove('input-fixed-absolute');
+      input.addEventListener("blur", function () {
+        // Убираем класс
+        this.classList.remove("input-fixed-absolute");
+      });
+    });
+  }
+  // Функция для добавления крестиков
+function setupClearButtons() {
+  const inputIds = [
+    'filterRegion',
+    'filterCity',
+    'filterProfile',
+    'filterType',
+    'filterDistrict',
+    'filterName'
+  ];
+
+  inputIds.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    // Проверяем, не добавлен ли уже крестик
+    if (input.nextElementSibling?.classList.contains('input-clear')) {
+      return;
+    }
+
+    // Создаем крестик
+    const clearBtn = document.createElement('span');
+    clearBtn.className = 'input-clear';
+    clearBtn.innerHTML = '×';
+    clearBtn.title = 'Очистить';
+    
+    // Вставляем после input
+    input.parentNode.insertBefore(clearBtn, input.nextSibling);
+
+    // Обработчик клика
+    clearBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      input.value = '';
+      input.focus();
+      
+      // Закрываем dropdown если есть
+      const dropdown = input.nextElementSibling;
+      if (dropdown?.classList.contains('dropdown-common-style')) {
+        dropdown.style.display = 'none';
+      }
+      
+      // Для мобильных - обновляем состояние
+      if (isMobile) {
+        input.classList.add('input-fixed-absolute');
+        clearBtn.style.display = 'block';
+      }
     });
   });
 }
-}
+
+// Инициализация после загрузки
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(setupClearButtons, 300);
+});}
 
 // Инициализация для всех полей
-['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
+[
+  "filterRegion",
+  "filterCity",
+  "filterProfile",
+  "filterDistrict",
+  "filterName",
+].forEach(initCommonDropdown);

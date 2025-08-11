@@ -261,3 +261,26 @@ input::placeholder {
 #customTypeDropdown div {
   padding: 10px 15px !important; /* Отступы как у других */
 }
+
+/* Стиль для крестика (десктоп) */
+.input-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #646363;
+  font-size: 18px;
+  display: none;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  pointer-events: auto;
+}
+
+/* Показывать крестик при фокусе */
+input:focus ~ .input-clear {
+  display: block;
+}
