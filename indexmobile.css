@@ -257,20 +257,8 @@ html.mobile-device #cards {
   padding: 10px 15px !important; /* Отступы как у других */
 }
 
-/* Фикс для мобильных полей */
-input {
-  min-height: 44px;
-  font-size: 16px;
-}
-
-/* Фикс для кнопок */
-.btn {
-  min-height: 44px;
-  display: inline-block !important;
-}
-
-/* Фиксированное поле */
-.input-fixed-top {
+/* Фиксированное поле ввода */
+.mobile-input-fixed {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -278,13 +266,16 @@ input {
   z-index: 10000 !important;
   background: #f0cda6 !important;
   padding: 15px !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
 }
 
 /* Список подсказок */
-.mobile-dropdown {
+.mobile-suggestions {
   position: fixed !important;
-  top: 60px !important; /* Высота поля ввода */
+  top: 60px !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
@@ -292,4 +283,5 @@ input {
   background: white !important;
   z-index: 9999 !important;
   padding: 10px !important;
+  display: none !important;
 }

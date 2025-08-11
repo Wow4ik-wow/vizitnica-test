@@ -5,60 +5,6 @@ const API_USER_URL =
   "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
 let currentUser = null;
 
-// Фикс для мобильного ввода
-// Фиксирование поля ввода
-function setupMobileInputs() {
-  if (!isMobile) return;
-
-  document.querySelectorAll('input').forEach(input => {
-    const dropdown = document.createElement('div');
-    dropdown.className = 'mobile-dropdown';
-    dropdown.style.display = 'none';
-    document.body.appendChild(dropdown);
-
-    input.addEventListener('focus', function() {
-      // Фиксируем поле вверху
-      this.classList.add('input-fixed-top');
-      
-      // Прокручиваем в начало страницы
-      window.scrollTo(0, 0);
-      
-      // Заполняем список
-      const datalistId = this.getAttribute('list');
-      if (datalistId) {
-        const datalist = document.getElementById(datalistId);
-        dropdown.innerHTML = '';
-        
-        Array.from(datalist.options).forEach(option => {
-          const item = document.createElement('div');
-          item.textContent = option.value;
-          item.style.padding = '12px';
-          item.style.borderBottom = '1px solid #eee';
-          item.addEventListener('click', () => {
-            input.value = option.value;
-            dropdown.style.display = 'none';
-            input.classList.remove('input-fixed-top');
-          });
-          dropdown.appendChild(item);
-        });
-        
-        dropdown.style.display = 'block';
-      }
-    });
-
-    // Закрытие при клике вне поля
-    document.addEventListener('click', (e) => {
-      if (e.target !== input && !dropdown.contains(e.target)) {
-        dropdown.style.display = 'none';
-        input.classList.remove('input-fixed-top');
-      }
-    });
-  });
-}
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', setupMobileInputs);
-
 let allServices = [];
 
 async function loadServices() {
@@ -1219,7 +1165,52 @@ function initCommonDropdown(inputId) {
       dropdown.style.display = 'none';
     }
   });
-}
+// Фиксация полей на мобильных
+if (isMobile) {
+  const inputs = document.querySelectorAll('input[list]');
+  
+  inputs.forEach(input => {
+    // Создаем контейнер для подсказок
+    const suggestions = document.createElement('div');
+    suggestions.className = 'mobile-suggestions';
+    document.body.appendChild(suggestions);
+    
+    input.addEventListener('focus', function() {
+      // Фиксируем поле
+      this.classList.add('mobile-input-fixed');
+      
+      // Прокручиваем страницу вверх
+      window.scrollTo({top: 0, behavior: 'smooth'});
+      
+      // Заполняем подсказки
+      const datalist = document.getElementById(this.getAttribute('list'));
+      if (datalist) {
+        suggestions.innerHTML = '';
+        Array.from(datalist.options).forEach(option => {
+          const div = document.createElement('div');
+          div.textContent = option.value;
+          div.style.padding = '12px 15px';
+          div.style.borderBottom = '1px solid #eee';
+          div.addEventListener('click', () => {
+            input.value = option.value;
+            suggestions.style.display = 'none';
+            input.classList.remove('mobile-input-fixed');
+          });
+          suggestions.appendChild(div);
+        });
+        suggestions.style.display = 'block';
+      }
+    });
+    
+    // Закрытие при клике вне поля
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+        suggestions.style.display = 'none';
+        input.classList.remove('mobile-input-fixed');
+      }
+    });
+  });
+}}
 
 // Инициализация для всех полей
 ['filterRegion', 'filterCity', 'filterProfile', 'filterDistrict', 'filterName'].forEach(initCommonDropdown);
