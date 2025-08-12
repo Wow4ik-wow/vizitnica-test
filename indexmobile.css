@@ -195,7 +195,7 @@ html.mobile-device #cards {
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .custom-dropdown div {
   padding: 8px 12px;
@@ -213,7 +213,7 @@ html.mobile-device #cards {
   max-height: 400px; /* Увеличили высоту в 2 раза */
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   padding: 5px 0;
   width: auto; /* Автоподбор ширины */
@@ -292,11 +292,11 @@ html.mobile-device #cards {
   padding: 15px !important;
   margin: 0 !important;
   width: 100% !important;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Стиль для крестика (мобильные) */
-.input-clear {
+/* Стили для мобильного крестика */
+.input-clear-mobile {
   position: fixed;
   right: 25px;
   top: 15px;
@@ -309,9 +309,10 @@ html.mobile-device #cards {
   height: 30px;
   text-align: center;
   line-height: 30px;
+  background: none;
+  border: none;
 }
 
-/* Показывать крестик при фиксации поля */
-.input-fixed-absolute ~ .input-clear {
+.input-fixed-absolute ~ .input-clear-mobile {
   display: block;
 }

@@ -1205,59 +1205,75 @@ function initCommonDropdown(inputId) {
     });
   }
   // Функция для добавления крестиков
-function setupClearButtons() {
-  const inputIds = [
-    'filterRegion',
-    'filterCity',
-    'filterProfile',
-    'filterType',
-    'filterDistrict',
-    'filterName'
-  ];
+  function setupClearButtons() {
+    const inputIds = [
+      "filterRegion",
+      "filterCity",
+      "filterProfile",
+      "filterType",
+      "filterDistrict",
+      "filterName",
+    ];
 
-  inputIds.forEach(id => {
-    const input = document.getElementById(id);
-    if (!input) return;
+    inputIds.forEach((id) => {
+      const input = document.getElementById(id);
+      if (!input) return;
 
-    // Проверяем, не добавлен ли уже крестик
-    if (input.nextElementSibling?.classList.contains('input-clear')) {
-      return;
-    }
-
-    // Создаем крестик
-    const clearBtn = document.createElement('span');
-    clearBtn.className = 'input-clear';
-    clearBtn.innerHTML = '×';
-    clearBtn.title = 'Очистить';
-    
-    // Вставляем после input
-    input.parentNode.insertBefore(clearBtn, input.nextSibling);
-
-    // Обработчик клика
-    clearBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      input.value = '';
-      input.focus();
-      
-      // Закрываем dropdown если есть
-      const dropdown = input.nextElementSibling;
-      if (dropdown?.classList.contains('dropdown-common-style')) {
-        dropdown.style.display = 'none';
-      }
-      
-      // Для мобильных - обновляем состояние
+      // Для мобильной версии - простой крестик без обертки
       if (isMobile) {
-        input.classList.add('input-fixed-absolute');
-        clearBtn.style.display = 'block';
+        if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
+          return;
+
+        const clearBtn = document.createElement("button");
+        clearBtn.className = "input-clear-mobile";
+        clearBtn.innerHTML = "×";
+        clearBtn.type = "button";
+        input.parentNode.insertBefore(clearBtn, input.nextSibling);
+
+        clearBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          input.value = "";
+          input.focus();
+        });
+      }
+      // Для десктопа - версия с оберткой
+      else {
+        if (input.parentNode.classList.contains("input-wrapper-dt")) return;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "input-wrapper-dt";
+        Object.assign(wrapper.style, {
+          position: "relative",
+          flex: "1 1 auto", // Критически важно
+          minWidth: "0",
+          width: "100%",
+        });
+
+        // Сохраняем все существующие классы и атрибуты
+        const parent = input.parentNode;
+        parent.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        const clearBtn = document.createElement("button");
+        clearBtn.className = "input-clear-desktop";
+        clearBtn.innerHTML = "×";
+        clearBtn.type = "button";
+        wrapper.appendChild(clearBtn);
+
+        clearBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          input.value = "";
+          input.focus();
+          const dropdown = document.querySelector(".dropdown-common-style");
+          if (dropdown) dropdown.style.display = "none";
+        });
       }
     });
-  });
-}
+  }
 
-// Инициализация после загрузки
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(setupClearButtons, 300);
-});}
+  // Вызываем при загрузке
+  document.addEventListener("DOMContentLoaded", setupClearButtons);
+}
 
 // Инициализация для всех полей
 [

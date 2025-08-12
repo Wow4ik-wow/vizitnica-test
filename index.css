@@ -184,7 +184,7 @@ input::placeholder {
   max-height: 400px; /* Увеличили высоту в 2 раза */
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   padding: 5px 0;
   width: auto; /* Автоподбор ширины */
@@ -226,7 +226,7 @@ input::placeholder {
   max-height: 400px; /* Увеличиваем высоту */
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   padding: 5px 0;
   width: auto;
@@ -262,25 +262,40 @@ input::placeholder {
   padding: 10px 15px !important; /* Отступы как у других */
 }
 
-/* Стиль для крестика (десктоп) */
-.input-clear {
+/* Фикс для крестика в десктопной версии */
+/* Заменяем старые стили на эти: */
+.filter-row {
+  display: flex;
+  gap: 10px;
+  width: 100%; /* Добавляем это */
+}
+
+.input-wrapper-dt {
+  position: relative;
+  flex: 1;
+  min-width: 0; /* Важно! */
+}
+
+.input-clear-desktop {
   position: absolute;
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #646363;
+  color: #555;
   font-size: 18px;
   display: none;
-  z-index: 2;
-  width: 20px;
-  height: 20px;
-  text-align: center;
-  line-height: 20px;
-  pointer-events: auto;
+  background: none;
+  border: none;
+  z-index: 10;
 }
 
-/* Показывать крестик при фокусе */
-input:focus ~ .input-clear {
+input {
+  width: 100% !important; /* Главное исправление */
+  padding-right: 30px !important;
+  box-sizing: border-box !important;
+}
+
+input:focus + .input-clear-desktop {
   display: block;
 }
