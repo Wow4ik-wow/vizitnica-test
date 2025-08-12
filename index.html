@@ -1,4 +1,4 @@
-версия 152
+версия 153
 <!DOCTYPE html>
 <html lang="ru">
   <head>
@@ -38,38 +38,33 @@
     </script>
   </head>
   <body>
-    <div id="mainContainer">
-      <div class="header">
-        <h1 class="page-title">Нужен ас? - Смотри у нас!</h1>
-        <!-- Google Вход — ВНЕ блока authButtons -->
+  <div class="header">
+    <h1 class="page-title">Нужен ас? - Смотри у нас!</h1>
 
-        <!-- Остальные кнопки -->
-        <div class="auth-container">
-          <div id="googleAuthBtn"></div>
-          <!-- Вход (через Google) -->
-          <button id="logoutBtn" class="btn hidden">ВЫХОД</button>
-          <button id="adminBtn" class="btn hidden">Админка</button>
-        </div>
-
-        <div id="actionButtons" class="auth-buttons">
-          <button id="addServiceBtn" class="btn">Добавить услугу</button>
-          <button id="cabinetBtn" class="btn hidden">Личный кабинет</button>
-        </div>
-
-        <div
-          id="roleInfo"
-          style="margin-top: 10px; font-weight: bold; color: #2c3e50"
-        ></div>
-      </div>
+    <div class="auth-container">
+      <div id="googleAuthBtn"></div>
+      <button id="logoutBtn" class="btn hidden">ВЫХОД</button>
+      <button id="adminBtn" class="btn hidden">Админка</button>
     </div>
 
+    <div id="actionButtons" class="auth-buttons">
+      <button id="addServiceBtn" class="btn">Добавить услугу</button>
+      <button id="cabinetBtn" class="btn hidden">Личный кабинет</button>
+    </div>
+
+    <div
+      id="roleInfo"
+      style="margin-top: 10px; font-weight: bold; color: #2c3e50"
+    ></div>
+  </div>
+
+  <div id="mainContainer">
     <div class="filters-container">
       <div class="filter-row">
         <input
           type="text"
           id="filterRegion"
           placeholder="Область"
-        
           autocomplete="off"
         />
         <datalist id="listRegion"></datalist>
@@ -121,6 +116,7 @@
 
       <button onclick="applyFilters()" class="btn search-btn">Поиск</button>
     </div>
+  </div>
 
     <p id="searchCount" class="search-count"></p>
 
@@ -128,9 +124,9 @@
     <div id="scrollTarget" style="position: relative; top: -5px; height: 1px;"></div>
 
     <!-- Здесь БУДЕТ ваш блок с картинками под рекламу (пока его нет) -->
-    <div class="image-block"
-      <!-- Позже добавите картинки -->
-    </div>
+    <div class="image-block">
+   <!-- Позже добавите картинки -->
+</div>
 
     <div id="cards"></div>
 
