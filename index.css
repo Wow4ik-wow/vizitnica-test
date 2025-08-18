@@ -22,6 +22,14 @@ body {
   padding: 0;
 }
 
+/* Жёсткий сброс для рекламных блоков */
+.ad-left, .ad-right, .adRow1, .adRow2, .adRow3, .adRow4 {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 100 !important;
+}
+
 .header {
   position: relative;
   width: 100%;
@@ -98,14 +106,14 @@ body {
 /* Рекламные блоки боковые */
 .adLeft,
 .adRight {
-  position: absolute !important;
-  background: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  border-radius: 4px !important;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
   text-align: center;
   font-size: 14px;
-  color: #333 !important;
-  display: flex !important;
+  color: #333;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -115,14 +123,14 @@ body {
 .adRow2,
 .adRow3,
 .adRow4 {
-  position: absolute !important;
-  background: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  border-radius: 4px !important;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
   text-align: center;
   font-size: 14px;
-  color: #333 !important;
-  display: flex !important;
+  color: #333;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -132,13 +140,13 @@ body {
 .adRow3 .ad-block,
 .adRow4 .ad-block {
   flex: 1;
-  background: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  padding: 10px !important;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 10px;
   text-align: center;
-  font-size: 14px !important;
+  font-size: 14px;
   color: #333;
-  border-radius: 4px !important;
+  border-radius: 4px;
 }
 
 /* Контейнер фильтров */
@@ -148,7 +156,7 @@ body {
 .filter4,
 .filter5,
 .filter6 {
-  position: absolute !important;
+  position: absolute;
 }
 
 input {
