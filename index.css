@@ -132,13 +132,13 @@ body {
 .adRow3 .ad-block,
 .adRow4 .ad-block {
   flex: 1;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 10px;
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  padding: 10px !important;
   text-align: center;
-  font-size: 14px;
+  font-size: 14px !important;
   color: #333;
-  border-radius: 4px;
+  border-radius: 4px !important;
 }
 
 /* Контейнер фильтров */
@@ -148,7 +148,7 @@ body {
 .filter4,
 .filter5,
 .filter6 {
-  position: absolute;
+  position: absolute !important;
 }
 
 input {
