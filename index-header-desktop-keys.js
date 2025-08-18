@@ -151,11 +151,6 @@ function applyHeaderKeys() {
   const applyElement = (element, points) => {
     if (!element) return;
 
-    if (element.classList.contains('ad-block')) {
-    element.style.display = 'flex'; // Принудительно включаем flex
-    element.style.visibility = 'visible'; // Гарантируем видимость
-  }
-
     const breakpoints = Object.keys(points).map(Number).sort((a,b)=>a-b);
     let leftBP = breakpoints[0];
     let rightBP = breakpoints[breakpoints.length - 1];
