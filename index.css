@@ -95,9 +95,9 @@ body {
   background: #2563eb;
 }
 
-/* Рекламные блоки боковые */
-.adLeft,
-.adRight {
+/* Боковые блоки */
+.promoLeft,
+.promoRight {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -110,11 +110,11 @@ body {
   justify-content: center;
 }
 
-/* Нижние рекламные ряды */
-.adRow1,
-.adRow2,
-.adRow3,
-.adRow4 {
+/* Нижние ряды */
+.promoRow1,
+.promoRow2,
+.promoRow3,
+.promoRow4 {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -127,10 +127,10 @@ body {
   justify-content: center;
 }
 
-.adRow1 .ad-block,
-.adRow2 .ad-block,
-.adRow3 .ad-block,
-.adRow4 .ad-block {
+.promoRow1 .promo-block,
+.promoRow2 .promo-block,
+.promoRow3 .promo-block,
+.promoRow4 .promo-block {
   flex: 1;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -140,6 +140,7 @@ body {
   color: #333;
   border-radius: 4px;
 }
+
 
 /* Контейнер фильтров */
 .filter1,

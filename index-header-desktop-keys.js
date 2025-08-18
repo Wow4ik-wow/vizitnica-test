@@ -6,13 +6,13 @@ console.log("✅ index-header-desktop-keys-full.js загружен");
 // ----------------------------
 const headerKeys = {
   // Боковые рекламные блоки
-  adLeft: {
+  promoLeft: {
     1920: { top: 100, left: 100, width: 450, height: 450 },
     1440: { top: 100, left: 80, width: 400, height: 400 },
     1280: { top: 80, left: 70, width: 350, height: 350 },
     720:  { top: 50, left: 20, width: 300, height: 300 }
   },
-  adRight: {
+  promoRight: {
     1920: { top: 100, left: 1370, width: 450, height: 450 },
     1440: { top: 100, left: 1060, width: 400, height: 400 },
     1280: { top: 80, left: 860, width: 350, height: 350 },
@@ -20,25 +20,25 @@ const headerKeys = {
   },
 
   // Нижние рекламные блоки под фильтрами (каждый блок отдельно)
-  adRow1: {
+  promoRow1: {
     1920: { top: 500, left: 50, width: 400, height: 400 },
     1440: { top: 480, left: 40, width: 350, height: 140 },
     1280: { top: 460, left: 30, width: 300, height: 130 },
     720:  { top: 440, left: 20, width: 250, height: 120 }
   },
-  adRow2: {
+  promoRow2: {
     1920: { top: 500, left: 500, width: 400, height: 150 },
     1440: { top: 480, left: 450, width: 350, height: 140 },
     1280: { top: 460, left: 400, width: 300, height: 130 },
     720:  { top: 440, left: 350, width: 250, height: 120 }
   },
-  adRow3: {
+  promoRow3: {
     1920: { top: 500, left: 950, width: 400, height: 150 },
     1440: { top: 480, left: 850, width: 350, height: 140 },
     1280: { top: 460, left: 750, width: 300, height: 130 },
     720:  { top: 440, left: 650, width: 250, height: 120 }
   },
-  adRow4: {
+  promoRow4: {
     1920: { top: 500, left: 1400, width: 400, height: 150 },
     1440: { top: 480, left: 1200, width: 350, height: 140 },
     1280: { top: 460, left: 1050, width: 300, height: 130 },
