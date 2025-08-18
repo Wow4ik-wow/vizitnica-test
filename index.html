@@ -38,7 +38,7 @@
   </head>
   <body>
     <div class="header">
-      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 160</h1>
+      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 161</h1>
       <div class="page-subtitle pageSubtitle">Мы поможем найти специалиста</div>
 
       <div class="auth-container">
@@ -188,5 +188,36 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="index-header-desktop-keys.js"></script>
     <script src="index.js"></script>
+
+    <!-- ИЗМЕРЕНИЕ РАЗМЕРА ОКНА САЙТА -->
+    <div id="window-size"></div>
+
+<script>
+  const sizeBox = document.getElementById("window-size");
+
+  function updateSize() {
+    sizeBox.textContent = `${window.innerWidth} × ${window.innerHeight}`;
+  }
+
+  window.addEventListener("resize", updateSize);
+  updateSize(); // первый вызов при загрузке
+</script>
+
+<style>
+  #window-size {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    z-index: 9999;
+    pointer-events: none; /* чтобы не мешало кликам */
+  }
+</style>
+
   </body>
 </html>
