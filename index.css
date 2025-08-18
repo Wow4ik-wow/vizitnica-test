@@ -127,19 +127,6 @@ body {
   justify-content: center;
 }
 
-.promoRow1 .promo-block,
-.promoRow2 .promo-block,
-.promoRow3 .promo-block,
-.promoRow4 .promo-block {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
-  color: #333;
-  border-radius: 4px;
-}
 
 
 /* Контейнер фильтров */
