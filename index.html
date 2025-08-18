@@ -29,7 +29,9 @@
     ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       gtag("js", new Date());
       gtag("config", "G-MSBJNF664Y");
     </script>
@@ -43,16 +45,20 @@
       <div class="page-subtitle pageSubtitle">Мы поможем найти специалиста</div>
 
       <div class="auth-container">
-  <div class="auth-login-wrapper">
-    <div id="googleAuthBtn" class="authLogin"></div>
-  </div>
-  <button id="logoutBtn" class="btn hidden authLogin">ВЫХОД</button>
-  <button id="adminBtn" class="btn hidden authAdmin">Админка</button>
-</div>
+        <div class="auth-login-wrapper">
+          <div id="googleAuthBtn" class="authLogin"></div>
+        </div>
+        <button id="logoutBtn" class="btn hidden authLogin">ВЫХОД</button>
+        <button id="adminBtn" class="btn hidden authAdmin">Админка</button>
+      </div>
 
       <div id="actionButtons" class="auth-buttons">
-        <button id="addServiceBtn" class="btn authAddService">Добавить услугу</button>
-        <button id="cabinetBtn" class="btn hidden authProfile">Личный кабинет</button>
+        <button id="addServiceBtn" class="btn authAddService">
+          Добавить услугу
+        </button>
+        <button id="cabinetBtn" class="btn hidden authProfile">
+          Личный кабинет
+        </button>
       </div>
 
       <div
@@ -61,76 +67,115 @@
       ></div>
 
       <!-- Блок фильтров в шапке -->
-<div class="filters-container">
+      <div class="filters-container">
+        <!-- Боковые рекламные блоки -->
+        <div class="ad-block ad-left adLeft">Реклама</div>
+        <div class="ad-block ad-right adRight">Реклама</div>
 
-  <!-- Боковые рекламные блоки -->
-  <div class="ad-block ad-left adLeft">Реклама</div>
-  <div class="ad-block ad-right adRight">Реклама</div>
+        <!-- Первая строка фильтров -->
+        <div class="filter-row">
+          <div class="input-wrapper-dt">
+            <input
+              type="text"
+              id="filterRegion"
+              class="filter1"
+              placeholder="Область"
+              autocomplete="off"
+            />
+            <button class="input-clear-desktop">×</button>
+            <datalist id="listRegion"></datalist>
+          </div>
 
-  <!-- Первая строка фильтров -->
-  <div class="filter-row">
-    <div class="input-wrapper-dt">
-      <input type="text" id="filterRegion" class="filter1" placeholder="Область" autocomplete="off" />
-      <button class="input-clear-desktop">×</button>
-      <datalist id="listRegion"></datalist>
-    </div>
+          <div class="input-wrapper-dt">
+            <input
+              type="text"
+              id="filterCity"
+              class="filter2"
+              placeholder="Населённый пункт"
+              autocomplete="off"
+            />
+            <button class="input-clear-desktop">×</button>
+            <datalist id="listCity"></datalist>
+          </div>
+        </div>
 
-    <div class="input-wrapper-dt">
-      <input type="text" id="filterCity" class="filter2" placeholder="Населённый пункт" autocomplete="off" />
-      <button class="input-clear-desktop">×</button>
-      <datalist id="listCity"></datalist>
-    </div>
-  </div>
+        <!-- Вторая строка фильтров -->
+        <div class="filter-row">
+          <div class="input-wrapper-dt">
+            <input
+              type="text"
+              id="filterProfile"
+              class="filter3"
+              placeholder="Профиль"
+              autocomplete="off"
+            />
+            <button class="input-clear-desktop">×</button>
+            <datalist id="listProfile"></datalist>
+          </div>
 
-  <!-- Вторая строка фильтров -->
-  <div class="filter-row">
-    <div class="input-wrapper-dt">
-      <input type="text" id="filterProfile" class="filter3" placeholder="Профиль" autocomplete="off" />
-      <button class="input-clear-desktop">×</button>
-      <datalist id="listProfile"></datalist>
-    </div>
+          <div class="input-wrapper-dt">
+            <input
+              type="text"
+              id="filterType"
+              class="filter4"
+              list="listType"
+              placeholder="Вид деятельности"
+              autocomplete="off"
+            />
+            <button class="input-clear-desktop">×</button>
+          </div>
+        </div>
 
-    <div class="input-wrapper-dt">
-      <input type="text" id="filterType" class="filter4" list="listType" placeholder="Вид деятельности" autocomplete="off" />
-      <button class="input-clear-desktop">×</button>
-    </div>
-  </div>
+        <!-- Третья строка фильтров -->
+        <div class="filter-row">
+          <div class="input-wrapper-dt">
+            <input
+              type="text"
+              id="filterDistrict"
+              class="filter5"
+              placeholder="Район"
+              autocomplete="off"
+            />
+            <button class="input-clear-desktop">×</button>
+            <datalist id="listDistrict"></datalist>
+          </div>
 
-  <!-- Третья строка фильтров -->
-  <div class="filter-row">
-    <div class="input-wrapper-dt">
-      <input type="text" id="filterDistrict" class="filter5" placeholder="Район" autocomplete="off" />
-      <button class="input-clear-desktop">×</button>
-      <datalist id="listDistrict"></datalist>
-    </div>
+          <div class="input-wrapper-dt">
+            <input
+              type="text"
+              id="filterName"
+              class="filter6"
+              placeholder="Имя или Компания"
+              autocomplete="off"
+            />
+            <button class="input-clear-desktop">×</button>
+            <datalist id="listName"></datalist>
+          </div>
+        </div>
 
-    <div class="input-wrapper-dt">
-      <input type="text" id="filterName" class="filter6" placeholder="Имя или Компания" autocomplete="off" />
-      <button class="input-clear-desktop">×</button>
-      <datalist id="listName"></datalist>
-    </div>
-  </div>
+        <!-- Кнопка поиска -->
+        <button onclick="applyFilters()" class="btn search-btn searchBtn">
+          Поиск
+        </button>
 
-  <!-- Кнопка поиска -->
-  <button onclick="applyFilters()" class="btn search-btn searchBtn">Поиск</button>
-
-  <!-- Нижние рекламные блоки -->
-  <div class="ad-row">
-    <div class="ad-block adRow1">Реклама</div>
-    <div class="ad-block adRow2">Реклама</div>
-    <div class="ad-block adRow3">Реклама</div>
-    <div class="ad-block adRow4">Реклама</div>
-  </div>
-
-</div>
-<!-- конец блока фильтров -->
-
+        <!-- Нижние рекламные блоки -->
+        <div class="ad-row">
+          <div class="ad-block adRow1">Реклама</div>
+          <div class="ad-block adRow2">Реклама</div>
+          <div class="ad-block adRow3">Реклама</div>
+          <div class="ad-block adRow4">Реклама</div>
+        </div>
+      </div>
+      <!-- конец блока фильтров -->
     </div>
 
     <p id="searchCount" class="search-count"></p>
 
     <!-- Якорь для прокрутки -->
-    <div id="scrollTarget" style="position: relative; top: -5px; height: 1px;"></div>
+    <div
+      id="scrollTarget"
+      style="position: relative; top: -5px; height: 1px"
+    ></div>
 
     <!-- Блок с картинками под рекламу -->
     <div class="image-block">
@@ -140,7 +185,10 @@
     <div id="cards"></div>
 
     <!-- Кнопка "Наверх" -->
-    <div id="backToTopContainer" style="width: 100%; text-align: center; margin-top: 20px"></div>
+    <div
+      id="backToTopContainer"
+      style="width: 100%; text-align: center; margin-top: 20px"
+    ></div>
 
     <p id="searchCount" class="search-count"></p>
 
