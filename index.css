@@ -330,9 +330,9 @@ input::placeholder {
 .filter4,
 .filter5,
 .filter6 {
-  position: static !important;
-  width: 100% !important;
-  margin: 0 !important;
+  position: static;
+  width: 100%;
+  margin: 0;
 }
 
 .input-wrapper-dt .input-clear-desktop {
