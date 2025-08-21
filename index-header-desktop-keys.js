@@ -8,161 +8,170 @@ const headerKeys = {
   // Боковые рекламные блоки
   promoLeft: {
     1920: { top: 80, left: 100, width: 450, height: 450 },
-    1440: { top: 80, left: 20, width: 370, height: 370 },
     1281: { top: 80, left: 20, width: 340, height: 340 },
-    1280: { top: 380, left: 50, width: 300, height: 300 },
-    961: { top: 380, left: 20, width: 300, height: 300 },
-    720: { top: 430, left: 30, width: 200, height: 200 },
+    1280: { top: 280, left: 50, width: 300, height: 300 },
+    961: { top: 280, left: 20, width: 300, height: 300 },
+    960: { top: 430, left: 200, width: 200, height: 200 },
+    500: { top: 430, left: 30, width: 200, height: 200 },
   },
   promoRight: {
     1920: { top: 80, left: 1360, width: 450, height: 450 },
-    1440: { top: 80, left: 1030, width: 370, height: 370 },
     1281: { top: 80, left: 910, width: 340, height: 340 },
-    1280: { top: 380, left: 920, width: 300, height: 300 },
-    961: { top: 380, left: 640, width: 300, height: 300 },
-    720: { top: 430, left: 260, width: 200, height: 200 },
+    1280: { top: 280, left: 920, width: 300, height: 300 },
+    961: { top: 280, left: 640, width: 300, height: 300 },
+    960: { top: 430, left: 550, width: 200, height: 200 },
+    500: { top: 430, left: 260, width: 200, height: 200 },
   },
 
   // Нижние рекламные блоки под фильтрами (каждый блок отдельно)
   promoRow1: {
     1920: { top: 555, left: 320, width: 300, height: 300 },
-    1440: { top: 500, left: 100, width: 300, height: 300 },
     1281: { top: 430, left: 20, width: 300, height: 300 },
-    1280: { top: 380, left: 490, width: 300, height: 300 },
-    961: { top: 380, left: 330, width: 300, height: 300 },
-    720: { top: 640, left: 30, width: 200, height: 200 },
+    1280: { top: 280, left: 490, width: 300, height: 300 },
+    961: { top: 280, left: 330, width: 300, height: 300 },
+    960: { top: 640, left: 200, width: 200, height: 200 },
+    500: { top: 640, left: 30, width: 200, height: 200 },
   },
   promoRow2: {
     1920: { top: 555, left: 640, width: 300, height: 300 },
-    1440: { top: 500, left: 420, width: 300, height: 300 },
     1281: { top: 430, left: 330, width: 300, height: 300 },
-    1280: { top: 690, left: 50, width: 300, height: 300 },
-    961: { top: 690, left: 20, width: 300, height: 300 },
-    720: { top: 640, left: 260, width: 200, height: 200 },
+    1280: { top: 590, left: 50, width: 300, height: 300 },
+    961: { top: 590, left: 20, width: 300, height: 300 },
+    960: { top: 640, left: 550, width: 200, height: 200 },
+    500: { top: 640, left: 260, width: 200, height: 200 },
   },
   promoRow3: {
     1920: { top: 555, left: 960, width: 300, height: 300 },
-    1440: { top: 500, left: 740, width: 300, height: 300 },
     1281: { top: 430, left: 640, width: 300, height: 300 },
-    1280: { top: 690, left: 490, width: 300, height: 300 },
-    961: { top: 690, left: 330, width: 300, height: 300 },
-    720: { top: 850, left: 30, width: 200, height: 200 },
+    1280: { top: 590, left: 490, width: 300, height: 300 },
+    961: { top: 590, left: 330, width: 300, height: 300 },
+    960: { top: 850, left: 200, width: 200, height: 200 },
+    500: { top: 850, left: 30, width: 200, height: 200 },
   },
   promoRow4: {
     1920: { top: 555, left: 1280, width: 300, height: 300 },
-    1440: { top: 500, left: 1060, width: 300, height: 300 },
     1281: { top: 430, left: 950, width: 300, height: 300 },
-    1280: { top: 690, left: 920, width: 300, height: 300 },
-    961: { top: 690, left: 640, width: 300, height: 300 },
-    720: { top: 850, left: 260, width: 200, height: 200 },
+    1280: { top: 590, left: 920, width: 300, height: 300 },
+    961: { top: 590, left: 640, width: 300, height: 300 },
+    960: { top: 850, left: 550, width: 200, height: 200 },
+    500: { top: 850, left: 260, width: 200, height: 200 },
   },
 
   // Заголовок
   pageTitle: {
     1920: { top: 68, left: 830, fontSize: 48, width: 350 },
-    1440: { top: 68, left: 590, fontSize: 48, width: 350 },
-    1280: { top: 68, left: 510, fontSize: 48, width: 350 },
-    960: { top: 215, left: 100, fontSize: 48, width: 350 },
-    720: { top: 325, left: 10, fontSize: 40, width: 470 },
+    1281: { top: 68, left: 530, fontSize: 48, width: 350 },
+    1280: { top: 18, left: 10, fontSize: 48, width: 350 },
+    961: { top: 18, left: 10, fontSize: 48, width: 350 },
+    960: { top: 325, left: 400, fontSize: 40, width: 470 },
+    500: { top: 325, left: 10, fontSize: 40, width: 470 },
   },
   // Подпись под заголовком
   pageSubtitle: {
     1920: { top: 180, left: 830, fontSize: 32 },
-    1440: { top: 180, left: 590, fontSize: 27 },
-    1280: { top: 180, left: 510, fontSize: 24 },
-    960: { top: 385, left: 100, fontSize: 22 },
-    720: { top: 385, left: 100, fontSize: 22 },
+    1281: { top: 180, left: 530, fontSize: 23 },
+    1280: { top: 230, left: 10, fontSize: 24 },
+    961: { top: 230, left: 10, fontSize: 21 },
+    960: { top: 385, left: 400, fontSize: 26 },
+    500: { top: 385, left: 100, fontSize: 22 },
   },
 
   // Кнопка поиска
   searchBtn: {
     1920: { top: 380, left: 600, width: 705, height: 35 },
-    1440: { top: 380, left: 420, width: 590, height: 35 },
-    1280: { top: 380, left: 365, width: 540, height: 35 },
-    960: { top: 380, left: 470, width: 350, height: 40 },
-    720: { top: 278, left: 340, width: 140, height: 40 },
+    1281: { top: 380, left: 365, width: 540, height: 35 },
+    1280: { top: 230, left: 540, width: 710, height: 35 },
+    961: { top: 230, left: 360, width: 570, height: 35 },
+    960: { top: 278, left: 800, width: 140, height: 40 },
+    500: { top: 278, left: 340, width: 140, height: 40 },
   },
 
   // Кнопки (каждая отдельная)
   authLogin: {
     // Кнопка ВХОД/ВЫХОД
-    1920: { top: 28, left: 50, width: 80, height: 40 },
-    1440: { top: 28, left: 50, width: 80, height: 40 },
-    1280: { top: 28, left: 50, width: 80, height: 40 },
-    720: { top: 28, left: 340, width: 140, height: 40 },
+    1920: { top: 28, left: 1800, width: 80, height: 40 },
+    961: { top: 28, left: 850, width: 80, height: 40 },
+    960: { top: 28, left: 800, width: 140, height: 40 },
+    500: { top: 28, left: 340, width: 140, height: 40 },
   },
   authAdmin: {
     // Кнопка АДМИНКА
-    1920: { top: 28, left: 150, width: 90, height: 40 },
-    1440: { top: 28, left: 150, width: 90, height: 40 },
-    1280: { top: 28, left: 150, width: 90, height: 40 },
-    720: { top: 78, left: 340, width: 140, height: 40 },
+    1920: { top: 28, left: 1380, width: 90, height: 40 },
+    961: { top: 28, left: 430, width: 90, height: 40 },
+    960: { top: 78, left: 800, width: 140, height: 40 },
+    500: { top: 78, left: 340, width: 140, height: 40 },
   },
   authAddService: {
     // Кнопка ДОБАВИТЬ УСЛУГУ
-    1920: { top: 28, left: 255, width: 140, height: 40 },
-    1440: { top: 28, left: 255, width: 140, height: 40 },
-    1280: { top: 28, left: 255, width: 140, height: 40 },
-    720: { top: 128, left: 340, width: 140, height: 40 },
+    1920: { top: 28, left: 1490, width: 140, height: 40 },
+    961: { top: 28, left: 540, width: 140, height: 40 },
+    960: { top: 128, left: 800, width: 140, height: 40 },
+    500: { top: 128, left: 340, width: 140, height: 40 },
   },
   authProfile: {
     // Кнопка ЛИЧНЫЙ КАБИНЕТ
-    1920: { top: 28, left: 410, width: 133, height: 40 },
-    1440: { top: 28, left: 410, width: 133, height: 40 },
-    1280: { top: 28, left: 410, width: 133, height: 40 },
-    720: { top: 178, left: 340, width: 140, height: 40 },
+    1920: { top: 28, left: 1650, width: 133, height: 40 },
+    961: { top: 28, left: 700, width: 133, height: 40 },
+    960: { top: 178, left: 800, width: 140, height: 40 },
+    500: { top: 178, left: 340, width: 140, height: 40 },
   },
 
   // Поля фильтров (каждое поле отдельно)
   filter1: {
     // Поле ОБЛАСТЬ
     1920: { top: 230, left: 600, width: 350, height: 40 },
-    1440: { top: 230, left: 410, width: 300, height: 40 },
-    1280: { top: 230, left: 365, width: 265, height: 40 },
-    960: { top: 80, left: 470, width: 350, height: 40 },
-    720: { top: 28, left: 110, width: 220, height: 40 },
+    1281: { top: 230, left: 365, width: 265, height: 40 },
+    1280: { top: 80, left: 540, width: 350, height: 40 },
+    961: { top: 80, left: 360, width: 265, height: 40 },
+    960: { top: 28, left: 370, width: 400, height: 40 },
+    500: { top: 28, left: 110, width: 220, height: 40 },
   },
   filter2: {
     // Поле ГОРОД
     1920: { top: 230, left: 955, width: 350, height: 40 },
-    1440: { top: 230, left: 715, width: 300, height: 40 },
-    1280: { top: 230, left: 640, width: 265, height: 40 },
-    960: { top: 130, left: 470, width: 350, height: 40 },
-    720: { top: 78, left: 110, width: 220, height: 40 },
+    1281: { top: 230, left: 640, width: 265, height: 40 },
+    1280: { top: 80, left: 900, width: 350, height: 40 },
+    961: { top: 80, left: 665, width: 265, height: 40 },
+    960: { top: 78, left: 370, width: 400, height: 40 },
+    500: { top: 78, left: 110, width: 220, height: 40 },
   },
 
   filter3: {
     // Поле ПРОФИЛЬ
     1920: { top: 280, left: 600, width: 350, height: 40 },
-    1440: { top: 280, left: 410, width: 300, height: 40 },
-    1280: { top: 280, left: 365, width: 265, height: 40 },
-    960: { top: 180, left: 470, width: 350, height: 40 },
-    720: { top: 128, left: 110, width: 220, height: 40 },
+    1281: { top: 280, left: 365, width: 265, height: 40 },
+    1280: { top: 130, left: 540, width: 350, height: 40 },
+    961: { top: 130, left: 360, width: 265, height: 40 },
+    960: { top: 128, left: 370, width: 400, height: 40 },
+    500: { top: 128, left: 110, width: 220, height: 40 },
   },
   filter4: {
     // Поле ВИД
     1920: { top: 280, left: 955, width: 350, height: 40 },
-    1440: { top: 280, left: 715, width: 300, height: 40 },
-    1280: { top: 280, left: 640, width: 265, height: 40 },
-    960: { top: 230, left: 470, width: 350, height: 40 },
-    720: { top: 178, left: 110, width: 220, height: 40 },
+    1281: { top: 280, left: 640, width: 265, height: 40 },
+    1280: { top: 130, left: 900, width: 350, height: 40 },
+    961: { top: 130, left: 665, width: 265, height: 40 },
+    960: { top: 178, left: 370, width: 400, height: 40 },
+    500: { top: 178, left: 110, width: 220, height: 40 },
   },
 
   filter5: {
     // Поле РАЙОН
     1920: { top: 330, left: 600, width: 350, height: 40 },
-    1440: { top: 330, left: 410, width: 300, height: 40 },
-    1280: { top: 330, left: 365, width: 265, height: 40 },
-    960: { top: 280, left: 470, width: 350, height: 40 },
-    720: { top: 228, left: 110, width: 220, height: 40 },
+    1281: { top: 330, left: 365, width: 265, height: 40 },
+    1280: { top: 180, left: 540, width: 350, height: 40 },
+    961: { top: 180, left: 360, width: 265, height: 40 },
+    960: { top: 228, left: 370, width: 400, height: 40 },
+    500: { top: 228, left: 110, width: 220, height: 40 },
   },
   filter6: {
     // Поле ИМЯ
     1920: { top: 330, left: 955, width: 350, height: 40 },
-    1440: { top: 330, left: 715, width: 300, height: 40 },
-    1280: { top: 330, left: 640, width: 265, height: 40 },
-    960: { top: 330, left: 470, width: 350, height: 40 },
-    720: { top: 278, left: 110, width: 220, height: 40 },
+    1281: { top: 330, left: 640, width: 265, height: 40 },
+    1280: { top: 180, left: 900, width: 350, height: 40 },
+    961: { top: 180, left: 665, width: 265, height: 40 },
+    960: { top: 278, left: 370, width: 400, height: 40 },
+    500: { top: 278, left: 110, width: 220, height: 40 },
   },
 };
 
@@ -271,6 +280,49 @@ function applyHeaderKeys() {
     if (el) applyElement(el, headerKeys[key]);
   }
 }
+
+adjustCardsOffset();
+
+
+// Сдвигаем карточки так, чтобы они начинались сразу под самой "низкой" рекламой
+function adjustCardsOffset() {
+  const header = document.querySelector('.header');
+  if (!header) return;
+
+  const headerRect = header.getBoundingClientRect();
+  const headerBottom = headerRect.bottom + window.scrollY;
+
+  // Берём все элементы внутри .header, у которых position: absolute/fixed
+  const absChildren = Array.from(header.querySelectorAll('*')).filter((el) => {
+    const cs = window.getComputedStyle(el);
+    return (cs.position === 'absolute' || cs.position === 'fixed') && cs.display !== 'none';
+  });
+
+  let maxBottom = headerBottom;
+
+  absChildren.forEach((el) => {
+    const r = el.getBoundingClientRect();
+    // пропускаем полностью невидимые (0×0)
+    if (r.width === 0 && r.height === 0) return;
+    const bottom = r.bottom + window.scrollY;
+    if (bottom > maxBottom) maxBottom = bottom;
+  });
+
+  const delta = Math.max(Math.ceil(maxBottom - headerBottom), 0);
+
+  // Используем твой существующий якорь перед карточками как "прокладку"
+  const spacer = document.getElementById('scrollTarget');
+  if (spacer) {
+    spacer.style.height = (delta > 0 ? delta : 1) + 'px'; // минимум 1px, чтобы якорь не схлопывался
+  }
+
+  // На всякий случай уберём верхний отступ у карточек, чтобы он не мешал нашим расчётам
+  const cards = document.getElementById('cards');
+  if (cards) {
+    cards.style.marginTop = '0';
+  }
+}
+
 
 // ----------------------------
 // Запуск при загрузке и ресайзе
