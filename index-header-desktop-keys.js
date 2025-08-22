@@ -1,9 +1,3 @@
-// index-header-desktop-keys-full.js
-console.log("✅ index-header-desktop-keys-full.js загружен");
-
-// ----------------------------
-// Ключевые точки для шапки (desktop)
-// ----------------------------
 const headerKeys = {
   // Боковые рекламные блоки
   promoLeft: {
@@ -175,16 +169,12 @@ const headerKeys = {
   },
 };
 
-// ----------------------------
 // Интерполяция числовых значений
-// ----------------------------
 function interpolate(val1, val2, ratio) {
   return val1 + (val2 - val1) * ratio;
 }
 
-// ----------------------------
 // Применяем ключевые точки к объектам
-// ----------------------------
 function applyHeaderKeys() {
   const width = window.innerWidth;
 
@@ -283,49 +273,49 @@ function applyHeaderKeys() {
 
 adjustCardsOffset();
 
-
 // Сдвигаем карточки так, чтобы они начинались сразу под самой "низкой" рекламой
 function adjustCardsOffset() {
-  const header = document.querySelector('.header');
+  const header = document.querySelector(".header");
   if (!header) return;
 
   const headerRect = header.getBoundingClientRect();
   const headerBottom = headerRect.bottom + window.scrollY;
 
-  // Берём все элементы внутри .header, у которых position: absolute/fixed
-  const absChildren = Array.from(header.querySelectorAll('*')).filter((el) => {
-    const cs = window.getComputedStyle(el);
-    return (cs.position === 'absolute' || cs.position === 'fixed') && cs.display !== 'none';
-  });
-
+  // Находим самый нижний элемент в шапке (включая рекламу)
   let maxBottom = headerBottom;
+  const headerElements = header.querySelectorAll("*");
 
-  absChildren.forEach((el) => {
-    const r = el.getBoundingClientRect();
-    // пропускаем полностью невидимые (0×0)
-    if (r.width === 0 && r.height === 0) return;
-    const bottom = r.bottom + window.scrollY;
-    if (bottom > maxBottom) maxBottom = bottom;
+  headerElements.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      const bottom = rect.bottom + window.scrollY;
+      if (bottom > maxBottom) maxBottom = bottom;
+    }
   });
 
-  const delta = Math.max(Math.ceil(maxBottom - headerBottom), 0);
+  // Добавляем отступ 20px между рекламой и контентом
+  const delta = Math.max(maxBottom - headerBottom + 20, 0);
 
-  // Используем твой существующий якорь перед карточками как "прокладку"
-  const spacer = document.getElementById('scrollTarget');
+  const spacer = document.getElementById("scrollTarget");
   if (spacer) {
-    spacer.style.height = (delta > 0 ? delta : 1) + 'px'; // минимум 1px, чтобы якорь не схлопывался
+    spacer.style.height = delta + "px";
   }
 
-  // На всякий случай уберём верхний отступ у карточек, чтобы он не мешал нашим расчётам
-  const cards = document.getElementById('cards');
-  if (cards) {
-    cards.style.marginTop = '0';
+  // Также добавляем отступ для надписи с количеством результатов
+  const searchCount = document.getElementById("searchCount");
+  if (searchCount) {
+    searchCount.style.marginTop = "10px";
+    searchCount.style.marginBottom = "10px";
   }
 }
 
-
-// ----------------------------
 // Запуск при загрузке и ресайзе
-// ----------------------------
-window.addEventListener("load", applyHeaderKeys);
-window.addEventListener("resize", applyHeaderKeys);
+window.addEventListener("load", function () {
+  applyHeaderKeys();
+  setTimeout(adjustCardsOffset, 100);
+});
+
+window.addEventListener("resize", function () {
+  applyHeaderKeys();
+  setTimeout(adjustCardsOffset, 50);
+});

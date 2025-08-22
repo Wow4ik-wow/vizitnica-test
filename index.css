@@ -43,17 +43,19 @@ body {
   font-weight: bold; /* Жирность */
   letter-spacing: -1px; /* Расстояние между буквами */
   color: #2c3e50; /* Цвет текста */
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Тень текста */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2), 0 0 5px rgba(255, 255, 255, 1),
+    0 0 10px rgba(255, 255, 255, 1);
 }
 
 .pageSubtitle {
   margin: 0;
   position: absolute;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-weight: normal;
   font-size: 32px;
-  color: #4b5657;
+  color: #262a2b;
   font-style: italic; /* Курсив */
+  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 255, 255, 1);
 }
 
 /* Кнопки шапки */
@@ -126,8 +128,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
-
 
 /* Контейнер фильтров */
 .filter1,
@@ -370,4 +370,35 @@ input:focus + .input-clear-desktop {
   z-index: 1000;
   top: 20px;
   left: 100px;
+}
+
+/* Гарантируем, что якорь находится после шапки */
+#scrollTarget {
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Карточки начинаются сразу после якоря */
+#cards {
+  position: relative;
+  z-index: 10;
+  margin-top: 0 !important;
+}
+
+/* Стили для надписи с количеством результатов */
+.search-count {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(235, 214, 196, 0.8);
+  border-radius: 6px;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }

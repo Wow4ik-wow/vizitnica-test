@@ -38,7 +38,7 @@
   </head>
   <body>
     <div class="header">
-      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 164</h1>
+      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 165</h1>
       <div class="page-subtitle pageSubtitle">Мы поможем найти специалиста</div>
 
       <div class="auth-container">
@@ -156,21 +156,18 @@
         </button>
 
         <!-- Нижние рекламные блоки -->
-          <div class="promoRow1">Реклама низ1</div>
-          <div class="promoRow2">Реклама низ2</div>
-          <div class="promoRow3">Реклама низ3</div>
-          <div class="promoRow4">Реклама низ4</div>
+        <div class="promoRow1">Реклама низ1</div>
+        <div class="promoRow2">Реклама низ2</div>
+        <div class="promoRow3">Реклама низ3</div>
+        <div class="promoRow4">Реклама низ4</div>
       </div>
-      <!-- конец блока фильтров -->
     </div>
 
-    <p id="searchCount" class="search-count"></p>
+    <!-- Якорь для прокрутки - ПОСЛЕ шапки -->
+    <div id="scrollTarget" style="position: relative; height: 1px"></div>
 
-    <!-- Якорь для прокрутки -->
-    <div
-      id="scrollTarget"
-      style="position: relative; top: -5px; height: 1px"
-    ></div>
+    <!-- Надпись о количестве найденных - после якоря -->
+    <p id="searchCount" class="search-count"></p>
 
     <div id="cards"></div>
 
@@ -179,10 +176,6 @@
       id="backToTopContainer"
       style="width: 100%; text-align: center; margin-top: 20px"
     ></div>
-
-    <p id="searchCount" class="search-count"></p>
-
-    <div id="notification" class="notification"></div>
     <div id="notification" class="notification"></div>
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -192,32 +185,31 @@
     <!-- ИЗМЕРЕНИЕ РАЗМЕРА ОКНА САЙТА -->
     <div id="window-size"></div>
 
-<script>
-  const sizeBox = document.getElementById("window-size");
+    <script>
+      const sizeBox = document.getElementById("window-size");
 
-  function updateSize() {
-    sizeBox.textContent = `${window.innerWidth} × ${window.innerHeight}`;
-  }
+      function updateSize() {
+        sizeBox.textContent = `${window.innerWidth} × ${window.innerHeight}`;
+      }
 
-  window.addEventListener("resize", updateSize);
-  updateSize(); // первый вызов при загрузке
-</script>
+      window.addEventListener("resize", updateSize);
+      updateSize(); // первый вызов при загрузке
+    </script>
 
-<style>
-  #window-size {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    font-size: 14px;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-family: monospace;
-    z-index: 9999;
-    pointer-events: none; /* чтобы не мешало кликам */
-  }
-</style>
-
+    <style>
+      #window-size {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-family: monospace;
+        z-index: 9999;
+        pointer-events: none; /* чтобы не мешало кликам */
+      }
+    </style>
   </body>
 </html>

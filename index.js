@@ -9,12 +9,11 @@ let allServices = [];
 
 async function loadServices() {
   const CACHE_KEY = "services_cache";
-  const CACHE_TIME = 3600000; // 1 час в миллисекундах
+  const CACHE_TIME = 3600000;
 
   document.getElementById("cards").innerText = "Сайт загружается...";
 
   try {
-    // Проверяем кэш
     const cachedData = localStorage.getItem(CACHE_KEY);
     if (cachedData) {
       const { data, timestamp } = JSON.parse(cachedData);
@@ -27,13 +26,11 @@ async function loadServices() {
       }
     }
 
-    // Загружаем свежие данные
     const response = await fetch(apiUrl);
     if (!response.ok) throw new Error("Ошибка загрузки");
 
     allServices = await response.json();
 
-    // Сохраняем в кэш
     localStorage.setItem(
       CACHE_KEY,
       JSON.stringify({
@@ -195,8 +192,8 @@ function renderCards(services) {
 
     // 2. Объединяем с существующими соцсетями (socialButtonsHTML)
     const allSocialLinks = [
-      ...socials.filter((s) => s.url), // Из текущего socialButtonsHTML
-      ...parsedSocialLinks, // Из нового парсинга
+      ...socials.filter((s) => s.url),
+      ...parsedSocialLinks,
     ];
 
     // 3. Генерируем HTML для всех соцсетей
@@ -297,7 +294,7 @@ function renderCards(services) {
   });
   // Добавляем кнопку "ВЕРНУТЬСЯ НАВЕРХ" после всех карточек
   const backToTopContainer = document.getElementById("backToTopContainer");
-  backToTopContainer.innerHTML = ""; // Очищаем перед добавлением
+  backToTopContainer.innerHTML = "";
 
   const backToTopBtn = document.createElement("button");
   backToTopBtn.className = "btn back-to-top";
@@ -379,33 +376,18 @@ function applyFilters() {
   populateList("listDistrict", filtered, "Район");
   populateList("listName", filtered, "Имя", true);
 
-  // Прокрутка к результатам (после ВСЕХ операций с DOM)
+  // Обновляем позиционирование после изменения контента
+  setTimeout(adjustCardsOffset, 100);
+
+  // Прокрутка к результатам - к надписи с количеством
   setTimeout(() => {
-    const scrollToResults = () => {
-      const target = document.getElementById("scrollTarget");
-      if (!target) return;
-
-      // Получаем позицию кнопки ПОИСК
-      const searchBtn = document.querySelector(".search-btn");
-      const searchBtnHeight = searchBtn ? searchBtn.offsetHeight : 0;
-
-      // Вычисляем позицию с учётом высоты кнопки
-      const targetPosition = target.getBoundingClientRect().top;
-      const offsetPosition =
-        targetPosition + window.pageYOffset - searchBtnHeight - 10;
-
-      // Плавная прокрутка
-      window.scrollTo({
-        top: offsetPosition,
+    const searchCount = document.getElementById("searchCount");
+    if (searchCount && searchCount.innerText) {
+      searchCount.scrollIntoView({
         behavior: "smooth",
+        block: "start",
       });
-    };
-
-    // Первая попытка
-    scrollToResults();
-
-    // Страховка на случай если DOM не обновился
-    setTimeout(scrollToResults, 50);
+    }
   }, 100);
 }
 
@@ -429,7 +411,6 @@ function populateList(
   datalist.innerHTML = "";
   const valuesSet = new Set();
 
-  // Получаем текущие значения фильтров и нормализуем их
   const filterValues = {};
   for (const key in filterFields) {
     const val = filterFields[key];
@@ -437,7 +418,6 @@ function populateList(
   }
 
   services.forEach((service) => {
-    // Для каждого фильтра получаем массив значений (сплитим по запятой, убираем пробелы и нормализуем)
     const matchesFilters = Object.entries(filterValues).every(
       ([filterField, filterVal]) => {
         if (!filterVal) return true;
@@ -458,16 +438,12 @@ function populateList(
     if (!valueToAdd) return;
 
     if (fieldName === "Вид деятельности") {
-      // Сплитим и добавляем каждое отдельно, убираем пустые
       valueToAdd
         .split(",")
         .map((s) => s.trim())
         .filter((s) => s)
         .forEach((v) => valuesSet.add(useLowerCase ? v.toLowerCase() : v));
     } else if (fieldName === "Имя" || fieldName === "Компания") {
-      // Для списка имён объединяем Имя и Компания
-      // Но эта функция вызывается отдельно для listName с объединением ниже
-      // Здесь игнорируем, чтобы не дублировать
     } else {
       valuesSet.add(
         useLowerCase ? valueToAdd.trim().toLowerCase() : valueToAdd.trim()
@@ -475,11 +451,8 @@ function populateList(
     }
   });
 
-  // Особая обработка для listName - объединяем Имя и Компания из services
   if (listId === "listName") {
-    // Собираем уникальные Имя и Компания по фильтрам отдельно
     services.forEach((service) => {
-      // Проверка фильтров повторяется, можно было оптимизировать, но оставим так
       const matchesFilters = Object.entries(filterValues).every(
         ([filterField, filterVal]) => {
           if (!filterVal) return true;
@@ -503,7 +476,6 @@ function populateList(
     });
   }
 
-  // Преобразуем в массив и сортируем по-русски, с учетом регистра для читаемости
   const sortedValues = Array.from(valuesSet).sort((a, b) =>
     a.localeCompare(b, "ru")
   );
@@ -611,12 +583,9 @@ function populateDependentLists(filteredServices) {
 function setupInputAutobehavior(id, onFocusCallback) {
   const input = document.getElementById(id);
   input.addEventListener("focus", () => {
-    // input.value = ""; // <- закомментировано, чтобы не очищать поле сразу
     if (typeof onFocusCallback === "function") onFocusCallback();
   });
-  input.addEventListener("blur", () => {
-    // пустой обработчик, чтобы не мешать списку выпадать
-  });
+  input.addEventListener("blur", () => {});
 }
 
 // Поведение поля ОБЛАСТЬ
@@ -830,7 +799,7 @@ filterFields.forEach((id) => {
   });
 
   el.addEventListener("change", () => {
-    el.blur(); // при выборе из списка закрываем его
+    el.blur();
   });
 });
 
@@ -849,6 +818,8 @@ window.onload = () => {
   document.getElementById("logoutBtn").onclick = () => {
     logout();
   };
+
+  setTimeout(adjustCardsOffset, 500);
 
   const storedUser = localStorage.getItem("user");
   if (storedUser) {
@@ -1147,7 +1118,6 @@ function initCommonDropdown(inputId) {
   dropdown.className = "dropdown-common-style";
   document.body.appendChild(dropdown);
 
-  // Обновление dropdown
   const updateDropdown = () => {
     const value = input.value.toLowerCase();
     dropdown.innerHTML = "";
@@ -1192,14 +1162,11 @@ function initCommonDropdown(inputId) {
   if (isMobile) {
     document.querySelectorAll("input").forEach((input) => {
       input.addEventListener("focus", function () {
-        // Просто добавляем класс
         this.classList.add("input-fixed-absolute");
-        // Прокрутка вверх
         window.scrollTo(0, 0);
       });
 
       input.addEventListener("blur", function () {
-        // Убираем класс
         this.classList.remove("input-fixed-absolute");
       });
     });
@@ -1244,7 +1211,7 @@ function initCommonDropdown(inputId) {
         wrapper.className = "input-wrapper-dt";
         Object.assign(wrapper.style, {
           position: "relative",
-          flex: "1 1 auto", // Критически важно
+          flex: "1 1 auto",
           minWidth: "0",
           width: "100%",
         });
