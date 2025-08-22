@@ -226,42 +226,39 @@ function renderCards(services) {
     // 4. Добавляем геолокацию (geoHTML)
     contentHTML += geoHTML;
 
-    contentHTML += `
-  <div class="card-buttons">
-    <button class="btn small" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
-    ${
-      currentUser?.role === "admin"
-        ? `<button class="btn small" onclick="console.log('Добавить в избранное: ${id}')">В ИЗБРАННОЕ</button>`
-        : ""
+    // 5. Добавляем ТЕГИ только для админов
+    const tags = (service["Теги"] || "").trim();
+    if (tags) {
+      contentHTML += `
+    <div data-role="admin" style="margin-top: 10px;">
+      <strong>Теги:</strong> ${tags}
+    </div>
+  `;
     }
+
+    // 6. Добавляем кнопки
+    contentHTML += `
+<div class="card-buttons">
+  <button class="btn small" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
+  <button class="btn small" data-role="admin">В ИЗБРАННОЕ</button>
+</div>
+
+<div data-role="admin" style="margin-top: 8px; color: #888; display: block; width: 100%;">
+  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <div style="font-weight: bold; user-select: none;">
+      ОЦЕНИ &nbsp;
+      <span style="font-size: 20px; cursor: default;">☆ ☆ ☆ ☆ ☆</span>
+    </div>
+    <button class="btn small" style="background-color:rgb(176, 204, 236); color:rgb(5, 29, 68); cursor: default; border: none; white-space: nowrap;">ОТЗЫВЫ</button>
   </div>
+</div>
 
-  ${
-    currentUser?.role === "admin"
-      ? `
-    <div class="card-buttons" style="margin-top: 8px; color: #888; justify-content: space-between; align-items: center;">
-      <div style="font-weight: bold; user-select: none;">
-        ОЦЕНИ &nbsp;
-        <span style="font-size: 20px; cursor: default;">☆ ☆ ☆ ☆ ☆</span>
-      </div>
-      <button class="btn small" style="background-color:rgb(176, 204, 236); color:rgb(5, 29, 68); cursor: default; border: none;">ОТЗЫВЫ</button>
-    </div>
-  `
-      : ""
-  }
+<div class="card-buttons" data-role="admin" style="margin-top: 8px;">
+  <button class="btn small">РЕДАКТИРОВАТЬ</button>
+  <button class="btn small">ОПУБЛИКОВАТЬ</button>
+</div>
 
-  ${
-    currentUser?.role === "admin"
-      ? `
-    <div class="card-buttons" style="margin-top: 8px;">
-      <button class="btn small" onclick="console.log('Редактировать: ${id}')">РЕДАКТИРОВАТЬ</button>
-      <button class="btn small" onclick="console.log('Опубликовать: ${id}')">ОПУБЛИКОВАТЬ</button>
-    </div>
-  `
-      : ""
-  }
-
-  <div style="text-align: right; font-size: 11px; color: red; margin-top: 4px;">ID: ${id}</div>
+<div style="text-align: right; font-size: 11px; color: red; margin-top: 4px;">ID: ${id}</div>
 </div>`;
 
     card.innerHTML = contentHTML;
@@ -291,6 +288,7 @@ function renderCards(services) {
     });
 
     container.appendChild(card);
+    setTimeout(updateRolesVisibility, 100);
   });
   // Добавляем кнопку "ВЕРНУТЬСЯ НАВЕРХ" после всех карточек
   const backToTopContainer = document.getElementById("backToTopContainer");
@@ -820,6 +818,7 @@ window.onload = () => {
   };
 
   setTimeout(adjustCardsOffset, 500);
+  setTimeout(updateRolesVisibility, 600);
 
   const storedUser = localStorage.getItem("user");
   if (storedUser) {
@@ -955,35 +954,33 @@ function logout() {
 function updateAuthUI() {
   const googleAuthBtn = document.getElementById("googleAuthBtn");
   const logoutBtn = document.getElementById("logoutBtn");
-  const cabinetBtn = document.getElementById("cabinetBtn");
-  const adminBtn = document.getElementById("adminBtn");
-  const addServiceBtn = document.getElementById("addServiceBtn");
   const roleInfo = document.getElementById("roleInfo");
+  const authLoginWrapper = document.querySelector(".auth-login-wrapper");
 
   if (currentUser && currentUser.role) {
-    googleAuthBtn.style.display = "none";
-    logoutBtn.classList.remove("hidden");
+    // Авторизованный пользователь
+    if (authLoginWrapper) authLoginWrapper.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "block";
 
-    if (currentUser.role === "admin") {
-      cabinetBtn.classList.remove("hidden");
-      adminBtn.classList.remove("hidden");
-      addServiceBtn.classList.remove("hidden");
-      roleInfo.innerText = "Вы сейчас админ";
-    } else {
-      cabinetBtn.classList.add("hidden");
-      adminBtn.classList.add("hidden");
-      addServiceBtn.classList.add("hidden");
-      roleInfo.innerText = "Вы сегодня молодец!";
+    // Обновляем информацию о роли
+    if (roleInfo) {
+      if (currentUser.role === "admin") {
+        roleInfo.innerText = "Вы сейчас админ";
+      } else {
+        roleInfo.innerText = "Вы сегодня молодец!";
+      }
     }
   } else {
-    googleAuthBtn.style.display = "block";
-    logoutBtn.classList.add("hidden");
-    cabinetBtn.classList.add("hidden");
-    adminBtn.classList.add("hidden");
-    addServiceBtn.classList.add("hidden");
-    roleInfo.innerText = "Вы не авторизованы";
+    // Неавторизованный
+    if (authLoginWrapper) authLoginWrapper.style.display = "block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    if (roleInfo) roleInfo.innerText = "Вы не авторизованы";
   }
+
+  // Управляем ВСЕМИ элементами с ролями
+  updateRolesVisibility();
 }
+
 (function setupCustomTypeDropdown() {
   const input = document.getElementById("filterType");
 
@@ -1250,3 +1247,35 @@ function initCommonDropdown(inputId) {
   "filterDistrict",
   "filterName",
 ].forEach(initCommonDropdown);
+
+// Дополнительная функция для управления кнопками по ролям (опционально)
+function manageRoleBasedButtons() {
+  const allButtons = document.querySelectorAll("[data-roles]");
+
+  allButtons.forEach((button) => {
+    const allowedRoles = button.getAttribute("data-roles").split(",");
+    const isVisible = currentUser && allowedRoles.includes(currentUser.role);
+
+    if (isVisible) {
+      button.classList.remove("hidden");
+    } else {
+      button.classList.add("hidden");
+    }
+  });
+}
+
+function updateRolesVisibility() {
+  const elements = document.querySelectorAll('[data-role]');
+  const userRole = currentUser?.role || 'guest';
+  
+  elements.forEach(element => {
+    // Пропускаем выпадающие списки и их содержимое!
+    if (element.closest('.dropdown-common-style') || 
+        element.closest('#customTypeDropdown')) {
+      return;
+    }
+    
+    const allowedRoles = element.getAttribute('data-role').split(',');
+    element.style.display = allowedRoles.includes(userRole) ? 'block' : 'none';
+  });
+}

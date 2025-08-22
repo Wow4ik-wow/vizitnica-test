@@ -81,31 +81,32 @@ const headerKeys = {
   },
 
   // Кнопки (каждая отдельная)
+  
   authLogin: {
     // Кнопка ВХОД/ВЫХОД
-    1920: { top: 28, left: 1800, width: 80, height: 40 },
-    961: { top: 28, left: 850, width: 80, height: 40 },
+    1920: { top: 28, left: 1750, width: 140, height: 40 },
+    961: { top: 28, left: 800, width: 140, height: 40 },
     960: { top: 28, left: 800, width: 140, height: 40 },
     500: { top: 28, left: 340, width: 140, height: 40 },
   },
   authAdmin: {
     // Кнопка АДМИНКА
-    1920: { top: 28, left: 1380, width: 90, height: 40 },
-    961: { top: 28, left: 430, width: 90, height: 40 },
+    1920: { top: 28, left: 1370, width: 90, height: 40 },
+    961: { top: 28, left: 415, width: 90, height: 40 },
     960: { top: 78, left: 800, width: 140, height: 40 },
     500: { top: 78, left: 340, width: 140, height: 40 },
   },
   authAddService: {
     // Кнопка ДОБАВИТЬ УСЛУГУ
-    1920: { top: 28, left: 1490, width: 140, height: 40 },
-    961: { top: 28, left: 540, width: 140, height: 40 },
+    1920: { top: 28, left: 1465, width: 140, height: 40 },
+    961: { top: 28, left: 512, width: 140, height: 40 },
     960: { top: 128, left: 800, width: 140, height: 40 },
     500: { top: 128, left: 340, width: 140, height: 40 },
   },
   authProfile: {
     // Кнопка ЛИЧНЫЙ КАБИНЕТ
-    1920: { top: 28, left: 1650, width: 133, height: 40 },
-    961: { top: 28, left: 700, width: 133, height: 40 },
+    1920: { top: 28, left: 1610, width: 133, height: 40 },
+    961: { top: 28, left: 660, width: 133, height: 40 },
     960: { top: 178, left: 800, width: 140, height: 40 },
     500: { top: 178, left: 340, width: 140, height: 40 },
   },
@@ -258,14 +259,14 @@ function applyHeaderKeys() {
       document.querySelector("." + key) || document.getElementById(key);
 
     if (key === "authLogin") {
-      // Применяем стили к обеим кнопкам (ВХОД и ВЫХОД)
-      const loginBtn = document.querySelector(".authLogin");
-      const logoutBtn = document.getElementById("logoutBtn");
+  // Применяем стили к ОБЕИМ кнопкам (ВХОД и ВЫХОД)
+  const loginBtn = document.querySelector(".auth-login-wrapper");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-      if (loginBtn) applyElement(loginBtn, headerKeys[key]);
-      if (logoutBtn) applyElement(logoutBtn, headerKeys[key]);
-      continue;
-    }
+  if (loginBtn) applyElement(loginBtn, headerKeys[key]);
+  if (logoutBtn) applyElement(logoutBtn, headerKeys[key]);
+  continue;
+}
 
     if (el) applyElement(el, headerKeys[key]);
   }

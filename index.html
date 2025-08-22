@@ -38,30 +38,21 @@
   </head>
   <body>
     <div class="header">
-      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 165</h1>
+      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 166</h1>
       <div class="page-subtitle pageSubtitle">Мы поможем найти специалиста</div>
 
-      <div class="auth-container">
-        <div class="auth-login-wrapper">
-          <div id="googleAuthBtn" class="authLogin"></div>
-        </div>
-        <button id="logoutBtn" class="btn hidden authLogin">ВЫХОД</button>
-        <button id="adminBtn" class="btn hidden authAdmin">Админка</button>
-      </div>
+      <!-- Кнопки шапки -->
+<div class="auth-container">
+  <div class="auth-login-wrapper">
+    <div id="googleAuthBtn" class="authLogin"></div>
+  </div>
+  <button id="logoutBtn" class="btn authLogin" data-role="user,admin">ВЫХОД</button>
+<button id="adminBtn" class="btn authAdmin" data-role="admin">Админка</button>
+<button id="addServiceBtn" class="btn authAddService" data-role="admin">Добавить услугу</button>
+<button id="cabinetBtn" class="btn authProfile" data-role="admin">Личный кабинет</button>
+</div>
 
-      <div id="actionButtons" class="auth-buttons">
-        <button id="addServiceBtn" class="btn authAddService">
-          Добавить услугу
-        </button>
-        <button id="cabinetBtn" class="btn hidden authProfile">
-          Личный кабинет
-        </button>
-      </div>
-
-      <div
-        id="roleInfo"
-        style="margin-top: 10px; font-weight: bold; color: #2c3e50"
-      ></div>
+<div id="roleInfo" style="margin-top: 10px; font-weight: bold; color: #2c3e50"></div>
 
       <!-- Блок фильтров в шапке -->
       <div class="filters-container">
@@ -183,7 +174,7 @@
     <script src="index.js"></script>
 
     <!-- ИЗМЕРЕНИЕ РАЗМЕРА ОКНА САЙТА -->
-    <div id="window-size"></div>
+    <div id="window-size" data-role="admin"></div>
 
     <script>
       const sizeBox = document.getElementById("window-size");

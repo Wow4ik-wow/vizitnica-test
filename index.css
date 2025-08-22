@@ -402,3 +402,47 @@ input:focus + .input-clear-desktop {
   margin-left: auto;
   margin-right: auto;
 }
+
+.hidden {
+  display: none !important;
+}
+
+/* Контейнер для Google кнопки */
+.auth-login-wrapper {
+  position: absolute;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Google кнопка - фиксируем размеры */
+#googleAuthBtn {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Кнопка ВЫХОД */
+#logoutBtn {
+  position: absolute;
+  z-index: 1001;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+#logoutBtn:hover {
+  background: #2563eb;
+}
+
+/* Гарантируем, что Google iframe занимает весь контейнер */
+#googleAuthBtn iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  border: none !important;
+}
