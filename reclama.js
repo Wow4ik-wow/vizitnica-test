@@ -66,7 +66,7 @@ async function loadAds() {
         if (ad["Ссылка на сайт"]) {
           window.open(ad["Ссылка на сайт"], "_blank");
         } else {
-          window.open(`/reclama.html?id=${ad["ID заказа"]}`, "_blank");
+          window.open(`reclama.html?id=${ad["ID заказа"]}`, "_blank");
         }
       };
     });
@@ -87,22 +87,21 @@ async function loadAds() {
 // --- Функция для конвертации ссылок Google Drive ---
 function convertDriveLink(url) {
   if (!url) return "";
+  console.log("Конвертируем ссылку:", url);
   
-  // Обрабатываем разные форматы Google Drive ссылок
-  const patterns = [
-    /\/file\/d\/([-\w]+)/, // стандартная ссылка
-    /id=([-\w]+)/,         // ссылка с параметром id
-    /([-\w]{25,})/         // прямой ID
-  ];
-  
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
-      return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-    }
+  // Для прямых ID
+  if (url.length === 33 && !url.includes('/')) {
+    return `https://drive.google.com/thumbnail?id=${url}&sz=w1000`;
   }
   
-  return url; // если не Google Drive ссылка
+  // Для Google Drive ссылок
+  const match = url.match(/[-\w]{25,}/);
+  if (match) {
+    return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w1000`;
+  }
+  
+  // Для других ссылок
+  return url;
 }
 
 // Запуск загрузки рекламы при готовности DOM
