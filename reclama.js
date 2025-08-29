@@ -63,61 +63,52 @@ function field(obj, key) {
   return obj[key];
 }
 
-// парсим поле Города, которое у тебя приходит как строка '["Киев"]'
-function parseCitiesField(raw) {
-  if (!raw) return [];
-  if (Array.isArray(raw))
-    return raw.map((s) => String(s).trim()).filter(Boolean);
-  if (typeof raw === "string") {
-    const trimmed = raw.trim();
-    // если это JSON-строка
-    if (
-      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
-      trimmed.startsWith("{")
-    ) {
-      try {
-        const parsed = JSON.parse(trimmed);
-        if (Array.isArray(parsed))
-          return parsed.map((s) => String(s).trim()).filter(Boolean);
-        // если объект - взять значения
-        if (typeof parsed === "object")
-          return Object.values(parsed)
-            .map(String)
-            .map((s) => s.trim())
-            .filter(Boolean);
-      } catch (e) {
-        // не JSON — пробуем разделить по запятым
-        return trimmed
-          .split(",")
-          .map((s) => s.replace(/[\[\]'"`]/g, "").trim())
-          .filter(Boolean);
-      }
-    }
-    // обычная запятой-разделённая строка
-    return trimmed
-      .split(",")
-      .map((s) => s.replace(/[\[\]'"`]/g, "").trim())
-      .filter(Boolean);
+// 3. ОБЩАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ (чтоб не дублировать код)
+function forceAdUpdate() {
+  const u = getUserFiltersFromPage();
+  buildAndRenderAll({ region: u.region, city: u.city });
+  lastDisplayedHourKyiv = getKyivNowParts().hour; // Запоминаем новый час
+}
+
+// 2. ФУНКЦИЯ ДЛЯ ПРОВЕРОЧНОГО ИНТЕРВАЛА (КАЖДЫЕ 20 СЕКУНД)
+function checkHourInterval() {
+  const now = getKyivNowParts();
+  // Если час сменился с момента последнего обновления...
+  if (lastDisplayedHourKyiv !== null && now.hour !== lastDisplayedHourKyiv) {
+    // ...немедленно обновляем!
+    forceAdUpdate();
   }
-  return [];
 }
 
-// сравниваем строки по регистру (нормализуем)
-function eqNorm(a, b) {
-  if (!a || !b) return false;
-  return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+// 1. ФУНКЦИЯ ДЛЯ ТОЧНОГО ОБНОВЛЕНИЯ ПО БУДИЛЬНИКУ
+function scheduleNextHourUpdate() {
+  const nowKyiv = getKyivNowParts();
+
+  // Вычисляем, сколько миллисекунд осталось до следующего часа
+  const minutesPassed = nowKyiv.minute;
+  const secondsPassed = 0; // Если в getKyivNowParts нет секунд, считаем 0
+
+  // Миллисекунды до следующего часа:
+  // (оставшиеся минуты * 60 * 1000) + (оставшиеся секунды * 1000) + 1000мс (гарантия перехода часа)
+  const msUntilNextHourFinal =
+    (59 - minutesPassed) * 60 * 1000 + (60 - secondsPassed) * 1000 + 1000;
+
+  // Ставим будильник
+  setTimeout(() => {
+    // Вызываем функцию обновления
+    forceAdUpdate();
+    // Планируем следующий будильник
+    scheduleNextHourUpdate();
+  }, msUntilNextHourFinal);
 }
 
-// --- Фильтрация по ГЕО (строго по твоему требованию) ---
-// userGeo: { region: 'Одесская обл', city: 'Одесса' } — оба поля обязательны для показа заказа.
-// Если один из них пуст — считаем, что пользователь вне ГЕО и показываем только заглушки.
+// --- Фильтрация по ГЕО (упрощенная и четкая версия) ---
 function matchesGeoByFilters(order, userGeo) {
   // пользовательский фильтр всегда должен быть заполнен
   if (!userGeo || !userGeo.region || !userGeo.city) return false;
 
-  const target = (
-    field(order, "Гео таргет") || field(order, "ГЕО таргет") || ""
-  )
+  // Получаем значение таргета. В вашей таблице поле называется "Гео таргет"
+  const target = (field(order, "Гео таргет") || "")
     .toString()
     .trim()
     .toLowerCase();
@@ -127,27 +118,29 @@ function matchesGeoByFilters(order, userGeo) {
     return true;
   }
 
+  // Для таргета "Город" - проверяем массив городов из поля "ГЕО Города"
   if (target.includes("город")) {
-    // берём конкретные города из заказа
-    const citiesRaw =
-      field(order, "ГЕО Города") || field(order, "Города") || "";
-    const cities = parseCitiesField(citiesRaw); // вернёт массив городов
-    if (!cities.length) return false;
-    // проверяем, есть ли город пользователя в массиве городов заказа
-    return cities.some((c) => eqNorm(c, userGeo.city));
+    // В вашем JSON "ГЕО Города" - это всегда массив, например ["Одесса"]
+    const cities = field(order, "ГЕО Города") || [];
+    // Проверяем, есть ли город пользователя в массиве (простое сравнение)
+    return cities.some(
+      (city) =>
+        city &&
+        userGeo.city &&
+        city.toString().trim().toLowerCase() ===
+          userGeo.city.trim().toLowerCase()
+    );
   }
 
+  // Для таргета "Область" - сравниваем область
   if (target.includes("область") || target.includes("обл")) {
-    const regionRaw =
-      field(order, "ГЕО Область") || field(order, "Область") || "";
-    if (!regionRaw) return false;
-    return eqNorm(regionRaw, userGeo.region);
+    const orderRegion = (field(order, "ГЕО Область") || "").toString().trim();
+    return orderRegion.toLowerCase() === userGeo.region.trim().toLowerCase();
   }
 
   // на всякий случай: если таргет непонятный — не показываем
   return false;
 }
-
 
 // --- Извлечение id(ов) из расписания для текущего часа (используем Kyiv время) ---
 function getScheduledIdsForNow(schedule) {
@@ -426,8 +419,10 @@ async function loadJsonFromGitHub(force = false) {
     const payload = await resp.json();
 
     GLOBAL.orders = payload.orders || payload.Заказы || payload.ads || [];
-    GLOBAL.fallbacks = payload.fallback || payload.fallbacks || payload.Заглушки || [];
-    GLOBAL.schedule = payload.schedule || payload.расписание || payload.calendar || {};
+    GLOBAL.fallbacks =
+      payload.fallback || payload.fallbacks || payload.Заглушки || [];
+    GLOBAL.schedule =
+      payload.schedule || payload.расписание || payload.calendar || {};
 
     const uf = getUserFiltersFromPage();
     buildAndRenderAll({ region: uf.region, city: uf.city });
@@ -439,7 +434,6 @@ async function loadJsonFromGitHub(force = false) {
   }
 }
 
-
 // --- Инициализация и интервалы ---
 // Инициализируем: загружаем JSON, ставим слушатели на поля фильтрации, запускаем чекеры
 async function initReclama() {
@@ -447,32 +441,24 @@ async function initReclama() {
   await loadJsonFromGitHub();
 
   // подписываемся на изменения фильтрации пользователя (если элементы найдены)
-const { regionEl, cityEl } = findFilterElements();
-if (regionEl) {
-  regionEl.addEventListener("change", onFiltersChanged);
-  regionEl.addEventListener("input", onFiltersChanged);   // <-- мгновенно
-}
-if (cityEl) {
-  cityEl.addEventListener("change", onFiltersChanged);
-  cityEl.addEventListener("input", onFiltersChanged);     // <-- мгновенно
-}
+  const { regionEl, cityEl } = findFilterElements();
+  if (regionEl) {
+    regionEl.addEventListener("change", onFiltersChanged);
+    regionEl.addEventListener("input", onFiltersChanged); // <-- мгновенно
+  }
+  if (cityEl) {
+    cityEl.addEventListener("change", onFiltersChanged);
+    cityEl.addEventListener("input", onFiltersChanged); // <-- мгновенно
+  }
 
+  // Запускаем точный будильник
+  scheduleNextHourUpdate();
 
-  // стартуем интервал проверки часа по Kyiv (каждые 20s)
-  if (kyivHourCheckerInterval) clearInterval(kyivHourCheckerInterval);
-  kyivHourCheckerInterval = setInterval(() => {
-    const now = getKyivNowParts();
-    if (lastDisplayedHourKyiv === null) {
-      lastDisplayedHourKyiv = now.hour;
-      // при первом запуске — отрисуем (на случай, если JSON пришёл раньше)
-      const u = getUserFiltersFromPage();
-      buildAndRenderAll({ region: u.region, city: u.city });
-    } else if (now.hour !== lastDisplayedHourKyiv) {
-      lastDisplayedHourKyiv = now.hour;
-      const u = getUserFiltersFromPage();
-      buildAndRenderAll({ region: u.region, city: u.city });
-    }
-  }, 20 * 1000);
+  // Запускаем страховочный интервал (каждые 20 секунд)
+  setInterval(checkHourInterval, 20000);
+
+  // Делаем первоначальную установку часа
+  lastDisplayedHourKyiv = getKyivNowParts().hour;
 
   // интервал для ежедневного обновления JSON в окне 00:00-00:30 Kyiv
   if (kyivJsonReloadCheckerInterval)
@@ -485,7 +471,7 @@ if (cityEl) {
     ).padStart(2, "0")}`; // YYYY-MM-DD
     if (now.hour === 0 && now.minute >= 0 && now.minute <= 30) {
       if (lastJsonReloadDateKyiv !== ym) {
-        const ok = await loadJsonFromGAS(true);
+        const ok = await loadJsonFromGitHub(true);
         if (ok) lastJsonReloadDateKyiv = ym;
       }
     } else {
