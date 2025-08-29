@@ -447,9 +447,16 @@ async function initReclama() {
   await loadJsonFromGitHub();
 
   // подписываемся на изменения фильтрации пользователя (если элементы найдены)
-  const { regionEl, cityEl } = findFilterElements();
-  if (regionEl) regionEl.addEventListener("change", onFiltersChanged);
-  if (cityEl) cityEl.addEventListener("change", onFiltersChanged);
+const { regionEl, cityEl } = findFilterElements();
+if (regionEl) {
+  regionEl.addEventListener("change", onFiltersChanged);
+  regionEl.addEventListener("input", onFiltersChanged);   // <-- мгновенно
+}
+if (cityEl) {
+  cityEl.addEventListener("change", onFiltersChanged);
+  cityEl.addEventListener("input", onFiltersChanged);     // <-- мгновенно
+}
+
 
   // стартуем интервал проверки часа по Kyiv (каждые 20s)
   if (kyivHourCheckerInterval) clearInterval(kyivHourCheckerInterval);
