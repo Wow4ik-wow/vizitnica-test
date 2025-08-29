@@ -1,6 +1,6 @@
 // reclаma.js — финальная версия для работы с GAS (заменить файл целиком)
 const GAS_URL =
-  "https://script.google.com/macros/s/AKfycby3VudtrNIahOTHXlKi91UPQiHI5vHHwwUm0C5Azw-eIgWzdt6wcUv0QHjRfhgg7ewgoA/exec";
+  "https://script.google.com/macros/s/AKfycbxD42OvmH8YFsnZQK0Syjqv4iDaNfe_ebT3KY5TJ2RP5FmnCpcEqwXYPlF09XDgreIMSQ/exec";
 
 // HTML-блоки
 const SIDE_BLOCK_IDS = ["promoLeft", "promoRight"];
