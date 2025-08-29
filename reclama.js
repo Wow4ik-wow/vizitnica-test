@@ -112,56 +112,42 @@ function eqNorm(a, b) {
 // userGeo: { region: 'Одесская обл', city: 'Одесса' } — оба поля обязательны для показа заказа.
 // Если один из них пуст — считаем, что пользователь вне ГЕО и показываем только заглушки.
 function matchesGeoByFilters(order, userGeo) {
-  // если пользователь не заполнил оба поля — не показывать ни одного заказа
+  // пользовательский фильтр всегда должен быть заполнен
   if (!userGeo || !userGeo.region || !userGeo.city) return false;
 
   const target = (
-    field(order, "Гео таргет") ||
-    field(order, "ГЕО таргет") ||
-    ""
+    field(order, "Гео таргет") || field(order, "ГЕО таргет") || ""
   )
     .toString()
     .trim()
     .toLowerCase();
 
-  // Если явно таргет пуст или 'все' — считаем подходящим
-  if (
-    !target ||
-    target === "все" ||
-    target === "весь мир" ||
-    target === "всей страны" ||
-    target.includes("страна") ||
-    target.includes("весь")
-  ) {
+  if (target === "страна") {
+    // показ для всех регионов/городов
     return true;
   }
 
-  // Таргет по городу
   if (target.includes("город")) {
+    // берём конкретные города из заказа
     const citiesRaw =
-      field(order, "Города") ||
-      field(order, "Города/села") ||
-      field(order, "Города/Села") ||
-      "";
-    const cities = parseCitiesField(citiesRaw);
-    if (cities.length === 0) return false;
+      field(order, "ГЕО Города") || field(order, "Города") || "";
+    const cities = parseCitiesField(citiesRaw); // вернёт массив городов
+    if (!cities.length) return false;
+    // проверяем, есть ли город пользователя в массиве городов заказа
     return cities.some((c) => eqNorm(c, userGeo.city));
   }
 
-  // Таргет по области
   if (target.includes("область") || target.includes("обл")) {
     const regionRaw =
-      field(order, "Область") ||
-      field(order, "ГЕО Область") ||
-      field(order, "Гео Область") ||
-      "";
+      field(order, "ГЕО Область") || field(order, "Область") || "";
     if (!regionRaw) return false;
     return eqNorm(regionRaw, userGeo.region);
   }
 
-  // Другие варианты — по умолчанию считать подходящим (чтобы не терять показ)
-  return true;
+  // на всякий случай: если таргет непонятный — не показываем
+  return false;
 }
+
 
 // --- Извлечение id(ов) из расписания для текущего часа (используем Kyiv время) ---
 function getScheduledIdsForNow(schedule) {
