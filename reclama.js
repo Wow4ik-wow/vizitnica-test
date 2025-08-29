@@ -1,6 +1,6 @@
 // reclаma.js — финальная версия для работы с GAS (заменить файл целиком)
-const GAS_URL =
-  "https://script.google.com/macros/s/AKfycbxD42OvmH8YFsnZQK0Syjqv4iDaNfe_ebT3KY5TJ2RP5FmnCpcEqwXYPlF09XDgreIMSQ/exec";
+const GITHUB_JSON_URL =
+  "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json";
 
 // HTML-блоки
 const SIDE_BLOCK_IDS = ["promoLeft", "promoRight"];
@@ -430,43 +430,35 @@ function getUserFiltersFromPage() {
   return { region, city, _els: { regionEl, cityEl } };
 }
 
-// --- Загрузка JSON от GAS ---
-async function loadJsonFromGAS(force = false) {
+// --- Загрузка JSON ---
+async function loadJsonFromGitHub(force = false) {
   try {
-    const resp = await fetch(GAS_URL + "?_=" + Date.now(), {
+    const resp = await fetch(GITHUB_JSON_URL + "?_=" + Date.now(), {
       cache: "no-store",
     });
     if (!resp.ok) throw new Error("Fetch error " + resp.status);
     const payload = await resp.json();
 
-    // В твоём JSON ключи строгие: "orders", "fallback" или "fallbacks", "schedule"
-    GLOBAL.orders =
-      payload.orders ||
-      payload.Заказы ||
-      payload.ads ||
-      payload.ordersList ||
-      [];
-    GLOBAL.fallbacks =
-      payload.fallback || payload.fallbacks || payload.Заглушки || [];
-    GLOBAL.schedule =
-      payload.schedule || payload.расписание || payload.calendar || {};
+    GLOBAL.orders = payload.orders || payload.Заказы || payload.ads || [];
+    GLOBAL.fallbacks = payload.fallback || payload.fallbacks || payload.Заглушки || [];
+    GLOBAL.schedule = payload.schedule || payload.расписание || payload.calendar || {};
 
-    // при успешной загрузке — обновим отображение немедленно (используем текущие фильтры)
     const uf = getUserFiltersFromPage();
     buildAndRenderAll({ region: uf.region, city: uf.city });
 
     return true;
   } catch (e) {
-    console.error("Ошибка загрузки JSON рекламы:", e);
+    console.error("Ошибка загрузки JSON с GitHub:", e);
     return false;
   }
 }
+
 
 // --- Инициализация и интервалы ---
 // Инициализируем: загружаем JSON, ставим слушатели на поля фильтрации, запускаем чекеры
 async function initReclama() {
   // начальная загрузка JSON
-  await loadJsonFromGAS();
+  await loadJsonFromGitHub();
 
   // подписываемся на изменения фильтрации пользователя (если элементы найдены)
   const { regionEl, cityEl } = findFilterElements();
