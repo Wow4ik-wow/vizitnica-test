@@ -98,8 +98,8 @@ body {
 }
 
 /* Боковые блоки */
-.promoLeft,
-.promoRight {
+.sideBlockLeft,
+.sideBlockRight {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -113,10 +113,10 @@ body {
 }
 
 /* Нижние ряды */
-.promoRow1,
-.promoRow2,
-.promoRow3,
-.promoRow4 {
+.bottomBlock1,
+.bottomBlock2,
+.bottomBlock3,
+.bottomBlock4 {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -452,7 +452,7 @@ input:focus + .input-clear-desktop {
 }
 
 /* Стили для рекламных картинок */
-.ad-card {
+.info-card {
     cursor: pointer;
     height: 100%;
     width: 100%;
@@ -462,12 +462,12 @@ input:focus + .input-clear-desktop {
     box-shadow: 0 4px 12px rgba(15, 9, 1, 0.3); /* ← Тень для объема */
 }
 
-.ad-card:hover {
+.info-card:hover {
     border-color: #462b22; /* ← Темнее при наведении */
     box-shadow: 0 6px 16px rgba(236, 5, 5, 0.5);
 }
 
-.ad-card img {
+.info-card img {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -476,27 +476,27 @@ input:focus + .input-clear-desktop {
     transition: transform 0.3s ease;
 }
 
-.ad-card:hover img {
+.info-card:hover img {
     transform: scale(1.05);
 }
 
 /* Гарантируем правильный z-index для всех рекламных блоков */
-.promoLeft, .promoRight, .promoRow1, .promoRow2, .promoRow3, .promoRow4 {
+.sideBlockLeft, .sideBlockRight, .bottomBlock1, .bottomBlock2, .bottomBlock3, .bottomBlock4 {
     cursor: pointer !important;
     transition: transform 0.3s ease, box-shadow 0.3s ease !important;
     z-index: 10; /* ← По умолчанию */
 }
 
-.promoLeft:hover, .promoRight:hover, 
-.promoRow1:hover, .promoRow2:hover, 
-.promoRow3:hover, .promoRow4:hover {
+.sideBlockLeft:hover, .sideBlockRight:hover, 
+.bottomBlock1:hover, .bottomBlock2:hover, 
+.bottomBlock3:hover, .bottomBlock4:hover {
     transform: scale(1.05) !important;
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5) !important;
     z-index: 1000 !important; /* ↑ Поверх всех при ховере */
 }
 
 /* Убедимся что трансформация не ломает позиционирование */
-.promoRow1, .promoRow2, .promoRow3, .promoRow4 {
+.bottomBlock1, .bottomBlock2, .bottomBlock3, .bottomBlock4 {
     transform-origin: center;
     pointer-events: auto !important; /* ← Важно! */
 }

@@ -1,6 +1,6 @@
 const headerKeys = {
   // Боковые рекламные блоки
-  promoLeft: {
+  sideBlockLeft: {
     1920: { top: 80, left: 100, width: 450, height: 450 },
     1281: { top: 80, left: 20, width: 340, height: 340 },
     1280: { top: 280, left: 50, width: 300, height: 300 },
@@ -8,7 +8,7 @@ const headerKeys = {
     960: { top: 430, left: 200, width: 200, height: 200 },
     500: { top: 430, left: 30, width: 200, height: 200 },
   },
-  promoRight: {
+  sideBlockRight: {
     1920: { top: 80, left: 1360, width: 450, height: 450 },
     1281: { top: 80, left: 910, width: 340, height: 340 },
     1280: { top: 280, left: 920, width: 300, height: 300 },
@@ -18,7 +18,7 @@ const headerKeys = {
   },
 
   // Нижние рекламные блоки под фильтрами (каждый блок отдельно)
-  promoRow1: {
+  bottomBlock1: {
     1920: { top: 555, left: 320, width: 300, height: 300 },
     1281: { top: 430, left: 20, width: 300, height: 300 },
     1280: { top: 280, left: 490, width: 300, height: 300 },
@@ -26,7 +26,7 @@ const headerKeys = {
     960: { top: 640, left: 200, width: 200, height: 200 },
     500: { top: 640, left: 30, width: 200, height: 200 },
   },
-  promoRow2: {
+  bottomBlock2: {
     1920: { top: 555, left: 640, width: 300, height: 300 },
     1281: { top: 430, left: 330, width: 300, height: 300 },
     1280: { top: 590, left: 50, width: 300, height: 300 },
@@ -34,7 +34,7 @@ const headerKeys = {
     960: { top: 640, left: 550, width: 200, height: 200 },
     500: { top: 640, left: 260, width: 200, height: 200 },
   },
-  promoRow3: {
+  bottomBlock3: {
     1920: { top: 555, left: 960, width: 300, height: 300 },
     1281: { top: 430, left: 640, width: 300, height: 300 },
     1280: { top: 590, left: 490, width: 300, height: 300 },
@@ -42,7 +42,7 @@ const headerKeys = {
     960: { top: 850, left: 200, width: 200, height: 200 },
     500: { top: 850, left: 30, width: 200, height: 200 },
   },
-  promoRow4: {
+  bottomBlock4: {
     1920: { top: 555, left: 1280, width: 300, height: 300 },
     1281: { top: 430, left: 950, width: 300, height: 300 },
     1280: { top: 590, left: 920, width: 300, height: 300 },

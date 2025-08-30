@@ -3,8 +3,8 @@ const GITHUB_JSON_URL =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json";
 
 // HTML-блоки
-const SIDE_BLOCK_IDS = ["promoLeft", "promoRight"];
-const BOTTOM_BLOCK_IDS = ["promoRow1", "promoRow2", "promoRow3", "promoRow4"];
+const SIDE_BLOCK_IDS = ["sideBlockLeft", "sideBlockRight"];
+const BOTTOM_BLOCK_IDS = ["bottomBlock1", "bottomBlock2", "bottomBlock3", "bottomBlock4"];
 const ALL_BLOCK_IDS = [...SIDE_BLOCK_IDS, ...BOTTOM_BLOCK_IDS];
 
 // Глобальные данные
@@ -193,7 +193,7 @@ function renderBlockById(blockId, item) {
   const el = document.getElementById(blockId);
   if (!el) return;
   if (!item) {
-    el.innerHTML = '<div class="ad-card empty">Рекламный блок</div>';
+    el.innerHTML = '<div class="info-card empty">Блок постов</div>';
     el.onclick = null;
     el.style.cursor = "default";
     return;
@@ -224,11 +224,11 @@ function renderBlockById(blockId, item) {
     : "";
 
   el.innerHTML = `
-    <div class="ad-card">
+    <div class="info-card">
       ${imgHtml}
-      <div class="ad-text">
-        <div class="ad-title">${escapeHtml(title)}</div>
-        <div class="ad-desc">${escapeHtml(desc)}</div>
+      <div class="info-text">
+        <div class="info-title">${escapeHtml(title)}</div>
+        <div class="info-desc">${escapeHtml(desc)}</div>
       </div>
     </div>
   `;
