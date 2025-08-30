@@ -118,17 +118,20 @@ function matchesGeoByFilters(order, userGeo) {
     return true;
   }
 
-  // Для таргета "Город" - проверяем массив городов из поля "ГЕО Города"
+    // Для таргета "Город" - проверяем строку городов из поля "ГЕО Города"
   if (target.includes("город")) {
-    // В вашем JSON "ГЕО Города" - это всегда массив, например ["Одесса"]
-    const cities = field(order, "ГЕО Города") || [];
-    // Проверяем, есть ли город пользователя в массиве (простое сравнение)
-    return cities.some(
-      (city) =>
-        city &&
-        userGeo.city &&
-        city.toString().trim().toLowerCase() ===
-          userGeo.city.trim().toLowerCase()
+    // Получаем строку с городами через запятую: "Одесса, Черноморск, Южный, Киев"
+    const citiesString = (field(order, "ГЕО Города") || "").toString();
+    
+    // Разбиваем строку на массив городов, убираем пробелы
+    const cityList = citiesString.split(',')
+                                .map(city => city.trim())
+                                .filter(city => city); // Убираем пустые строки
+    
+    // Проверяем, есть ли город пользователя в этом списке
+    return cityList.some(city => 
+      city && userGeo.city && 
+      city.toLowerCase() === userGeo.city.trim().toLowerCase()
     );
   }
 
