@@ -37,14 +37,14 @@
         }
 
         .ad-image-container {
-            width: 100%;
-            margin: 0 auto 30px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-        }
+    width: 100%;
+    margin: 0 auto 30px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: transparent; /* ПРОЗРАЧНЫЙ ФОН */
+    border: 2px solid #e2e8f0;
+}
 
         .ad-slider {
             display: flex;
@@ -297,16 +297,22 @@ if (!order) {
 
             // Преобразование ссылки Google Drive в прямую
             function extractDirectImageLink(link) {
-                if (!link) return '';
-                
-                // Для Google Drive
-                const match = link.match(/\/file\/d\/([^\/]+)/);
-                if (match) {
-                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-                }
-                
-                return link;
-            }
+    if (!link) return '';
+    
+    // Для Google Drive (формат /file/d/)
+    const fileMatch = link.match(/\/file\/d\/([^\/]+)/);
+    if (fileMatch) {
+        return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
+    }
+    
+    // Для Google Drive (формат uc?id=)
+    const ucMatch = link.match(/uc\?id=([^&]+)/);
+    if (ucMatch) {
+        return `https://drive.google.com/thumbnail?id=${ucMatch[1]}&sz=w1000`;
+    }
+    
+    return link;
+}
 
             // Рендеринг содержимого заказа
             function renderOrderContent(order) {
@@ -319,7 +325,7 @@ if (!order) {
 
                 // Слайдер с изображениями - ИСПОЛЬЗУЕМ "Ссылки на фото" вместо "Ссылки на картинки"
                 const images = order['Ссылки на фото'] ? 
-                    order['Ссылки на фото'].split(',').map(url => url.trim()).filter(url => url) : [];
+    order['Ссылки на фото'].split(',').map(url => url.trim()).filter(url => url) : [];
                 
                 if (images.length > 0) {
                     html += `<div class="ad-image-container">`;
@@ -469,11 +475,34 @@ if (!order) {
             };
             
             function initSlider() {
-                // Автопрокрутка каждые 5 секунд
-                setInterval(() => {
-                    window.moveSlide(1);
-                }, 5000);
-            }
+    let slideInterval;
+    
+    // Функция для запуска автопрокрутки
+    const startSlideShow = () => {
+        slideInterval = setInterval(() => {
+            window.moveSlide(1);
+        }, 10000);
+    };
+    
+    // Запускаем автопрокрутку
+    startSlideShow();
+    
+    // Сбрасываем таймер при клике на стрелки
+    document.querySelectorAll('.slider-arrow').forEach(arrow => {
+        arrow.addEventListener('click', () => {
+            clearInterval(slideInterval); // Останавливаем текущий таймер
+            startSlideShow(); // Запускаем новый таймер
+        });
+    });
+    
+    // Сбрасываем таймер при клике на точки
+    document.querySelectorAll('.slider-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            clearInterval(slideInterval); // Останавливаем текущий таймер
+            startSlideShow(); // Запускаем новый таймер
+        });
+    });
+}
 
 // Хаотичное движение муравьев
 function initAntsAnimation() {
