@@ -1,98 +1,519 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Рекламная карточка</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рекламное предложение</title>
     <style>
-      /* ФОН КАК НА ГЛАВНОЙ СТРАНИЦЕ */
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-image: url("main-bg.webp");
-        background-repeat: repeat-y;
-        background-size: 1920px auto;
-        background-position: center top;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+        /* ФОН КАК НА ГЛАВНОЙ СТРАНИЦЕ */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url("main-bg.webp");
+            background-repeat: repeat-y;
+            background-size: 1920px auto;
+            background-position: center top;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-      /* КАРТОЧКА 600px С РАМКОЙ */
-      .ad-container {
-        background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
-        border-radius: 16px;
-        padding: 40px;
-        max-width: 600px;
-        width: 90%;
-        text-align: center;
-        border: 4px solid #3b82f6;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-      }
+        /* КАРТОЧКА 600px С РАМКОЙ */
+        .ad-container {
+            background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            border: 4px solid #3b82f6;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+        }
 
-.ad-image-container {
-    width: 400px;
-    height: 400px;
-    margin: 0 auto 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    overflow: hidden;
-}
+        .ad-image-container {
+            width: 100%;
+            margin: 0 auto 30px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
 
-      .ad-image {
-        width: 100%;
-        max-height: 400px;
-        object-fit: contain;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        border: 2px solid #e2e8f0;
-      }
+        .ad-slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
 
-      .ad-title {
-        font-size: 28px;
-        font-weight: bold;
-        color: #2c3e50;
-        margin-bottom: 20px;
-      }
+        .slide {
+            flex: 0 0 auto;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-      .ad-description {
-        font-size: 18px;
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 30px;
-      }
+        .slide-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            display: block;
+        }
 
-      .back-button {
-        background: #3b82f6;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .back-button:hover {
-        background: #2563eb;
-      }
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .slider-dot.active {
+            background-color: #3b82f6;
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #3b82f6;
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-arrow:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .slider-arrow.prev {
+            left: 10px;
+        }
+
+        .slider-arrow.next {
+            right: 10px;
+        }
+
+        .ad-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .ad-description {
+            font-size: 18px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            white-space: pre-line;
+            text-align: left;
+        }
+
+        .ad-details {
+            text-align: left;
+            margin-bottom: 25px;
+            font-size: 16px;
+            color: #4b5563;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            min-width: 120px;
+            margin-right: 10px;
+        }
+
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .social-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .social-button:hover {
+            background: #2563eb;
+        }
+
+        .back-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: #2563eb;
+        }
+
+        /* Декоративные муравьи */
+        .decoration {
+            position: absolute;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+        }
+
+        .decoration.left {
+            left: 5%;
+            top: 20%;
+            animation: floatLeft 15s ease-in-out infinite, pulse 8s ease-in-out infinite;
+        }
+
+        .decoration.right {
+            right: 5%;
+            top: 65%;
+            animation: floatRight 18s ease-in-out infinite, pulse 7s ease-in-out infinite;
+        }
+
+        @keyframes floatLeft {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-20px, 15px) scale(1.1); }
+            50% { transform: translate(10px, 30px) scale(1.25); }
+            75% { transform: translate(15px, -10px) scale(1.15); }
+        }
+
+        @keyframes floatRight {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(15px, -20px) scale(1.2); }
+            50% { transform: translate(-25px, 10px) scale(1.25); }
+            75% { transform: translate(10px, 25px) scale(1.1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.75; }
+            50% { opacity: 1; }
+        }
+
+        /* Сообщения об ошибках */
+        .error-message {
+            font-size: 24px;
+            color: #ef4444;
+            text-align: center;
+            padding: 40px;
+        }
+
+        /* Адаптивность для муравьев */
+        @media (max-width: 900px) {
+            .decoration {
+                display: none;
+            }
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+    <div class="decoration left"></div>
+    <div class="decoration right"></div>
+
     <div class="ad-container">
-      <img
-        class="ad-image"
-        src="https://drive.google.com/thumbnail?id=1AI_pgJRxQfya8NatzRHMalDWQTQYChSD&sz=w1000"
-        alt="Рекламное изображение"
-      />
-      <div class="ad-title">Рекламное предложение</div>
-      <div class="ad-description">Описание вашего рекламного предложения</div>
-      <button class="back-button" onclick="window.close()">ЗАКРЫТЬ</button>
+        <div id="content">
+            <!-- Контент будет загружен через JavaScript -->
+        </div>
     </div>
-  </body>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('id');
+            const contentDiv = document.getElementById('content');
+
+            if (!orderId) {
+                contentDiv.innerHTML = '<div class="error-message">ID предложения не указан в URL.</div>';
+                return;
+            }
+
+            // Функция для загрузки JSON
+            function loadJSON(url, callback) {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Ошибка сети');
+                        }
+                        return response.json();
+                    })
+                    .then(data => callback(null, data))
+                    .catch(error => callback(error, null));
+            }
+
+            // Загружаем основной JSON с заказами
+            loadJSON('https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json', function(error, ordersData) {
+                if (error) {
+                    contentDiv.innerHTML = '<div class="error-message">Ошибка загрузки данных.</div>';
+                    console.error('Ошибка загрузки JSON:', error);
+                    return;
+                }
+
+                // Ищем заказ по ID
+                const order = ordersData.find(item => item['ID заказа'] == orderId);
+                
+                if (!order) {
+                    contentDiv.innerHTML = '<div class="error-message">Предложение не найдено.</div>';
+                    return;
+                }
+
+                // Загружаем JSON с муравьями
+                loadJSON('https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json', function(error, antsData) {
+                    // Если не удалось загрузить муравьев, просто продолжаем без декора
+                    if (!error && antsData && antsData.length >= 2) {
+                        setupDecorations(antsData);
+                    }
+                    
+                    // Рендерим основное содержимое
+                    renderOrderContent(order);
+                });
+            });
+
+            // Настройка декоративных элементов
+            function setupDecorations(antsData) {
+                const leftDecor = document.querySelector('.decoration.left');
+                const rightDecor = document.querySelector('.decoration.right');
+                
+                // Выбираем двух случайных муравьев
+                const randomAnts = [...antsData].sort(() => 0.5 - Math.random()).slice(0, 2);
+                
+                if (randomAnts[0] && randomAnts[0]['Костюм мураша']) {
+                    leftDecor.style.backgroundImage = `url('${extractDirectImageLink(randomAnts[0]['Костюм мураша'])}')`;
+                }
+                
+                if (randomAnts[1] && randomAnts[1]['Костюм мураша']) {
+                    rightDecor.style.backgroundImage = `url('${extractDirectImageLink(randomAnts[1]['Костюм мураша'])}')`;
+                }
+            }
+
+            // Преобразование ссылки Google Drive в прямую
+            function extractDirectImageLink(link) {
+                if (!link) return '';
+                
+                // Для Google Drive
+                const match = link.match(/\/file\/d\/([^\/]+)/);
+                if (match) {
+                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+                }
+                
+                return link;
+            }
+
+            // Рендеринг содержимого заказа
+            function renderOrderContent(order) {
+                let html = '';
+
+                // Заголовок
+                if (order['Название']) {
+                    html += `<div class="ad-title">${order['Название']}</div>`;
+                }
+
+                // Слайдер с изображениями
+                const images = order['Ссылки на картинки'] ? 
+                    order['Ссылки на картинки'].split(',').map(url => url.trim()).filter(url => url) : [];
+                
+                if (images.length > 0) {
+                    html += `<div class="ad-image-container">`;
+                    html += `<div class="ad-slider" id="imageSlider">`;
+                    
+                    images.forEach((imgUrl, index) => {
+                        const directUrl = extractDirectImageLink(imgUrl);
+                        html += `<div class="slide"><img src="${directUrl}" alt="Изображение ${index + 1}" class="slide-image"></div>`;
+                    });
+                    
+                    html += `</div>`;
+                    
+                    // Стрелки только если больше 1 изображения
+                    if (images.length > 1) {
+                        html += `<button class="slider-arrow prev" onclick="moveSlide(-1)">❮</button>`;
+                        html += `<button class="slider-arrow next" onclick="moveSlide(1)">❯</button>`;
+                    }
+                    
+                    html += `</div>`;
+                    
+                    // Точки навигации
+                    if (images.length > 1) {
+                        html += `<div class="slider-controls" id="sliderDots">`;
+                        for (let i = 0; i < images.length; i++) {
+                            html += `<div class="slider-dot ${i === 0 ? 'active' : ''}" onclick="showSlide(${i})"></div>`;
+                        }
+                        html += `</div>`;
+                    }
+                }
+
+                // Описание
+                if (order['Описание']) {
+                    html += `<div class="ad-description">${order['Описание']}</div>`;
+                }
+
+                // Дополнительная информация
+                const detailFields = [
+                    'Телефоны', 'Адрес', 'Сумма', 'Статус', 'Компания', 'Имя',
+                    'Область', 'Населённый пункт', 'Район города'
+                ];
+                
+                let hasDetails = false;
+                let detailsHtml = '';
+                
+                detailFields.forEach(field => {
+                    if (order[field]) {
+                        hasDetails = true;
+                        detailsHtml += `
+                            <div class="detail-item">
+                                <span class="detail-label">${field}:</span>
+                                <span>${order[field]}</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (hasDetails) {
+                    html += `<div class="ad-details">${detailsHtml}</div>`;
+                }
+
+                // Социальные ссылки
+                if (order['Ссылки']) {
+                    const socialLinks = parseSocialLinks(order['Ссылки']);
+                    
+                    if (socialLinks.length > 0) {
+                        html += `<div class="social-links">`;
+                        socialLinks.forEach(link => {
+                            html += `<a href="${link.url}" target="_blank" class="social-button">${link.text}</a>`;
+                        });
+                        html += `</div>`;
+                    }
+                }
+
+                // Кнопка закрытия
+                html += `<button class="back-button" onclick="window.close()">ЗАКРЫТЬ</button>`;
+
+                contentDiv.innerHTML = html;
+                
+                // Инициализация слайдера
+                if (images.length > 1) {
+                    initSlider();
+                }
+            }
+
+            // Парсинг социальных ссылок
+            function parseSocialLinks(linksText) {
+                const result = [];
+                
+                // Ищем ссылки в формате [Текст](URL)
+                const markdownRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+                let match;
+                
+                while ((match = markdownRegex.exec(linksText)) !== null) {
+                    result.push({
+                        text: match[1],
+                        url: match[2]
+                    });
+                }
+                
+                // Ищем email адреса
+                const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+                const emails = linksText.match(emailRegex);
+                
+                if (emails) {
+                    emails.forEach(email => {
+                        result.push({
+                            text: `Email: ${email}`,
+                            url: `mailto:${email}`
+                        });
+                    });
+                }
+                
+                return result;
+            }
+
+            // Логика слайдера
+            let currentSlide = 0;
+            
+            window.moveSlide = function(direction) {
+                const slides = document.querySelectorAll('.slide');
+                const dots = document.querySelectorAll('.slider-dot');
+                
+                currentSlide = (currentSlide + direction + slides.length) % slides.length;
+                
+                const slider = document.getElementById('imageSlider');
+                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentSlide);
+                });
+            };
+            
+            window.showSlide = function(index) {
+                const slides = document.querySelectorAll('.slide');
+                const dots = document.querySelectorAll('.slider-dot');
+                
+                if (index >= 0 && index < slides.length) {
+                    currentSlide = index;
+                    
+                    const slider = document.getElementById('imageSlider');
+                    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    
+                    dots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === currentSlide);
+                    });
+                }
+            };
+            
+            function initSlider() {
+                // Автопрокрутка каждые 5 секунд
+                setInterval(() => {
+                    window.moveSlide(1);
+                }, 5000);
+            }
+        });
+    </script>
+</body>
 </html>
