@@ -23,7 +23,7 @@
         }
 
         /* КАРТОЧКА 600px С РАМКОЙ */
-        .ad-container {
+        .offer-container {
             background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
             border-radius: 16px;
             padding: 40px;
@@ -33,20 +33,20 @@
             border: 4px solid #3b82f6;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
             position: relative;
-            z-index: 10;
+            z-index: 20;
         }
 
-        .ad-image-container {
-    width: 100%;
-    margin: 0 auto 30px;
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    background: transparent; /* ПРОЗРАЧНЫЙ ФОН */
-    border: 2px solid #e2e8f0;
-}
+        .image-container {
+            width: 100%;
+            margin: 0 auto 30px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: transparent;
+            border: 2px solid #e2e8f0;
+        }
 
-        .ad-slider {
+        .image-slider {
             display: flex;
             transition: transform 0.5s ease-in-out;
             width: 100%;
@@ -120,14 +120,14 @@
             right: 10px;
         }
 
-        .ad-title {
+        .offer-title {
             font-size: 28px;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 20px;
         }
 
-        .ad-description {
+        .offer-description {
             font-size: 18px;
             color: #555;
             line-height: 1.6;
@@ -136,7 +136,7 @@
             text-align: left;
         }
 
-        .ad-details {
+        .offer-details {
             text-align: left;
             margin-bottom: 25px;
             font-size: 16px;
@@ -181,7 +181,7 @@
             background: #2563eb;
         }
 
-        .back-button {
+        .close-button {
             background: #3b82f6;
             color: white;
             border: none;
@@ -192,22 +192,22 @@
             font-weight: bold;
         }
 
-        .back-button:hover {
+        .close-button:hover {
             background: #2563eb;
         }
 
         /* Декоративные муравьи */
         .decoration {
-    position: fixed;
-    z-index: 5;
-    width: 250px;
-    height: 250px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    pointer-events: none;
-    transition: none; /* убираем CSS transition */
-}
+            position: fixed;
+            z-index: 5;
+            width: 250px;
+            height: 250px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            transition: none;
+        }
 
         /* Сообщения об ошибках */
         .error-message {
@@ -222,7 +222,7 @@
     <div class="decoration left"></div>
     <div class="decoration right"></div>
 
-    <div class="ad-container">
+    <div class="offer-container">
         <div id="content">
             <!-- Контент будет загружен через JavaScript -->
         </div>
@@ -261,13 +261,13 @@
                 }
 
                 // Ищем заказ по ID в нескольких массивах
-let order = jsonData.orders.find(item => item['ID заказа'] == orderId);
-if (!order) order = jsonData.fallback.find(item => item['ID заказа'] == orderId);
+                let order = jsonData.orders.find(item => item['ID заказа'] == orderId);
+                if (!order) order = jsonData.fallback.find(item => item['ID заказа'] == orderId);
 
-if (!order) {
-    contentDiv.innerHTML = '<div class="error-message">Предложение не найдено.</div>';
-    return;
-}
+                if (!order) {
+                    contentDiv.innerHTML = '<div class="error-message">Предложение не найдено.</div>';
+                    return;
+                }
 
                 // Настраиваем декоративные элементы из массива ants
                 if (jsonData.ants && jsonData.ants.length >= 2) {
@@ -297,22 +297,22 @@ if (!order) {
 
             // Преобразование ссылки Google Drive в прямую
             function extractDirectImageLink(link) {
-    if (!link) return '';
-    
-    // Для Google Drive (формат /file/d/)
-    const fileMatch = link.match(/\/file\/d\/([^\/]+)/);
-    if (fileMatch) {
-        return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
-    }
-    
-    // Для Google Drive (формат uc?id=)
-    const ucMatch = link.match(/uc\?id=([^&]+)/);
-    if (ucMatch) {
-        return `https://drive.google.com/thumbnail?id=${ucMatch[1]}&sz=w1000`;
-    }
-    
-    return link;
-}
+                if (!link) return '';
+                
+                // Для Google Drive (формат /file/d/)
+                const fileMatch = link.match(/\/file\/d\/([^\/]+)/);
+                if (fileMatch) {
+                    return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
+                }
+                
+                // Для Google Drive (формат uc?id=)
+                const ucMatch = link.match(/uc\?id=([^&]+)/);
+                if (ucMatch) {
+                    return `https://drive.google.com/thumbnail?id=${ucMatch[1]}&sz=w1000`;
+                }
+                
+                return link;
+            }
 
             // Рендеринг содержимого заказа
             function renderOrderContent(order) {
@@ -320,16 +320,16 @@ if (!order) {
 
                 // Заголовок
                 if (order['Название']) {
-                    html += `<div class="ad-title">${order['Название']}</div>`;
+                    html += `<div class="offer-title">${order['Название']}</div>`;
                 }
 
-                // Слайдер с изображениями - ИСПОЛЬЗУЕМ "Ссылки на фото" вместо "Ссылки на картинки"
+                // Слайдер с изображениями
                 const images = order['Ссылки на фото'] ? 
-    order['Ссылки на фото'].split(',').map(url => url.trim()).filter(url => url) : [];
+                    order['Ссылки на фото'].split(',').map(url => url.trim()).filter(url => url) : [];
                 
                 if (images.length > 0) {
-                    html += `<div class="ad-image-container">`;
-                    html += `<div class="ad-slider" id="imageSlider">`;
+                    html += `<div class="image-container">`;
+                    html += `<div class="image-slider" id="imageSlider">`;
                     
                     images.forEach((imgUrl, index) => {
                         const directUrl = extractDirectImageLink(imgUrl);
@@ -358,7 +358,7 @@ if (!order) {
 
                 // Описание
                 if (order['Описание']) {
-                    html += `<div class="ad-description">${order['Описание']}</div>`;
+                    html += `<div class="offer-description">${order['Описание']}</div>`;
                 }
 
                 // Дополнительная информация
@@ -383,7 +383,7 @@ if (!order) {
                 });
                 
                 if (hasDetails) {
-                    html += `<div class="ad-details">${detailsHtml}</div>`;
+                    html += `<div class="offer-details">${detailsHtml}</div>`;
                 }
 
                 // Социальные ссылки
@@ -400,7 +400,7 @@ if (!order) {
                 }
 
                 // Кнопка закрытия
-                html += `<button class="back-button" onclick="window.close()">ЗАКРЫТЬ</button>`;
+                html += `<button class="close-button" onclick="window.close()">ЗАКРЫТЬ</button>`;
 
                 contentDiv.innerHTML = html;
                 
@@ -475,124 +475,121 @@ if (!order) {
             };
             
             function initSlider() {
-    let slideInterval;
-    
-    // Функция для запуска автопрокрутки
-    const startSlideShow = () => {
-        slideInterval = setInterval(() => {
-            window.moveSlide(1);
-        }, 10000);
-    };
-    
-    // Запускаем автопрокрутку
-    startSlideShow();
-    
-    // Сбрасываем таймер при клике на стрелки
-    document.querySelectorAll('.slider-arrow').forEach(arrow => {
-        arrow.addEventListener('click', () => {
-            clearInterval(slideInterval); // Останавливаем текущий таймер
-            startSlideShow(); // Запускаем новый таймер
-        });
-    });
-    
-    // Сбрасываем таймер при клике на точки
-    document.querySelectorAll('.slider-dot').forEach(dot => {
-        dot.addEventListener('click', () => {
-            clearInterval(slideInterval); // Останавливаем текущий таймер
-            startSlideShow(); // Запускаем новый таймер
-        });
-    });
-}
-
-// Хаотичное движение муравьев
-function initAntsAnimation() {
-    const leftAnt = document.querySelector('.decoration.left');
-    const rightAnt = document.querySelector('.decoration.right');
-    
-    if (!leftAnt || !rightAnt) return;
-    
-    // Размеры зон для движения
-    const getMovementZone = (isLeft) => {
-        const cardRect = document.querySelector('.ad-container').getBoundingClientRect();
-        const screenWidth = window.innerWidth;
-        
-        if (isLeft) {
-            return {
-                minX: 20, // отступ от края
-                maxX: cardRect.left - 150, // до карточки
-                minY: 20,
-                maxY: window.innerHeight - 170
-            };
-        } else {
-            return {
-                minX: cardRect.right + 20,
-                maxX: screenWidth - 170,
-                minY: 20,
-                maxY: window.innerHeight - 170
-            };
-        }
-    };
-    
-    // Генерация случайной точки в зоне
-    const getRandomPoint = (zone) => ({
-        x: Math.random() * (zone.maxX - zone.minX) + zone.minX,
-        y: Math.random() * (zone.maxY - zone.minY) + zone.minY
-    });
-    
-    // Плавное движение к точке
-    const moveAnt = (ant, targetX, targetY, duration = 4000) => {
-        const startX = parseInt(ant.style.left || ant.offsetLeft);
-        const startY = parseInt(ant.style.top || ant.offsetTop);
-        const startTime = performance.now();
-        
-        function animate(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // Плавная easing-функция
-            const ease = progress < 0.5 
-                ? 4 * progress * progress * progress 
-                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-            
-            const currentX = startX + (targetX - startX) * ease;
-            const currentY = startY + (targetY - startY) * ease;
-            
-            ant.style.left = currentX + 'px';
-            ant.style.top = currentY + 'px';
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                // Достигли цели - выбираем новую точку
-                const zone = ant.classList.contains('left') ? getMovementZone(true) : getMovementZone(false);
-                const newTarget = getRandomPoint(zone);
-                moveAnt(ant, newTarget.x, newTarget.y, 3000 + Math.random() * 3000);
+                let slideInterval;
+                
+                // Функция для запуска автопрокрутки
+                const startSlideShow = () => {
+                    slideInterval = setInterval(() => {
+                        window.moveSlide(1);
+                    }, 10000);
+                };
+                
+                // Запускаем автопрокрутку
+                startSlideShow();
+                
+                // Сбрасываем таймер при клике на стрелки
+                document.querySelectorAll('.slider-arrow').forEach(arrow => {
+                    arrow.addEventListener('click', () => {
+                        clearInterval(slideInterval);
+                        startSlideShow();
+                    });
+                });
+                
+                // Сбрасываем таймер при клике на точки
+                document.querySelectorAll('.slider-dot').forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        clearInterval(slideInterval);
+                        startSlideShow();
+                    });
+                });
             }
-        }
-        
-        requestAnimationFrame(animate);
-    };
-    
-    // Запуск анимации
-    const leftZone = getMovementZone(true);
-    const rightZone = getMovementZone(false);
-    
-    moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
-    moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
-    
-    // Перерасчет при изменении размера окна
-    window.addEventListener('resize', () => {
-        const leftZone = getMovementZone(true);
-        const rightZone = getMovementZone(false);
-        
-        moveAnt(leftAnt, leftAnt.offsetLeft, leftAnt.offsetTop, 1000);
-        moveAnt(rightAnt, rightAnt.offsetLeft, rightAnt.offsetTop, 1000);
-    });
-}
 
-// Запуск после загрузки
-setTimeout(initAntsAnimation, 1000);
+            // Хаотичное движение муравьев
+            function initAntsAnimation() {
+                const leftAnt = document.querySelector('.decoration.left');
+                const rightAnt = document.querySelector('.decoration.right');
+                
+                if (!leftAnt || !rightAnt) return;
+                
+                // Размеры зон для движения
+                const getMovementZone = (isLeft) => {
+                    const cardRect = document.querySelector('.offer-container').getBoundingClientRect();
+                    const screenWidth = window.innerWidth;
+                    
+                    if (isLeft) {
+                        return {
+                            minX: 20,
+                            maxX: cardRect.left - 150,
+                            minY: 20,
+                            maxY: window.innerHeight - 170
+                        };
+                    } else {
+                        return {
+                            minX: cardRect.right + 20,
+                            maxX: screenWidth - 170,
+                            minY: 20,
+                            maxY: window.innerHeight - 170
+                        };
+                    }
+                };
+                
+                // Генерация случайной точки в зоне
+                const getRandomPoint = (zone) => ({
+                    x: Math.random() * (zone.maxX - zone.minX) + zone.minX,
+                    y: Math.random() * (zone.maxY - zone.minY) + zone.minY
+                });
+                
+                // Плавное движение к точке
+                const moveAnt = (ant, targetX, targetY, duration = 4000) => {
+                    const startX = parseInt(ant.style.left || ant.offsetLeft);
+                    const startY = parseInt(ant.style.top || ant.offsetTop);
+                    const startTime = performance.now();
+                    
+                    function animate(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        const ease = progress < 0.5 
+                            ? 4 * progress * progress * progress 
+                            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                        
+                        const currentX = startX + (targetX - startX) * ease;
+                        const currentY = startY + (targetY - startY) * ease;
+                        
+                        ant.style.left = currentX + 'px';
+                        ant.style.top = currentY + 'px';
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            const zone = ant.classList.contains('left') ? getMovementZone(true) : getMovementZone(false);
+                            const newTarget = getRandomPoint(zone);
+                            moveAnt(ant, newTarget.x, newTarget.y, 3000 + Math.random() * 3000);
+                        }
+                    }
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                // Запуск анимации
+                const leftZone = getMovementZone(true);
+                const rightZone = getMovementZone(false);
+                
+                moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
+                moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
+                
+                // Перерасчет при изменении размера окна
+                window.addEventListener('resize', () => {
+                    const leftZone = getMovementZone(true);
+                    const rightZone = getMovementZone(false);
+                    
+                    moveAnt(leftAnt, leftAnt.offsetLeft, leftAnt.offsetTop, 1000);
+                    moveAnt(rightAnt, rightAnt.offsetLeft, rightAnt.offsetTop, 1000);
+                });
+            }
 
+            // Запуск после загрузки
+            setTimeout(initAntsAnimation, 1000);
         });
     </script>
 </body>
