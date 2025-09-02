@@ -198,46 +198,16 @@
 
         /* Декоративные муравьи */
         .decoration {
-            position: absolute;
-            z-index: 1;
-            width: 150px;
-            height: 150px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            pointer-events: none;
-        }
-
-        .decoration.left {
-            left: 5%;
-            top: 20%;
-            animation: floatLeft 15s ease-in-out infinite, pulse 8s ease-in-out infinite;
-        }
-
-        .decoration.right {
-            right: 5%;
-            top: 65%;
-            animation: floatRight 18s ease-in-out infinite, pulse 7s ease-in-out infinite;
-        }
-
-        @keyframes floatLeft {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(-20px, 15px) scale(1.1); }
-            50% { transform: translate(10px, 30px) scale(1.25); }
-            75% { transform: translate(15px, -10px) scale(1.15); }
-        }
-
-        @keyframes floatRight {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(15px, -20px) scale(1.2); }
-            50% { transform: translate(-25px, 10px) scale(1.25); }
-            75% { transform: translate(10px, 25px) scale(1.1); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.75; }
-            50% { opacity: 1; }
-        }
+    position: fixed;
+    z-index: 5;
+    width: 250px;
+    height: 250px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+    transition: none; /* убираем CSS transition */
+}
 
         /* Сообщения об ошибках */
         .error-message {
@@ -245,13 +215,6 @@
             color: #ef4444;
             text-align: center;
             padding: 40px;
-        }
-
-        /* Адаптивность для муравьев */
-        @media (max-width: 900px) {
-            .decoration {
-                display: none;
-            }
         }
     </style>
 </head>
@@ -289,32 +252,30 @@
                     .catch(error => callback(error, null));
             }
 
-            // Загружаем основной JSON с заказами
-            loadJSON('https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json', function(error, ordersData) {
+            // Загружаем JSON
+            loadJSON('https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json', function(error, jsonData) {
                 if (error) {
                     contentDiv.innerHTML = '<div class="error-message">Ошибка загрузки данных.</div>';
                     console.error('Ошибка загрузки JSON:', error);
                     return;
                 }
 
-                // Ищем заказ по ID
-                const order = ordersData.find(item => item['ID заказа'] == orderId);
-                
-                if (!order) {
-                    contentDiv.innerHTML = '<div class="error-message">Предложение не найдено.</div>';
-                    return;
-                }
+                // Ищем заказ по ID в нескольких массивах
+let order = jsonData.orders.find(item => item['ID заказа'] == orderId);
+if (!order) order = jsonData.fallback.find(item => item['ID заказа'] == orderId);
 
-                // Загружаем JSON с муравьями
-                loadJSON('https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json', function(error, antsData) {
-                    // Если не удалось загрузить муравьев, просто продолжаем без декора
-                    if (!error && antsData && antsData.length >= 2) {
-                        setupDecorations(antsData);
-                    }
-                    
-                    // Рендерим основное содержимое
-                    renderOrderContent(order);
-                });
+if (!order) {
+    contentDiv.innerHTML = '<div class="error-message">Предложение не найдено.</div>';
+    return;
+}
+
+                // Настраиваем декоративные элементы из массива ants
+                if (jsonData.ants && jsonData.ants.length >= 2) {
+                    setupDecorations(jsonData.ants);
+                }
+                
+                // Рендерим основное содержимое
+                renderOrderContent(order);
             });
 
             // Настройка декоративных элементов
@@ -356,9 +317,9 @@
                     html += `<div class="ad-title">${order['Название']}</div>`;
                 }
 
-                // Слайдер с изображениями
-                const images = order['Ссылки на картинки'] ? 
-                    order['Ссылки на картинки'].split(',').map(url => url.trim()).filter(url => url) : [];
+                // Слайдер с изображениями - ИСПОЛЬЗУЕМ "Ссылки на фото" вместо "Ссылки на картинки"
+                const images = order['Ссылки на фото'] ? 
+                    order['Ссылки на фото'].split(',').map(url => url.trim()).filter(url => url) : [];
                 
                 if (images.length > 0) {
                     html += `<div class="ad-image-container">`;
@@ -366,7 +327,7 @@
                     
                     images.forEach((imgUrl, index) => {
                         const directUrl = extractDirectImageLink(imgUrl);
-                        html += `<div class="slide"><img src="${directUrl}" alt="Изображение ${index + 1}" class="slide-image"></div>`;
+                        html += `<div class="slide"><img src="${directUrl}" alt="Изображение ${index + 1}" class="slide-image" onerror="this.style.display='none'"></div>`;
                     });
                     
                     html += `</div>`;
@@ -513,6 +474,96 @@
                     window.moveSlide(1);
                 }, 5000);
             }
+
+// Хаотичное движение муравьев
+function initAntsAnimation() {
+    const leftAnt = document.querySelector('.decoration.left');
+    const rightAnt = document.querySelector('.decoration.right');
+    
+    if (!leftAnt || !rightAnt) return;
+    
+    // Размеры зон для движения
+    const getMovementZone = (isLeft) => {
+        const cardRect = document.querySelector('.ad-container').getBoundingClientRect();
+        const screenWidth = window.innerWidth;
+        
+        if (isLeft) {
+            return {
+                minX: 20, // отступ от края
+                maxX: cardRect.left - 150, // до карточки
+                minY: 20,
+                maxY: window.innerHeight - 170
+            };
+        } else {
+            return {
+                minX: cardRect.right + 20,
+                maxX: screenWidth - 170,
+                minY: 20,
+                maxY: window.innerHeight - 170
+            };
+        }
+    };
+    
+    // Генерация случайной точки в зоне
+    const getRandomPoint = (zone) => ({
+        x: Math.random() * (zone.maxX - zone.minX) + zone.minX,
+        y: Math.random() * (zone.maxY - zone.minY) + zone.minY
+    });
+    
+    // Плавное движение к точке
+    const moveAnt = (ant, targetX, targetY, duration = 4000) => {
+        const startX = parseInt(ant.style.left || ant.offsetLeft);
+        const startY = parseInt(ant.style.top || ant.offsetTop);
+        const startTime = performance.now();
+        
+        function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Плавная easing-функция
+            const ease = progress < 0.5 
+                ? 4 * progress * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            
+            const currentX = startX + (targetX - startX) * ease;
+            const currentY = startY + (targetY - startY) * ease;
+            
+            ant.style.left = currentX + 'px';
+            ant.style.top = currentY + 'px';
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                // Достигли цели - выбираем новую точку
+                const zone = ant.classList.contains('left') ? getMovementZone(true) : getMovementZone(false);
+                const newTarget = getRandomPoint(zone);
+                moveAnt(ant, newTarget.x, newTarget.y, 3000 + Math.random() * 3000);
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    };
+    
+    // Запуск анимации
+    const leftZone = getMovementZone(true);
+    const rightZone = getMovementZone(false);
+    
+    moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
+    moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
+    
+    // Перерасчет при изменении размера окна
+    window.addEventListener('resize', () => {
+        const leftZone = getMovementZone(true);
+        const rightZone = getMovementZone(false);
+        
+        moveAnt(leftAnt, leftAnt.offsetLeft, leftAnt.offsetTop, 1000);
+        moveAnt(rightAnt, rightAnt.offsetLeft, rightAnt.offsetTop, 1000);
+    });
+}
+
+// Запуск после загрузки
+setTimeout(initAntsAnimation, 1000);
+
         });
     </script>
 </body>
