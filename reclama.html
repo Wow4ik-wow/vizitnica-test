@@ -133,10 +133,10 @@
         color: #2c3e50;
         line-height: 1.6;
         margin-bottom: 25px;
-        background: linear-gradient(135deg, #fff3eb 0%, #e7b381 100%);
+        background: linear-gradient(135deg, #fff3eb 0%, #f3b874 100%);
         padding: 20px;
         border-radius: 12px;
-        border-left: 4px solid #052963;
+        border-left: 15px solid #1c60cc;
       }
 
       .offer-details {
@@ -436,12 +436,25 @@
           detailFields.forEach((field) => {
             if (order[field]) {
               hasDetails = true;
+
+              let value = order[field];
+
+              // Особенная обработка для телефонов
+              if (field === "Телефоны") {
+                const phones = value.split(",").map((phone) => phone.trim());
+                value = phones
+                  .map((phone) => {
+                    return `<a href="tel:${phone}" style="color: #3b82f6; text-decoration: none;">${phone}</a>`;
+                  })
+                  .join(", ");
+              }
+
               detailsHtml += `
-                <div class="detail-item">
-                    <span class="detail-label">${field}:</span>
-                    <span>${order[field]}</span>
-                </div>
-            `;
+            <div class="detail-item">
+                <span class="detail-label">${field}:</span>
+                <span>${value}</span>
+            </div>
+        `;
             }
           });
 
