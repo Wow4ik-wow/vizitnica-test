@@ -246,6 +246,92 @@
           display: none;
         }
       }
+
+/* Мобильные стили */
+.mobile-device .offer-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 5px;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0;
+}
+
+.mobile-device .slide-image {
+    max-height: 300px;
+}
+
+/* Подложки для текстовых блоков */
+.mobile-device .offer-title,
+.mobile-device .offer-description,
+.mobile-device .offer-details,
+.mobile-device .name-company-block {
+    background: rgba(241, 227, 209, 0.8);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.mobile-device .offer-description {
+    font-size: 18px;
+}
+
+.mobile-device .social-links {
+    flex-direction: column;
+    gap: 6px;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.mobile-device .social-button {
+    width: auto !important;
+    min-width: 140px;
+    text-align: center;
+    background: #10b981;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 10px 20px;
+    font-size: 14px;
+    margin: 0 auto;
+    display: block;
+}
+
+.mobile-device .close-button {
+    width: 100%;
+}
+
+/* Скрываем муравьев на мобильных */
+.mobile-device .decoration {
+    display: none !important;
+}
+
+/* Адаптивные детали */
+.mobile-device .offer-details {
+    grid-template-columns: 1fr;
+    gap: 5px;
+}
+
+.mobile-device .detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-device .detail-label {
+    text-align: left;
+    min-width: auto;
+    margin-right: 0;
+    margin-bottom: 2px;
+}
+
+/* Сброс отступов body */
+.mobile-device body {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
     </style>
   </head>
   <body>
@@ -691,5 +777,14 @@
         setTimeout(initAntsAnimation, 1000);
       });
     </script>
+
+<script>
+    // Определение мобильного устройства
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+        document.body.classList.add('mobile-device');
+    }
+</script>
+
   </body>
 </html>
