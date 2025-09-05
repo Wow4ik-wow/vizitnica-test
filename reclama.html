@@ -137,31 +137,40 @@
         padding: 20px;
         border-radius: 12px;
         border-left: 15px solid #1c60cc;
+        text-align: left;
+        white-space: pre-line;
       }
 
       .offer-details {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 8px 15px;
-        margin-bottom: 25px;
-        font-size: 16px;
-        color: #4b5563;
-      }
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 5px;
+    margin-bottom: 25px;
+    font-size: 16px;
+    color: #4b5563;
+    align-items: start;
+}
 
-      .detail-item {
-        display: contents;
-      }
+.detail-item {
+    display: contents;
+}
 
-      .detail-label {
-        font-weight: bold;
-        text-align: right;
-        white-space: nowrap;
-        color: #2c3e50;
-      }
+.detail-label {
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+    color: #2c3e50;
+    justify-self: end;
+}
 
-      .detail-label::after {
-        content: ":";
-      }
+.detail-label::after {
+    content: ":";
+}
+
+.detail-item span:last-child {
+    text-align: left;
+    word-break: break-word;
+}
 
       .social-links {
         display: flex;
@@ -359,10 +368,6 @@
           // Заголовок
           if (order["Название"]) {
             document.title = order["Название"];
-          }
-
-          if (order["Название"]) {
-            html += `<div class="offer-title">${order["Название"]}</div>`;
           }
 
           // Слайдер с изображениями
