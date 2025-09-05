@@ -140,21 +140,27 @@
       }
 
       .offer-details {
-        text-align: left;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px 15px;
         margin-bottom: 25px;
         font-size: 16px;
         color: #4b5563;
       }
 
       .detail-item {
-        margin-bottom: 8px;
-        display: flex;
+        display: contents;
       }
 
       .detail-label {
         font-weight: bold;
-        min-width: 120px;
-        margin-right: 10px;
+        text-align: right;
+        white-space: nowrap;
+        color: #2c3e50;
+      }
+
+      .detail-label::after {
+        content: ":";
       }
 
       .social-links {
@@ -450,11 +456,11 @@
               }
 
               detailsHtml += `
-            <div class="detail-item">
-                <span class="detail-label">${field}:</span>
-                <span>${value}</span>
-            </div>
-        `;
+    <div class="detail-item">
+        <span class="detail-label">${field}</span>
+        <span>${value}</span>
+    </div>
+`;
             }
           });
 
