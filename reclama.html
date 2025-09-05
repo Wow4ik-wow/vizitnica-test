@@ -306,6 +306,9 @@
 /* Скрываем муравьев на мобильных */
 .mobile-device .decoration {
     display: none !important;
+    animation: none !important;
+    transition: none !important;
+    visibility: hidden !important;
 }
 
 /* Адаптивные детали */
@@ -681,6 +684,10 @@
 
         // Хаотичное движение муравьев
         function initAntsAnimation() {
+    // Отключаем анимацию на мобильных
+    if (document.body.classList.contains('mobile-device')) {
+        return; // полностью выходим из функции
+    }
           const leftAnt = document.querySelector(".decoration.left");
           const rightAnt = document.querySelector(".decoration.right");
 
