@@ -481,6 +481,7 @@ async function initReclama() {
       // если вышли из окна — дадим возможность следующей ночи
     }
   }, 60 * 1000); // каждую минуту проверяем окно
+  setupMobileAdLayout();
 }
 
 // при изменении фильтров — пересобрать выборку немедленно
@@ -512,6 +513,57 @@ function convertDriveLink(url) {
   } catch (e) {
     return s;
   }
+}
+
+// --- Мобильная адаптация рекламы ---
+function setupMobileAdLayout() {
+  if (!document.documentElement.classList.contains('mobile-device')) return;
+  
+  const header = document.querySelector('.header');
+  if (!header) return;
+  
+  // Создаем контейнеры для рекламы
+  const adContainer = document.createElement('div');
+  adContainer.className = 'mobile-ad-container';
+  adContainer.style.gridColumn = '1 / 3';
+  adContainer.style.gridRow = '9';
+  adContainer.style.display = 'grid';
+  adContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  adContainer.style.gap = '8px';
+  adContainer.style.width = '100%';
+  adContainer.style.marginTop = '2vh';
+  
+  const adContainer2 = document.createElement('div');
+  adContainer2.className = 'mobile-ad-container-second';
+  adContainer2.style.gridColumn = '1 / 3';
+  adContainer2.style.gridRow = '10';
+  adContainer2.style.display = 'grid';
+  adContainer2.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  adContainer2.style.gap = '8px';
+  adContainer2.style.width = '100%';
+  adContainer2.style.marginTop = '1vh';
+  
+  // Перемещаем блоки в контейнеры
+  const moveBlock = (id, container) => {
+    const block = document.getElementById(id);
+    if (block) {
+      block.style.width = '100%';
+      block.style.aspectRatio = '1 / 1';
+      block.style.margin = '0';
+      container.appendChild(block);
+    }
+  };
+  
+  moveBlock('sideBlockLeft', adContainer);
+  moveBlock('bottomBlock1', adContainer);
+  moveBlock('sideBlockRight', adContainer);
+  
+  moveBlock('bottomBlock2', adContainer2);
+  moveBlock('bottomBlock3', adContainer2);
+  moveBlock('bottomBlock4', adContainer2);
+  
+  header.appendChild(adContainer);
+  header.appendChild(adContainer2);
 }
 
 // --- старт при готовности DOM ---
