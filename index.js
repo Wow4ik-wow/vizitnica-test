@@ -1113,6 +1113,7 @@ function initCommonDropdown(inputId) {
 
   const dropdown = document.createElement("div");
   dropdown.className = "dropdown-common-style";
+  dropdown.style.display = "none";
   document.body.appendChild(dropdown);
 
   const updateDropdown = () => {
