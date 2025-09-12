@@ -605,23 +605,20 @@ html.mobile-device .info-card:hover img {
    ========================= */
 
 /* Общие dropdown (как в старом коде) */
-html.mobile-device .dropdown-common-style,
-html.mobile-device #customTypeDropdown {
+/* Правильное позиционирование dropdown */
+html.mobile-device .dropdown-common-style {
   position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  max-height: 60vh !important; /* список + место под клавиатуру */
-  top: auto !important;
+  top: 60px !important; /* Высота фиксированного поля */
+  left: 10px !important;
+  right: 10px !important;
+  max-height: 60vh !important;
   background: #fff !important;
   border: 1px solid #ddd !important;
-  border-radius: var(--radius) var(--radius) 0 0 !important;
+  border-radius: 8px !important;
   overflow-y: auto !important;
-  z-index: 9999 !important;
+  z-index: 10001 !important;
   padding: 6px 0 !important;
-  width: auto !important;
-  min-width: 250px !important;
-  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15) !important;
 }
 html.mobile-device .dropdown-common-style div,
 html.mobile-device #customTypeDropdown div {
