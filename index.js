@@ -236,29 +236,29 @@ function renderCards(services) {
   `;
     }
 
-    // 6. Добавляем кнопки
-    contentHTML += `
+   // 6. Добавляем кнопки
+contentHTML += `
 <div class="card-buttons">
-  <button class="btn small" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
-  <button class="btn small" data-role="admin">В ИЗБРАННОЕ</button>
+  <button class="btn small back-to-search" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
+  <button class="btn small add-to-favorites" data-role="admin">В ИЗБРАННОЕ</button>
 </div>
 
-<div data-role="admin" style="margin-top: 8px; color: #888; display: block; width: 100%;">
-  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-    <div style="font-weight: bold; user-select: none;">
+<div class="card-rating-block" data-role="admin">
+  <div class="rating-container">
+    <div class="rating-text">
       ОЦЕНИ &nbsp;
-      <span style="font-size: 20px; cursor: default;">☆ ☆ ☆ ☆ ☆</span>
+      <span class="rating-stars">☆ ☆ ☆ ☆ ☆</span>
     </div>
-    <button class="btn small" style="background-color:rgb(176, 204, 236); color:rgb(5, 29, 68); cursor: default; border: none; white-space: nowrap;">ОТЗЫВЫ</button>
+    <button class="btn small reviews-btn">ОТЗЫВЫ</button>
   </div>
 </div>
 
-<div class="card-buttons" data-role="admin" style="margin-top: 8px;">
-  <button class="btn small">РЕДАКТИРОВАТЬ</button>
-  <button class="btn small">ОПУБЛИКОВАТЬ</button>
+<div class="card-buttons" data-role="admin">
+  <button class="btn small edit-btn">РЕДАКТИРОВАТЬ</button>
+  <button class="btn small publish-btn">ОПУБЛИКОВАТЬ</button>
 </div>
 
-<div style="text-align: right; font-size: 11px; color: red; margin-top: 4px;">ID: ${id}</div>
+<div class="card-id">ID: ${id}</div>
 </div>`;
 
     card.innerHTML = contentHTML;

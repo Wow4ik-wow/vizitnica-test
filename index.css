@@ -500,3 +500,116 @@ input:focus + .input-clear-desktop {
     transform-origin: center;
     pointer-events: auto !important; /* ← Важно! */
 }
+
+/* Стили для кнопок карточек */
+.card-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.card-buttons .btn.small {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Фиолетовые кнопки */
+.back-to-search,
+.edit-btn {
+  background: #4f46e5;
+  color: white;
+}
+
+.back-to-search:hover,
+.edit-btn:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Зеленые кнопки */
+.add-to-favorites,
+.publish-btn {
+  background: #059669;
+  color: white;
+}
+
+.add-to-favorites:hover,
+.publish-btn:hover {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Синяя кнопка ОТЗЫВЫ */
+.reviews-btn {
+  background: #3b82f6;
+  color: white;
+  padding: 6px 12px;
+}
+
+.reviews-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Блок рейтинга */
+.card-rating-block {
+  margin-top: 8px;
+  color: #eb5555;
+  display: block;
+  width: 100%;
+}
+
+.rating-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.rating-text {
+  font-weight: bold;
+  user-select: none;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+.rating-stars {
+  font-size: 32px;
+  cursor: default;
+  color: #f59e0b; /* золотой цвет звезд */
+}
+
+/* ID карточки */
+.card-id {
+  text-align: right;
+  font-size: 11px;
+  color: red;
+  margin-top: 4px;
+}
+
+/* Исправление для нижних кнопок */
+.card-buttons[data-role="admin"] {
+  display: flex !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+.card-buttons[data-role="admin"] .btn.small {
+  flex: 1 !important;
+  min-width: 120px !important;
+}

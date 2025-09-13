@@ -728,19 +728,104 @@ html.mobile-device .card {
 }
 
 /* Кнопки в карточке */
+/* СЕТКА - 2 кнопки в ряд */
 html.mobile-device .card-buttons {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
   gap: 8px !important;
-  flex-wrap: wrap !important;
   margin-top: 10px !important;
   padding-top: 8px !important;
   border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
 }
+
+/* ОБЩИЕ СТИЛИ КНОПОК */
 html.mobile-device .card-buttons .btn {
-  padding: 5px 10px !important;
-  font-size: 13px !important;
-  line-height: 1.2 !important;
+  padding: 8px 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
   height: auto !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* ЦВЕТА КНОПОК */
+html.mobile-device .back-to-search,
+html.mobile-device .edit-btn {
+  background: #4f46e5 !important;
+  color: white !important;
+}
+
+html.mobile-device .add-to-favorites,
+html.mobile-device .publish-btn {
+  background: #059669 !important;
+  color: white !important;
+}
+
+html.mobile-device .reviews-btn {
+  background: #3b82f6 !important;
+  color: white !important;
+  padding: 6px 8px !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+}
+
+/* Ховер-эффекты */
+html.mobile-device .back-to-search:hover,
+html.mobile-device .edit-btn:hover {
+  background: #4338ca !important;
+  transform: translateY(-1px) !important;
+}
+
+html.mobile-device .add-to-favorites:hover,
+html.mobile-device .publish-btn:hover {
+  background: #047857 !important;
+  transform: translateY(-1px) !important;
+}
+
+html.mobile-device .reviews-btn:hover {
+  background: #2563eb !important;
+  transform: translateY(-1px) !important;
+}
+
+/* КНОПКА ОТЗЫВЫ - сохраняем её специфичные стили */
+html.mobile-device .card-buttons .btn[style*="background-color:rgb(176, 204, 236)"] {
+  background: #b0ccec !important;
+  color: rgb(5, 29, 68) !important;
+  cursor: default !important;
+}
+
+/* БЛОК РЕЙТИНГА - ОЦЕНИ и ОТЗЫВЫ в одной строке */
+html.mobile-device .card-rating-block {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
+}
+
+html.mobile-device .rating-container {
+  display: contents !important;
+}
+
+html.mobile-device .rating-text {
+  font-size: 14px !important;
+  font-weight: bold !important;
+  text-align: left !important;
+  color: #e73939 !important;
+}
+
+html.mobile-device .rating-stars {
+  font-size: 17px !important;
+  margin-right: 4px !important;
+  color: #f59e0b !important;
 }
 
 /* Кнопка «Наверх» */
@@ -764,6 +849,15 @@ html.mobile-device .notification {
   display: none !important;
   z-index: 9999 !important;
   font-size: 14px !important;
+}
+
+/* Стиль для ID карточки */
+.card-id {
+  text-align: right !important;
+  font-size: 11px !important;
+  color: red !important;
+  margin-top: 4px !important;
+  width: 100% !important;
 }
 
 /* =========================
@@ -943,45 +1037,6 @@ html.mobile-device .card {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
   margin: 0 auto !important;
   font-size: 16px !important;
-}
-
-/* Кнопки в карточке */
-html.mobile-device .card-buttons {
-  display: flex !important;
-  gap: 8px !important;
-  flex-wrap: wrap !important;
-  margin-top: 10px !important;
-  padding-top: 8px !important;
-  border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
-}
-html.mobile-device .card-buttons .btn {
-  padding: 5px 10px !important;
-  font-size: 13px !important;
-  line-height: 1.2 !important;
-  height: auto !important;
-}
-
-/* Кнопка «Наверх» */
-html.mobile-device .back-to-top {
-  width: calc(100% - 2 * var(--pad-x)) !important;
-  margin: 20px auto !important;
-  position: sticky !important;
-  bottom: 20px !important;
-}
-
-/* Нотификация */
-html.mobile-device .notification {
-  position: fixed !important;
-  top: 20px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  background: rgba(240, 147, 147, 0.75) !important;
-  color: #0f0c0c !important;
-  padding: 10px 20px !important;
-  border-radius: var(--radius) !important;
-  display: none !important;
-  z-index: 9999 !important;
-  font-size: 14px !important;
 }
 
 /* =========================
