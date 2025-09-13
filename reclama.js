@@ -4,7 +4,12 @@ const GITHUB_JSON_URL =
 
 // HTML-блоки
 const SIDE_BLOCK_IDS = ["sideBlockLeft", "sideBlockRight"];
-const BOTTOM_BLOCK_IDS = ["bottomBlock1", "bottomBlock2", "bottomBlock3", "bottomBlock4"];
+const BOTTOM_BLOCK_IDS = [
+  "bottomBlock1",
+  "bottomBlock2",
+  "bottomBlock3",
+  "bottomBlock4",
+];
 const ALL_BLOCK_IDS = [...SIDE_BLOCK_IDS, ...BOTTOM_BLOCK_IDS];
 
 // Глобальные данные
@@ -118,20 +123,23 @@ function matchesGeoByFilters(order, userGeo) {
     return true;
   }
 
-    // Для таргета "Город" - проверяем строку городов из поля "ГЕО Города"
+  // Для таргета "Город" - проверяем строку городов из поля "ГЕО Города"
   if (target.includes("город")) {
     // Получаем строку с городами через запятую: "Одесса, Черноморск, Южный, Киев"
     const citiesString = (field(order, "ГЕО Города") || "").toString();
-    
+
     // Разбиваем строку на массив городов, убираем пробелы
-    const cityList = citiesString.split(',')
-                                .map(city => city.trim())
-                                .filter(city => city); // Убираем пустые строки
-    
+    const cityList = citiesString
+      .split(",")
+      .map((city) => city.trim())
+      .filter((city) => city); // Убираем пустые строки
+
     // Проверяем, есть ли город пользователя в этом списке
-    return cityList.some(city => 
-      city && userGeo.city && 
-      city.toLowerCase() === userGeo.city.trim().toLowerCase()
+    return cityList.some(
+      (city) =>
+        city &&
+        userGeo.city &&
+        city.toLowerCase() === userGeo.city.trim().toLowerCase()
     );
   }
 
@@ -517,51 +525,51 @@ function convertDriveLink(url) {
 
 // --- Мобильная адаптация рекламы ---
 function setupMobileAdLayout() {
-  if (!document.documentElement.classList.contains('mobile-device')) return;
-  
-  const header = document.querySelector('.header');
+  if (!document.documentElement.classList.contains("mobile-device")) return;
+
+  const header = document.querySelector(".header");
   if (!header) return;
-  
+
   // Создаем контейнеры для рекламы
-  const adContainer = document.createElement('div');
-  adContainer.className = 'mobile-ad-container';
-  adContainer.style.gridColumn = '1 / 3';
-  adContainer.style.gridRow = '9';
-  adContainer.style.display = 'grid';
-  adContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
-  adContainer.style.gap = '8px';
-  adContainer.style.width = '100%';
-  adContainer.style.marginTop = '2vh';
-  
-  const adContainer2 = document.createElement('div');
-  adContainer2.className = 'mobile-ad-container-second';
-  adContainer2.style.gridColumn = '1 / 3';
-  adContainer2.style.gridRow = '10';
-  adContainer2.style.display = 'grid';
-  adContainer2.style.gridTemplateColumns = 'repeat(3, 1fr)';
-  adContainer2.style.gap = '8px';
-  adContainer2.style.width = '100%';
-  adContainer2.style.marginTop = '1vh';
-  
+  const adContainer = document.createElement("div");
+  adContainer.className = "mobile-ad-container";
+  adContainer.style.gridColumn = "1 / 3";
+  adContainer.style.gridRow = "9";
+  adContainer.style.display = "grid";
+  adContainer.style.gridTemplateColumns = "repeat(3, 1fr)";
+  adContainer.style.gap = "8px";
+  adContainer.style.width = "100%";
+  adContainer.style.marginTop = "2vh";
+
+  const adContainer2 = document.createElement("div");
+  adContainer2.className = "mobile-ad-container-second";
+  adContainer2.style.gridColumn = "1 / 3";
+  adContainer2.style.gridRow = "10";
+  adContainer2.style.display = "grid";
+  adContainer2.style.gridTemplateColumns = "repeat(3, 1fr)";
+  adContainer2.style.gap = "8px";
+  adContainer2.style.width = "100%";
+  adContainer2.style.marginTop = "1vh";
+
   // Перемещаем блоки в контейнеры
   const moveBlock = (id, container) => {
     const block = document.getElementById(id);
     if (block) {
-      block.style.width = '100%';
-      block.style.aspectRatio = '1 / 1';
-      block.style.margin = '0';
+      block.style.width = "100%";
+      block.style.aspectRatio = "1 / 1";
+      block.style.margin = "0";
       container.appendChild(block);
     }
   };
-  
-  moveBlock('sideBlockLeft', adContainer);
-  moveBlock('bottomBlock1', adContainer);
-  moveBlock('sideBlockRight', adContainer);
-  
-  moveBlock('bottomBlock2', adContainer2);
-  moveBlock('bottomBlock3', adContainer2);
-  moveBlock('bottomBlock4', adContainer2);
-  
+
+  moveBlock("sideBlockLeft", adContainer);
+  moveBlock("bottomBlock1", adContainer);
+  moveBlock("sideBlockRight", adContainer);
+
+  moveBlock("bottomBlock2", adContainer2);
+  moveBlock("bottomBlock3", adContainer2);
+  moveBlock("bottomBlock4", adContainer2);
+
   header.appendChild(adContainer);
   header.appendChild(adContainer2);
 }

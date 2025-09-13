@@ -236,8 +236,8 @@ function renderCards(services) {
   `;
     }
 
-   // 6. Добавляем кнопки
-contentHTML += `
+    // 6. Добавляем кнопки
+    contentHTML += `
 <div class="card-buttons">
   <button class="btn small back-to-search" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
   <button class="btn small add-to-favorites" data-role="admin">В ИЗБРАННОЕ</button>
@@ -1266,17 +1266,19 @@ function manageRoleBasedButtons() {
 }
 
 function updateRolesVisibility() {
-  const elements = document.querySelectorAll('[data-role]');
-  const userRole = currentUser?.role || 'guest';
-  
-  elements.forEach(element => {
+  const elements = document.querySelectorAll("[data-role]");
+  const userRole = currentUser?.role || "guest";
+
+  elements.forEach((element) => {
     // Пропускаем выпадающие списки и их содержимое!
-    if (element.closest('.dropdown-common-style') || 
-        element.closest('#customTypeDropdown')) {
+    if (
+      element.closest(".dropdown-common-style") ||
+      element.closest("#customTypeDropdown")
+    ) {
       return;
     }
-    
-    const allowedRoles = element.getAttribute('data-role').split(',');
-    element.style.display = allowedRoles.includes(userRole) ? 'block' : 'none';
+
+    const allowedRoles = element.getAttribute("data-role").split(",");
+    element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
   });
 }

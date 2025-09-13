@@ -794,7 +794,9 @@ html.mobile-device .reviews-btn:hover {
 }
 
 /* КНОПКА ОТЗЫВЫ - сохраняем её специфичные стили */
-html.mobile-device .card-buttons .btn[style*="background-color:rgb(176, 204, 236)"] {
+html.mobile-device
+  .card-buttons
+  .btn[style*="background-color:rgb(176, 204, 236)"] {
   background: #b0ccec !important;
   color: rgb(5, 29, 68) !important;
   cursor: default !important;
