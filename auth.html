@@ -1,50 +1,145 @@
-<script>
-    function onGoogleLoad() {
-        google.accounts.id.initialize({
-            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-            callback: handleAuthResponse,
-            auto_select: false,
-        });
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Авторизация — Google</title>
+</head>
+<body>
+  <main style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:Arial,Helvetica,sans-serif">
+    <h2>Войти через Google</h2>
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID"
+         data-login_uri=""
+         data-auto_prompt="false">
+    </div>
 
-        google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
-            theme: "outline",
-            size: "large",
-            width: 300
-        });
-    }
+    <div id="g_id_signin"></div>
 
-    function handleAuthResponse(response) {
-        if (response.credential) {
-            console.log('Авторизация успешна, сохраняем данные...');
-            localStorage.setItem('googleAuthCredential', response.credential);
-            localStorage.setItem('googleAuthTimestamp', Date.now());
-            
-            // Пытаемся отправить сообщение в основное окно
-            try {
-                if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({
-                        type: 'GOOGLE_AUTH_SUCCESS',
-                        credential: response.credential
-                    }, '*');
-                }
-            } catch (e) {
-                console.log('Не удалось отправить сообщение основному окну');
-            }
-            
-            // Закрываем окно через 1 секунду
-            setTimeout(() => {
-                window.close();
-            }, 1000);
+    <p id="status" style="margin-top:20px;font-size:0.95rem;color:#333"></p>
+    <script>
+      // Helper: парсим JWT (payload) для получения имени/почты
+      function parseJwt (token) {
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          return JSON.parse(jsonPayload);
+        } catch (e) {
+          return null;
         }
-    }
+      }
 
-    // Запускаем при загрузке
-    window.addEventListener('load', function() {
-        if (typeof google !== 'undefined') {
-            onGoogleLoad();
+      const statusEl = document.getElementById('status');
+
+      // Сообщаем родителю (опенеру) об успехе/ошибке
+      function sendResultToOpener(payload) {
+        // если есть window.opener и он того же происхождения — отправляем postMessage
+        try {
+          if (window.opener && !window.opener.closed) {
+            window.opener.postMessage({ type: 'oauth-success', user: payload }, window.location.origin);
+            // Закрываем окно-попап (работает в обычных браузерах)
+            try { window.close(); } catch (e) {}
+            return;
+          }
+        } catch (e) {
+          // fallthrough
+        }
+
+        // Если opener нет (например Telegram-in-app), сохраняем в localStorage и редиректим на главную
+        try {
+          localStorage.setItem('oauth_user', JSON.stringify(payload));
+        } catch (e) {}
+        // Редирект на главную — parent должен обработать localStorage на load
+        const redirect = '/';
+        window.location.href = redirect;
+      }
+
+      // Инициализация Google Identity
+      window.onload = function () {
+        // Подключаем скрипт Google Identity динамически (если ещё не подключён)
+        if (!document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
+          const s = document.createElement('script');
+          s.src = "https://accounts.google.com/gsi/client";
+          s.defer = true;
+          s.onload = initGSI;
+          document.head.appendChild(s);
         } else {
-            // Ждем загрузки Google API
-            setTimeout(onGoogleLoad, 1000);
+          initGSI();
         }
-    });
-</script>
+      };
+
+      function initGSI() {
+        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // Замените на ваш client_id
+
+        if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+          statusEl.textContent = 'Ошибка загрузки Google Identity. Попробуйте обновить.';
+          return;
+        }
+
+        google.accounts.id.initialize({
+          client_id: CLIENT_ID,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: false
+        });
+
+        google.accounts.id.renderButton(
+          document.getElementById('g_id_signin'),
+          { theme: 'outline', size: 'large', type: 'standard' } // внешний вид кнопки
+        );
+
+        // Не показываем автоматический prompt, т.к. login initiated by user
+      }
+
+      // Обработчик ответа от Google (credential — JWT)
+      async function handleCredentialResponse(response) {
+        statusEl.textContent = 'Авторизация...';
+        const jwt = response.credential;
+        const payload = parseJwt(jwt) || {};
+
+        // Сформируем минимальный объект пользователя
+        const user = {
+          id_token: jwt,
+          sub: payload.sub || '',
+          name: payload.name || '',
+          email: payload.email || '',
+          picture: payload.picture || ''
+        };
+
+        // Отправляем родительскому окну
+        sendResultToOpener(user);
+      }
+
+      // Если (редкий) случай: пользователь пришёл с параметром ?popup=0 и уже есть локальные данные
+      (function checkLocalStorageOnLoad() {
+        try {
+          const raw = localStorage.getItem('oauth_user');
+          if (raw) {
+            // если имеем локальные данные — автоматически отправляем их в родителя (если есть)
+            const user = JSON.parse(raw);
+            // Попытка отправить (в случае открытия auth.html в той же вкладке)
+            try {
+              if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({ type: 'oauth-success', user }, window.location.origin);
+                localStorage.removeItem('oauth_user');
+                try { window.close(); } catch (e) {}
+              } else {
+                // иначе остаёмся на странице — и просто оставляем сообщение для пользователя
+                statusEl.textContent = 'Вы успешно вошли. Сейчас вы будете перенаправлены...';
+                setTimeout(()=>{ localStorage.removeItem('oauth_user'); window.location.href = '/'; }, 700);
+              }
+            } catch (e) {
+              // просто редирект, данные уже в localStorage
+              setTimeout(()=>{ localStorage.removeItem('oauth_user'); window.location.href = '/'; }, 700);
+            }
+          }
+        } catch (e) {}
+      })();
+
+    </script>
+  </main>
+</body>
+</html>
