@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Авторизация</title>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background: #f5f5f5; 
+        }
+    </style>
+</head>
+<body>
+    <div id="googleAuthBtn"></div>
+
+    <script>
+        // Инициализация Google Auth
+        google.accounts.id.initialize({
+            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+            callback: handleAuthResponse
+        });
+
+        // Показываем кнопку Google
+        google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
+            theme: "outline",
+            size: "large",
+            width: 300
+        });
+
+        function handleAuthResponse(response) {
+            // Отправляем данные авторизации в основное окно
+            window.opener.postMessage({
+                type: 'GOOGLE_AUTH_RESPONSE',
+                credential: response.credential
+            }, '*');
+            
+            // Закрываем окно через секунду
+            setTimeout(() => window.close(), 1000);
+        }
+    </script>
+</body>
+</html>

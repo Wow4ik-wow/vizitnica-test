@@ -48,6 +48,12 @@ async function loadServices() {
   }
 }
 
+// Функция для определения браузера Telegram
+function isTelegramBrowser() {
+    return navigator.userAgent.includes('Telegram') || 
+           navigator.userAgent.includes('WebApp');
+}
+
 function renderCards(services) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
@@ -127,7 +133,7 @@ function renderCards(services) {
     let contentHTML = `
       <img src="${imageUrl}" alt="Превью" style="width: 95%; margin: 8px auto; display: block; cursor: pointer; border-radius: 6px; object-fit: contain;" />
 
-      <div class="card-text" style="display:none; font-size: 14px; text-align: left; padding: 0 12px; margin: 0 auto; width: 100%; box-sizing: border-box;">
+      <div class="card-text" style="display:none; font-size: 16px; text-align: left; padding: 0 12px; margin: 0 auto; width: 100%; box-sizing: border-box;">
 `;
 
     if (type) {
@@ -237,13 +243,14 @@ function renderCards(services) {
     }
 
     // 6. Добавляем кнопки
-    contentHTML += `
+contentHTML += `
 <div class="card-buttons">
   <button class="btn small back-to-search" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
-  <button class="btn small add-to-favorites" data-role="admin">В ИЗБРАННОЕ</button>
+  ${currentUser?.role === 'admin' ? `<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>` : ''}
 </div>
 
-<div class="card-rating-block" data-role="admin">
+${currentUser?.role === 'admin' ? `
+<div class="card-rating-block">
   <div class="rating-container">
     <div class="rating-text">
       ОЦЕНИ &nbsp;
@@ -253,10 +260,11 @@ function renderCards(services) {
   </div>
 </div>
 
-<div class="card-buttons" data-role="admin">
+<div class="card-buttons">
   <button class="btn small edit-btn">РЕДАКТИРОВАТЬ</button>
   <button class="btn small publish-btn">ОПУБЛИКОВАТЬ</button>
 </div>
+` : ''}
 
 <div class="card-id">ID: ${id}</div>
 </div>`;
@@ -288,7 +296,7 @@ function renderCards(services) {
     });
 
     container.appendChild(card);
-    setTimeout(updateRolesVisibility, 100);
+
   });
   // Добавляем кнопку "ВЕРНУТЬСЯ НАВЕРХ" после всех карточек
   const backToTopContainer = document.getElementById("backToTopContainer");
@@ -831,10 +839,6 @@ window.onload = () => {
 
   initGoogleAuth();
   updateAuthUI();
-  if (currentUser?.role !== "admin") {
-    const adminBtn = document.getElementById("goToAdmin");
-    if (adminBtn) adminBtn.style.display = "none";
-  }
 
   document.getElementById("addServiceBtn").onclick = () => {
     window.location.href = "add.html";
@@ -842,18 +846,35 @@ window.onload = () => {
 };
 
 function initGoogleAuth() {
-  google.accounts.id.initialize({
-    client_id:
-      "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-    callback: handleCredentialResponse,
-    auto_select: false,
-  });
+    const googleAuthBtn = document.getElementById('googleAuthBtn');
+    
+    if (!googleAuthBtn) return;
 
-  google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
-    theme: "outline",
-    size: "large",
-    type: "standard",
-  });
+    if (isTelegramBrowser()) {
+        // Для Telegram: открываем авторизацию в отдельном окне
+        googleAuthBtn.onclick = () => {
+            const authWindow = window.open('auth.html', 'auth', 'width=400,height=600');
+        };
+    } else {
+        // Для обычных браузеров: стандартная авторизация
+        google.accounts.id.initialize({
+            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+            callback: handleCredentialResponse,
+            auto_select: false
+        });
+
+        google.accounts.id.renderButton(googleAuthBtn, {
+            theme: "outline",
+            size: "large"
+        });
+    }
+
+    // Обработчик сообщений от окна авторизации
+    window.addEventListener('message', (event) => {
+        if (event.data.type === 'GOOGLE_AUTH_RESPONSE') {
+            handleCredentialResponse({ credential: event.data.credential });
+        }
+    });
 }
 
 async function handleCredentialResponse(response) {
@@ -874,6 +895,8 @@ async function handleCredentialResponse(response) {
     currentUser.role = user.role || "user";
     localStorage.setItem("user", JSON.stringify(currentUser));
     updateAuthUI();
+    updateRolesVisibility();
+    applyFilters();
   } catch (error) {
     console.error("Ошибка авторизации:", error);
     alert("Ошибка авторизации: " + error.message);
@@ -948,7 +971,8 @@ function logout() {
   currentUser = null;
   localStorage.removeItem("user");
   updateAuthUI();
-  location.reload();
+  updateRolesVisibility();
+  applyFilters();
 }
 
 function updateAuthUI() {
