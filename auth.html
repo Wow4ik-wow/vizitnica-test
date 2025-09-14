@@ -9,7 +9,7 @@
   <main style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:Arial,Helvetica,sans-serif">
     <h2>Войти через Google</h2>
     <div id="g_id_onload"
-         data-client_id="YOUR_GOOGLE_CLIENT_ID"
+         data-client_id="1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com"
          data-login_uri=""
          data-auto_prompt="false">
     </div>
@@ -53,8 +53,14 @@
           localStorage.setItem('oauth_user', JSON.stringify(payload));
         } catch (e) {}
         // Редирект на главную — parent должен обработать localStorage на load
-        const redirect = 'https://wow4ik-wow.github.io/vizitnica/';
-        window.location.href = redirect;
+        // Попробуем вернуть на главную страницу текущего сайта
+let redirect = window.location.origin + '/vizitnica/';
+if (document.referrer) {
+  // если был родительский сайт — возвращаем туда
+  redirect = document.referrer;
+}
+window.location.href = redirect;
+
       }
 
       // Инициализация Google Identity
@@ -72,7 +78,7 @@
       };
 
       function initGSI() {
-        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // Замените на ваш client_id
+        const CLIENT_ID = '1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com'; // Замените на ваш client_id
 
         if (!window.google || !window.google.accounts || !window.google.accounts.id) {
           statusEl.textContent = 'Ошибка загрузки Google Identity. Попробуйте обновить.';
