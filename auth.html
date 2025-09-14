@@ -10,37 +10,78 @@
             align-items: center; 
             height: 100vh; 
             margin: 0; 
-            background: #f5f5f5; 
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="googleAuthBtn"></div>
+    <div class="container">
+        <h3>Авторизация</h3>
+        <div id="googleAuthBtn"></div>
+        <p style="margin-top: 20px; color: #666;">После авторизации закройте это окно</p>
+    </div>
 
     <script>
-        // Инициализация Google Auth
-        google.accounts.id.initialize({
-            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-            callback: handleAuthResponse
-        });
+        // Ждем загрузки Google API
+        function onGoogleLoad() {
+            google.accounts.id.initialize({
+                client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+                callback: handleAuthResponse,
+                auto_select: false,
+            });
 
-        // Показываем кнопку Google
-        google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
-            theme: "outline",
-            size: "large",
-            width: 300
-        });
+            google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
+                theme: "outline",
+                size: "large",
+                width: 300
+            });
+        }
 
         function handleAuthResponse(response) {
-            // Отправляем данные авторизации в основное окно
-            window.opener.postMessage({
-                type: 'GOOGLE_AUTH_RESPONSE',
-                credential: response.credential
-            }, '*');
-            
-            // Закрываем окно через секунду
-            setTimeout(() => window.close(), 1000);
+            if (response.credential) {
+                // Сохраняем в localStorage для передачи
+                localStorage.setItem('googleAuthCredential', response.credential);
+                localStorage.setItem('googleAuthTimestamp', Date.now());
+                
+                // Сообщаем об успехе
+                alert('Авторизация успешна! Закройте это окно.');
+                
+                // Пытаемся отправить сообщение в родительское окно
+                try {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.postMessage({
+                            type: 'GOOGLE_AUTH_SUCCESS',
+                            credential: response.credential
+                        }, '*');
+                    }
+                } catch (e) {
+                    console.log('Не удалось отправить сообщение');
+                }
+            }
         }
+
+        // Проверяем, если уже есть данные авторизации (на случай повторного открытия)
+        window.addEventListener('load', function() {
+            const savedCredential = localStorage.getItem('googleAuthCredential');
+            const savedTimestamp = localStorage.getItem('googleAuthTimestamp');
+            
+            if (savedCredential && savedTimestamp && (Date.now() - savedTimestamp < 5000)) {
+                handleAuthResponse({ credential: savedCredential });
+            }
+            
+            // Запускаем инициализацию Google
+            if (typeof google !== 'undefined') {
+                onGoogleLoad();
+            } else {
+                // Ждем загрузки Google API
+                window.onGoogleLoad = onGoogleLoad;
+            }
+        });
     </script>
 </body>
 </html>

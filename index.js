@@ -7,6 +7,24 @@ let currentUser = null;
 
 let allServices = [];
 
+// Функция для определения браузера Telegram
+function isTelegramBrowser() {
+    return navigator.userAgent.includes('Telegram') || 
+           navigator.userAgent.includes('WebApp');
+}
+
+// Новая функция для проверки данных авторизации
+function checkForAuthData() {
+    const credential = localStorage.getItem('googleAuthCredential');
+    const timestamp = localStorage.getItem('googleAuthTimestamp');
+    
+    if (credential && timestamp && (Date.now() - timestamp < 30000)) {
+        handleCredentialResponse({ credential: credential });
+        localStorage.removeItem('googleAuthCredential');
+        localStorage.removeItem('googleAuthTimestamp');
+    }
+}
+
 async function loadServices() {
   const CACHE_KEY = "services_cache";
   const CACHE_TIME = 3600000;
@@ -46,12 +64,6 @@ async function loadServices() {
     document.getElementById("cards").innerText =
       "Сайт готов к работе (используются последние сохранённые данные)";
   }
-}
-
-// Функция для определения браузера Telegram
-function isTelegramBrowser() {
-    return navigator.userAgent.includes('Telegram') || 
-           navigator.userAgent.includes('WebApp');
 }
 
 function renderCards(services) {
@@ -819,6 +831,7 @@ function showNotification(message) {
 }
 
 window.onload = () => {
+  checkForAuthData();
   restoreRegionCity();
   loadServices();
   document.getElementById("logoutBtn").onclick = () => {
@@ -850,31 +863,23 @@ function initGoogleAuth() {
     
     if (!googleAuthBtn) return;
 
-    if (isTelegramBrowser()) {
-        // Для Telegram: открываем авторизацию в отдельном окне
-        googleAuthBtn.onclick = () => {
-            const authWindow = window.open('auth.html', 'auth', 'width=400,height=600');
-        };
-    } else {
-        // Для обычных браузеров: стандартная авторизация
-        google.accounts.id.initialize({
-            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-            callback: handleCredentialResponse,
-            auto_select: false
-        });
-
-        google.accounts.id.renderButton(googleAuthBtn, {
-            theme: "outline",
-            size: "large"
-        });
+    // Удаляем старую кнопку Google если есть
+    if (googleAuthBtn.querySelector('iframe')) {
+        googleAuthBtn.innerHTML = '';
     }
 
-    // Обработчик сообщений от окна авторизации
-    window.addEventListener('message', (event) => {
-        if (event.data.type === 'GOOGLE_AUTH_RESPONSE') {
-            handleCredentialResponse({ credential: event.data.credential });
-        }
-    });
+    // Для всех браузеров используем отдельное окно
+    googleAuthBtn.onclick = () => {
+        const authWindow = window.open('auth.html', 'auth', 'width=500,height=700,scrollbars=yes');
+        
+        // Проверяем состояние каждые 100ms
+        const checkAuth = setInterval(() => {
+            if (authWindow.closed) {
+                clearInterval(checkAuth);
+                checkForAuthData();
+            }
+        }, 100);
+    };
 }
 
 async function handleCredentialResponse(response) {
@@ -1305,4 +1310,11 @@ function updateRolesVisibility() {
     const allowedRoles = element.getAttribute("data-role").split(",");
     element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
   });
+
+  // Обработчик сообщений от окна авторизации
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+        handleCredentialResponse({ credential: event.data.credential });
+    }
+});
 }
