@@ -19,7 +19,12 @@ function checkForAuthData() {
     const timestamp = localStorage.getItem('googleAuthTimestamp');
     
     if (credential && timestamp && (Date.now() - timestamp < 30000)) {
+        console.log('Найдены данные авторизации, обрабатываем...');
         handleCredentialResponse({ credential: credential });
+        localStorage.removeItem('googleAuthCredential');
+        localStorage.removeItem('googleAuthTimestamp');
+    } else if (credential) {
+        // Данные устарели - очищаем
         localStorage.removeItem('googleAuthCredential');
         localStorage.removeItem('googleAuthTimestamp');
     }
@@ -863,23 +868,39 @@ function initGoogleAuth() {
     
     if (!googleAuthBtn) return;
 
-    // Удаляем старую кнопку Google если есть
-    if (googleAuthBtn.querySelector('iframe')) {
-        googleAuthBtn.innerHTML = '';
-    }
+    // Для обычных браузеров - стандартная кнопка Google
+    if (!isTelegramBrowser()) {
+        google.accounts.id.initialize({
+            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+            callback: handleCredentialResponse,
+            auto_select: false
+        });
 
-    // Для всех браузеров используем отдельное окно
-    googleAuthBtn.onclick = () => {
-        const authWindow = window.open('auth.html', 'auth', 'width=500,height=700,scrollbars=yes');
+        google.accounts.id.renderButton(googleAuthBtn, {
+            theme: "outline",
+            size: "large",
+            type: "standard"
+        });
+    } else {
+        // Для Telegram - создаем кастомную кнопку
+        googleAuthBtn.innerHTML = '<button class="custom-google-btn">ВХОД</button>';
         
-        // Проверяем состояние каждые 100ms
-        const checkAuth = setInterval(() => {
-            if (authWindow.closed) {
-                clearInterval(checkAuth);
-                checkForAuthData();
+        googleAuthBtn.querySelector('button').onclick = () => {
+            const authWindow = window.open('auth.html', 'auth', 'width=500,height=700,scrollbars=yes');
+            
+            if (!authWindow) {
+                alert('Разрешите всплывающие окна для авторизации');
+                return;
             }
-        }, 100);
-    };
+
+            const checkAuth = setInterval(() => {
+                if (authWindow.closed) {
+                    clearInterval(checkAuth);
+                    checkForAuthData();
+                }
+            }, 100);
+        };
+    }
 }
 
 async function handleCredentialResponse(response) {
