@@ -7,29 +7,6 @@ let currentUser = null;
 
 let allServices = [];
 
-// Функция для определения браузера Telegram
-function isTelegramBrowser() {
-    return navigator.userAgent.includes('Telegram') || 
-           navigator.userAgent.includes('WebApp');
-}
-
-// Новая функция для проверки данных авторизации
-function checkForAuthData() {
-    const credential = localStorage.getItem('googleAuthCredential');
-    const timestamp = localStorage.getItem('googleAuthTimestamp');
-    
-    if (credential && timestamp && (Date.now() - timestamp < 30000)) {
-        console.log('Найдены данные авторизации, обрабатываем...');
-        handleCredentialResponse({ credential: credential });
-        localStorage.removeItem('googleAuthCredential');
-        localStorage.removeItem('googleAuthTimestamp');
-    } else if (credential) {
-        // Данные устарели - очищаем
-        localStorage.removeItem('googleAuthCredential');
-        localStorage.removeItem('googleAuthTimestamp');
-    }
-}
-
 async function loadServices() {
   const CACHE_KEY = "services_cache";
   const CACHE_TIME = 3600000;
@@ -263,7 +240,7 @@ function renderCards(services) {
 contentHTML += `
 <div class="card-buttons">
   <button class="btn small back-to-search" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
-  ${currentUser?.role === 'admin' ? `<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>` : ''}
+  ${currentUser?.role === 'admin' ? '<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>' : ''}
 </div>
 
 ${currentUser?.role === 'admin' ? `
@@ -313,7 +290,7 @@ ${currentUser?.role === 'admin' ? `
     });
 
     container.appendChild(card);
-
+    setTimeout(updateRolesVisibility, 100);
   });
   // Добавляем кнопку "ВЕРНУТЬСЯ НАВЕРХ" после всех карточек
   const backToTopContainer = document.getElementById("backToTopContainer");
@@ -836,11 +813,11 @@ function showNotification(message) {
 }
 
 window.onload = () => {
-  checkForAuthData();
   restoreRegionCity();
   loadServices();
   document.getElementById("logoutBtn").onclick = () => {
     logout();
+    setTimeout(updateRolesVisibility, 100);
   };
 
   setTimeout(adjustCardsOffset, 500);
@@ -855,49 +832,55 @@ window.onload = () => {
     }
   }
 
+  initGoogleAuth();
   updateAuthUI();
-
-  // ---------- новый обработчик кнопки Войти ----------
-const loginBtn = document.getElementById("googleAuthBtn");
-if (loginBtn) {
-  loginBtn.onclick = (e) => {
-    e.preventDefault();
-
-    function isTelegramBrowser() {
-      const ua = (navigator.userAgent || "").toLowerCase();
-      return ua.includes("telegram") || ua.includes("tg/");
-    }
-
-    const authUrl = "/auth.html";
-
-    if (isTelegramBrowser()) {
-      window.location.href = authUrl + "?popup=0";
-      return;
-    }
-
-    const w = 600, h = 700;
-    const left = (screen.width / 2) - (w / 2);
-    const top = (screen.height / 2) - (h / 2);
-
-    const popup = window.open(
-      authUrl,
-      "authPopup",
-      `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${w},height=${h},top=${top},left=${left}`
-    );
-
-    if (!popup) {
-      window.location.href = authUrl + "?popup=0";
-    } else {
-      try { popup.focus(); } catch (e) {}
-    }
-  };
-}
-
 
   document.getElementById("addServiceBtn").onclick = () => {
     window.location.href = "add.html";
   };
 };
+
+function initGoogleAuth() {
+  google.accounts.id.initialize({
+    client_id:
+      "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+    callback: handleCredentialResponse,
+    auto_select: false,
+  });
+
+  google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
+    theme: "outline",
+    size: "large",
+    type: "standard",
+  });
+}
+
+async function handleCredentialResponse(response) {
+  try {
+    const payload = parseJWT(response.credential);
+
+    // Сохраняем пользователя
+    const user = {
+      uid: "",
+      name: payload.name,
+      email: payload.email,
+      picture: payload.picture,
+      role: (await getUserRoleFromServer(payload.email)) || "user",
+    };
+
+    await saveUserToBackend(user);
+    currentUser = user;
+    currentUser.role = user.role || "user";
+    localStorage.setItem("user", JSON.stringify(currentUser));
+    updateAuthUI();
+    updateRolesVisibility();
+    applyFilters();
+  } catch (error) {
+    console.error("Ошибка авторизации:", error);
+    alert("Ошибка авторизации: " + error.message);
+    logout();
+  }
+}
 
 function parseJWT(token) {
   try {
@@ -1285,65 +1268,12 @@ function manageRoleBasedButtons() {
 }
 
 function updateRolesVisibility() {
-  const elements = document.querySelectorAll("[data-role]");
-  const userRole = currentUser?.role || "guest";
+  const elements = document.querySelectorAll('[data-role]');
+  const userRole = currentUser?.role || 'guest'; // Если пользователя нет, роль 'guest'
 
   elements.forEach((element) => {
-    // Пропускаем выпадающие списки и их содержимое!
-    if (
-      element.closest(".dropdown-common-style") ||
-      element.closest("#customTypeDropdown")
-    ) {
-      return;
-    }
-
-    const allowedRoles = element.getAttribute("data-role").split(",");
-    element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
+    const allowedRoles = element.getAttribute('data-role').split(',');
+    // Скрываем элемент, если роль пользователя не входит в разрешенные
+    element.style.display = allowedRoles.includes(userRole) ? 'block' : 'none';
   });
-
-  // Обработчик сообщений от окна авторизации
-window.addEventListener('message', (event) => {
-    if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
-        handleCredentialResponse({ credential: event.data.credential });
-    }
-});
 }
-
-// ---------- обработка ответа от auth.html ----------
-(function() {
-  const allowedOrigin = window.location.origin;
-
-  // Приём данных из popup
-  window.addEventListener("message", async function(event) {
-    if (event.origin !== allowedOrigin) return;
-    const data = event.data;
-    if (!data || data.type !== "oauth-success" || !data.user) return;
-
-    await processAuthResult(data.user);
-  });
-
-  // Если Telegram открыл в той же вкладке (localStorage)
-  try {
-    const raw = localStorage.getItem("oauth_user");
-    if (raw) {
-      const user = JSON.parse(raw);
-      localStorage.removeItem("oauth_user");
-      processAuthResult(user);
-    }
-  } catch (e) {}
-
-  async function processAuthResult(user) {
-    try {
-      await saveUserToBackend(user);
-      currentUser = user;
-      currentUser.role = user.role || "user";
-      localStorage.setItem("user", JSON.stringify(currentUser));
-
-      updateAuthUI();
-      updateRolesVisibility();
-      applyFilters();
-    } catch (err) {
-      console.error("Ошибка обработки авторизации:", err);
-    }
-  }
-})();

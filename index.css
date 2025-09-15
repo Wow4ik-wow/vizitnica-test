@@ -627,33 +627,3 @@ input:focus + .input-clear-desktop {
   flex: 1 !important;
   min-width: 120px !important;
 }
-
-/* Стили для кастомной кнопки входа */
-.custom-google-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #4285f4;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    min-width: 120px;
-}
-
-.custom-google-btn:hover {
-    background: #357ae8;
-}
-
-/* Контейнер для кнопки */
-.auth-login-wrapper {
-    position: absolute;
-    width: 120px;
-    height: 40px;
-    z-index: 1000;
-    top: 20px;
-    left: 100px;
-}
