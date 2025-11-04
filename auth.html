@@ -2,60 +2,20 @@
 <html>
 <head>
     <title>Авторизация</title>
-    <script src="https://accounts.google.com/gsi/client" async></script>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #f5f5f5;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            text-align: center;
-            padding: 40px;
-        }
-    </style>
+    <script>
+        // Сразу делаем redirect на страницу выбора аккаунтов
+        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?' + new URLSearchParams({
+            client_id: '1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com',
+            scope: 'openid email profile',
+            response_type: 'id_token',
+            redirect_uri: 'https://wow4ik-wow.github.io/vizitnica/auth.html',
+            prompt: 'select_account',
+            display: 'popup',
+            origin: 'https://wow4ik-wow.github.io'
+        });
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h2>Авторизация</h2>
-        <div id="googleButton" style="margin: 20px 0;"></div>
-        <p style="color: #666; font-size: 14px;">Выберите аккаунт Google</p>
-    </div>
-
-    <script>
-        function initAuth() {
-            google.accounts.id.initialize({
-                client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-                callback: handleAuthResponse
-            });
-
-            google.accounts.id.renderButton(document.getElementById("googleButton"), {
-                theme: "filled_blue",
-                size: "large",
-                width: 300
-            });
-        }
-
-        function handleAuthResponse(response) {
-            if (response.credential) {
-                localStorage.setItem('googleAuthCredential', response.credential);
-                localStorage.setItem('googleAuthTimestamp', Date.now());
-                
-                if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({
-                        type: 'GOOGLE_AUTH_SUCCESS',
-                        credential: response.credential
-                    }, '*');
-                }
-                window.close();
-            }
-        }
-
-        window.addEventListener('load', initAuth);
-    </script>
+    <!-- Пустая страница - сразу redirect -->
 </body>
 </html>
