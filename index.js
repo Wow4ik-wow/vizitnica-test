@@ -879,48 +879,41 @@ function initGoogleAuth() {
     
     if (!googleAuthBtn) return;
 
-    // Удаляем старую кнопку Google
+    // Очищаем контейнер
     googleAuthBtn.innerHTML = '';
     
-    // Создаем единую красивую кнопку
+    // Создаем простую синюю кнопку как на сайте
     const loginBtn = document.createElement('button');
     loginBtn.className = 'unified-login-btn';
-    loginBtn.innerHTML = '🔐 ВХОД';
+    loginBtn.innerHTML = 'ВХОД';
+    loginBtn.style.width = '100%';
+    loginBtn.style.height = '100%';
     
     loginBtn.onclick = () => {
-        // Всегда открываем в новом окне/вкладке
-        const authUrl = 'auth.html';
+        const width = 450;
+        const height = 600;
+        const left = (screen.width - width) / 2;
+        const top = (screen.height - height) / 2;
         
-        if (isTelegramBrowser()) {
-            // В Telegram открываем в новой вкладке
-            window.open(authUrl, '_blank');
-        } else {
-            // В обычных браузерах открываем в popup
-            const width = 500;
-            const height = 700;
-            const left = (screen.width - width) / 2;
-            const top = (screen.height - height) / 2;
-            
-            const authWindow = window.open(
-                authUrl, 
-                'auth', 
-                `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-            );
-            
-            if (!authWindow) {
-                // Если popup заблокирован, открываем в новой вкладке
-                window.open(authUrl, '_blank');
-                return;
-            }
-
-            // Проверяем закрытие окна
-            const checkAuth = setInterval(() => {
-                if (authWindow.closed) {
-                    clearInterval(checkAuth);
-                    setTimeout(checkForAuthData, 500);
-                }
-            }, 100);
+        const authWindow = window.open(
+            'auth.html', 
+            'auth', 
+            `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+        );
+        
+        if (!authWindow) {
+            // Если popup заблокирован, открываем в новой вкладке
+            window.open('auth.html', '_blank');
+            return;
         }
+
+        // Проверяем закрытие окна
+        const checkAuth = setInterval(() => {
+            if (authWindow.closed) {
+                clearInterval(checkAuth);
+                setTimeout(checkForAuthData, 500);
+            }
+        }, 100);
     };
     
     googleAuthBtn.appendChild(loginBtn);

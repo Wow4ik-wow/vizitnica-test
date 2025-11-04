@@ -15,16 +15,16 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f5f5;
             font-family: Arial, sans-serif;
             padding: 20px;
         }
         
         .auth-container {
             background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             max-width: 400px;
             width: 100%;
@@ -32,69 +32,93 @@
         
         .auth-title {
             color: #333;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        
-        .auth-subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
+            margin-bottom: 20px;
+            font-size: 22px;
         }
         
         .google-btn-container {
-            margin: 20px 0;
+            margin: 25px 0;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
-        .instruction {
-            margin-top: 25px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #666;
+        .manual-auth {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .reload-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .reload-btn:hover {
+            background: #2563eb;
         }
     </style>
 </head>
 <body>
     <div class="auth-container">
-        <h1 class="auth-title">Авторизация</h1>
-        <p class="auth-subtitle">Войдите для доступа к сайту</p>
+        <h1 class="auth-title">Вход в систему</h1>
         
-        <div class="google-btn-container">
+        <div class="google-btn-container" id="googleBtnContainer">
             <div id="googleAuthBtn"></div>
         </div>
         
-        <div class="instruction">
-            <p>📱 После авторизации закройте это окно</p>
-            <p>🔄 Вы вернётесь на сайт автоматически</p>
+        <div class="manual-auth">
+            <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                Если не видите список аккаунтов, нажмите:
+            </p>
+            <button class="reload-btn" onclick="reloadAuth()">
+                🔄 Обновить список
+            </button>
         </div>
     </div>
 
     <script>
+        let authInitialized = false;
+
         function initGoogleAuth() {
+            if (authInitialized) return;
+            authInitialized = true;
+            
             google.accounts.id.initialize({
                 client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
                 callback: handleAuthResponse,
-                auto_select: true, // Автоматически предлагать аккаунты
+                auto_select: false,
                 ux_mode: "popup"
             });
 
-            // Показываем One-Tap если доступно
-            google.accounts.id.prompt((notification) => {
-                if (notification.isNotDisplayed() || notification.isSkipped()) {
-                    // Если One-Tap не показан, показываем обычную кнопку
-                    google.accounts.id.renderButton(
-                        document.getElementById("googleAuthBtn"),
-                        {
-                            theme: "filled_blue",
-                            size: "large",
-                            width: 300,
-                            text: "continue_with"
-                        }
-                    );
+            // Всегда показываем кнопку (не полагаемся на One-Tap)
+            google.accounts.id.renderButton(
+                document.getElementById("googleAuthBtn"),
+                {
+                    theme: "outline",
+                    size: "large",
+                    width: 300,
+                    text: "signin_with",
+                    shape: "rectangular"
                 }
-            });
+            );
+            
+            // Также показываем One-Tap если доступно
+            google.accounts.id.prompt();
+        }
+
+        function reloadAuth() {
+            document.getElementById('googleBtnContainer').innerHTML = '<div id="googleAuthBtn"></div>';
+            authInitialized = false;
+            setTimeout(initGoogleAuth, 100);
         }
 
         function handleAuthResponse(response) {
@@ -118,9 +142,13 @@
                 }
                 
                 // Показываем сообщение об успехе
-                document.querySelector('.instruction').innerHTML = 
-                    '<p style="color: green; font-weight: bold;">✅ Авторизация успешна!</p>' +
-                    '<p>Закройте это окно</p>';
+                document.querySelector('.auth-container').innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <h1 style="color: green; margin-bottom: 20px;">✅ Успешно!</h1>
+                        <p style="color: #666; margin-bottom: 20px;">Авторизация прошла успешно</p>
+                        <p style="color: #999; font-size: 14px;">Закройте это окно</p>
+                    </div>
+                `;
                 
                 // Автозакрытие через 2 секунды
                 setTimeout(() => {
@@ -131,9 +159,16 @@
 
         // Инициализация при загрузке
         window.addEventListener('load', function() {
-            // Даем время на загрузку Google API
-            setTimeout(initGoogleAuth, 100);
+            setTimeout(initGoogleAuth, 500);
         });
+
+        // Если Google API не загрузился
+        setTimeout(() => {
+            if (!authInitialized && typeof google === 'undefined') {
+                document.getElementById('googleBtnContainer').innerHTML = 
+                    '<p style="color: #666;">Ошибка загрузки. Обновите страницу.</p>';
+            }
+        }, 3000);
     </script>
 </body>
 </html>
