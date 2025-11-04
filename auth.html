@@ -1,110 +1,55 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Авторизация</title>
-    <script src="https://accounts.google.com/gsi/client" async></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: Arial, sans-serif;
-        }
-        
-        .auth-container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-        
-        .auth-title {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 24px;
-        }
-        
-        .google-container {
-            margin: 30px 0;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="auth-container">
-        <h1 class="auth-title">Выберите аккаунт</h1>
-        
-        <div class="google-container">
-            <div id="googleButton"></div>
-        </div>
-    </div>
+<script>
+    let accounts = [];
 
-    <script>
-        function initGoogleAuth() {
-            google.accounts.id.initialize({
-                client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-                callback: handleAuthResponse,
-                auto_select: false,
-                ux_mode: "popup"
-            });
-
-            // Всегда показываем One-Tap при загрузке страницы
-            google.accounts.id.prompt();
-            
-            // И рендерим кнопку, которая тоже показывает выбор аккаунтов
-            google.accounts.id.renderButton(
-                document.getElementById("googleButton"),
-                {
-                    theme: "filled_blue",
-                    size: "large", 
-                    width: 300,
-                    text: "signin_with",
-                    shape: "rectangular"
-                }
-            );
-        }
-
-        function handleAuthResponse(response) {
-            if (response.credential) {
-                // Сохраняем данные
-                localStorage.setItem('googleAuthCredential', response.credential);
-                localStorage.setItem('googleAuthTimestamp', Date.now());
-                
-                // Сообщаем основному окну
-                try {
-                    if (window.opener && !window.opener.closed) {
-                        window.opener.postMessage({
-                            type: 'GOOGLE_AUTH_SUCCESS',
-                            credential: response.credential
-                        }, '*');
-                    }
-                } catch (e) {
-                    console.log('Не удалось отправить сообщение');
-                }
-                
-                // Закрываем окно
-                window.close();
-            }
-        }
-
-        window.addEventListener('load', function() {
-            setTimeout(initGoogleAuth, 100);
+    function initGoogleAuth() {
+        // Показываем кастомный список аккаунтов
+        showCustomAccountsList();
+        
+        // One-Tap на всякий случай
+        google.accounts.id.initialize({
+            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+            callback: handleAuthResponse,
+            auto_select: false,
+            ux_mode: "popup"
         });
-    </script>
-</body>
-</html>
+        google.accounts.id.prompt();
+    }
+
+    function showCustomAccountsList() {
+        // Здесь будет кастомный список аккаунтов
+        // Нужно получить доступ к Google API для списка аккаунтов
+        console.log('Показываем кастомный список');
+        
+        // Заглушка - показываем сообщение
+        document.getElementById('googleButton').innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <p style="color: #666; margin-bottom: 20px;">Выберите способ входа:</p>
+                <button onclick="google.accounts.id.prompt()" style="background: #4285f4; color: white; border: none; padding: 15px 20px; border-radius: 5px; cursor: pointer; width: 100%;">
+                    Войти через Google
+                </button>
+            </div>
+        `;
+    }
+
+    function handleAuthResponse(response) {
+        if (response.credential) {
+            localStorage.setItem('googleAuthCredential', response.credential);
+            localStorage.setItem('googleAuthTimestamp', Date.now());
+            
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({
+                        type: 'GOOGLE_AUTH_SUCCESS',
+                        credential: response.credential
+                    }, '*');
+                }
+            } catch (e) {}
+            
+            window.close();
+        }
+    }
+
+    window.addEventListener('load', function() {
+        setTimeout(initGoogleAuth, 100);
+    });
+</script>
