@@ -59,13 +59,6 @@
         .reload-btn:hover {
             background: #2563eb;
         }
-        
-        .success-message {
-            color: green;
-            font-weight: bold;
-            font-size: 18px;
-            margin: 30px 0;
-        }
     </style>
 </head>
 <body>
@@ -76,33 +69,42 @@
             <!-- Здесь появится Google Auth -->
         </div>
         
-        <button class="reload-btn" onclick="forceShowAccounts()" id="reloadBtn">
-            🔄 Показать выбор аккаунтов
+        <button class="reload-btn" onclick="newSessionAuth()" id="reloadBtn">
+            🔄 Создать новую сессию авторизации
         </button>
     </div>
 
     <script>
-        let authInitialized = false;
+        let sessionId = Date.now(); // Уникальный ID сессии
 
         function initGoogleAuth() {
-            if (authInitialized) return;
-            
             const container = document.getElementById('googleContainer');
             container.innerHTML = '<div id="googleButton"></div>';
             
+            // Каждый раз инициализируем с новым context (обманываем Google)
             google.accounts.id.initialize({
                 client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
                 callback: handleAuthResponse,
                 auto_select: false,
-                ux_mode: "popup"
+                ux_mode: "popup",
+                context: "signin_" + sessionId // Меняем контекст каждый раз
             });
 
-            // СРАЗУ показываем One-Tap при открытии страницы
+            // Пытаемся показать One-Tap
             google.accounts.id.prompt((notification) => {
                 console.log('One-Tap статус:', notification);
+                
+                if (notification.isNotDisplayed() || notification.isSkipped()) {
+                    // Если One-Tap не показался, показываем кнопку
+                    showGoogleButton();
+                }
             });
             
-            // И рендерим кнопку на всякий случай
+            // Всегда показываем кнопку как запасной вариант
+            showGoogleButton();
+        }
+
+        function showGoogleButton() {
             google.accounts.id.renderButton(
                 document.getElementById("googleButton"),
                 {
@@ -113,20 +115,36 @@
                     shape: "rectangular"
                 }
             );
-            
-            authInitialized = true;
         }
 
-        function forceShowAccounts() {
-            // Принудительно показываем One-Tap снова
-            google.accounts.id.prompt((notification) => {
-                if (notification.isNotDisplayed()) {
-                    // Если One-Tap не показался, перезагружаем полностью
-                    authInitialized = false;
-                    document.getElementById('googleContainer').innerHTML = '<div style="color: #666; margin: 20px 0;">Загрузка...</div>';
-                    setTimeout(initGoogleAuth, 1000);
-                }
-            });
+        function newSessionAuth() {
+            // Создаем полностью новую сессию
+            sessionId = Date.now(); // Новый ID сессии
+            const container = document.getElementById('googleContainer');
+            
+            // Показываем загрузку
+            container.innerHTML = '<div style="color: #666; margin: 20px 0;">Создаем новую сессию...</div>';
+            
+            // Ждем и перезагружаем
+            setTimeout(() => {
+                container.innerHTML = '<div id="googleButton"></div>';
+                
+                // Переинициализируем с новым контекстом
+                google.accounts.id.initialize({
+                    client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+                    callback: handleAuthResponse,
+                    auto_select: false,
+                    ux_mode: "popup", 
+                    context: "signin_" + sessionId
+                });
+
+                // Показываем One-Tap снова
+                google.accounts.id.prompt();
+                
+                // И кнопку
+                showGoogleButton();
+                
+            }, 1000);
         }
 
         function handleAuthResponse(response) {
@@ -135,7 +153,7 @@
                 const reloadBtn = document.getElementById('reloadBtn');
                 
                 // Показываем успех
-                container.innerHTML = '<div class="success-message">✅ Авторизация успешна!</div>';
+                container.innerHTML = '<div style="color: green; font-weight: bold; font-size: 18px; margin: 30px 0;">✅ Авторизация успешна!</div>';
                 reloadBtn.style.display = 'none';
                 
                 // Сохраняем данные
@@ -163,19 +181,7 @@
 
         // Запускаем при загрузке
         window.addEventListener('load', function() {
-            // Даем время на загрузку Google API
-            let attempts = 0;
-            const waitForGoogle = setInterval(() => {
-                if (typeof google !== 'undefined') {
-                    clearInterval(waitForGoogle);
-                    initGoogleAuth();
-                } else if (attempts > 10) {
-                    clearInterval(waitForGoogle);
-                    document.getElementById('googleContainer').innerHTML = 
-                        '<div style="color: red;">Ошибка загрузки Google API</div>';
-                }
-                attempts++;
-            }, 200);
+            setTimeout(initGoogleAuth, 100);
         });
     </script>
 </body>
