@@ -882,7 +882,7 @@ function initGoogleAuth() {
     // Очищаем контейнер
     googleAuthBtn.innerHTML = '';
     
-    // Создаем простую синюю кнопку как на сайте
+    // Создаем кнопку
     const loginBtn = document.createElement('button');
     loginBtn.className = 'unified-login-btn';
     loginBtn.innerHTML = 'ВХОД';
@@ -890,30 +890,13 @@ function initGoogleAuth() {
     loginBtn.style.height = '100%';
     
     loginBtn.onclick = () => {
-        const width = 450;
-        const height = 600;
+        // Открываем auth.html в отдельном окне
+        const width = 500;
+        const height = 700;
         const left = (screen.width - width) / 2;
         const top = (screen.height - height) / 2;
         
-        const authWindow = window.open(
-            'auth.html', 
-            'auth', 
-            `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-        );
-        
-        if (!authWindow) {
-            // Если popup заблокирован, открываем в новой вкладке
-            window.open('auth.html', '_blank');
-            return;
-        }
-
-        // Проверяем закрытие окна
-        const checkAuth = setInterval(() => {
-            if (authWindow.closed) {
-                clearInterval(checkAuth);
-                setTimeout(checkForAuthData, 500);
-            }
-        }, 100);
+        window.open('auth.html', 'auth', `width=${width},height=${height},left=${left},top=${top}`);
     };
     
     googleAuthBtn.appendChild(loginBtn);
