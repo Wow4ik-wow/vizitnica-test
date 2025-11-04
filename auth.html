@@ -1,55 +1,38 @@
-<script>
-    let accounts = [];
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Авторизация</title>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+</head>
+<body>
+    <div id="googleButton"></div>
 
-    function initGoogleAuth() {
-        // Показываем кастомный список аккаунтов
-        showCustomAccountsList();
-        
-        // One-Tap на всякий случай
+    <script>
         google.accounts.id.initialize({
             client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-            callback: handleAuthResponse,
-            auto_select: false,
-            ux_mode: "popup"
+            callback: handleAuthResponse
         });
-        google.accounts.id.prompt();
-    }
 
-    function showCustomAccountsList() {
-        // Здесь будет кастомный список аккаунтов
-        // Нужно получить доступ к Google API для списка аккаунтов
-        console.log('Показываем кастомный список');
-        
-        // Заглушка - показываем сообщение
-        document.getElementById('googleButton').innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <p style="color: #666; margin-bottom: 20px;">Выберите способ входа:</p>
-                <button onclick="google.accounts.id.prompt()" style="background: #4285f4; color: white; border: none; padding: 15px 20px; border-radius: 5px; cursor: pointer; width: 100%;">
-                    Войти через Google
-                </button>
-            </div>
-        `;
-    }
+        google.accounts.id.renderButton(document.getElementById("googleButton"), {
+            theme: "filled_blue",
+            size: "large",
+            width: 300
+        });
 
-    function handleAuthResponse(response) {
-        if (response.credential) {
-            localStorage.setItem('googleAuthCredential', response.credential);
-            localStorage.setItem('googleAuthTimestamp', Date.now());
-            
-            try {
+        function handleAuthResponse(response) {
+            if (response.credential) {
+                localStorage.setItem('googleAuthCredential', response.credential);
+                localStorage.setItem('googleAuthTimestamp', Date.now());
+                
                 if (window.opener && !window.opener.closed) {
                     window.opener.postMessage({
-                        type: 'GOOGLE_AUTH_SUCCESS',
+                        type: 'GOOGLE_AUTH_SUCCESS', 
                         credential: response.credential
                     }, '*');
                 }
-            } catch (e) {}
-            
-            window.close();
+                window.close();
+            }
         }
-    }
-
-    window.addEventListener('load', function() {
-        setTimeout(initGoogleAuth, 100);
-    });
-</script>
+    </script>
+</body>
+</html>
