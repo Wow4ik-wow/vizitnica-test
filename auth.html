@@ -44,6 +44,7 @@
         
         .google-btn-container {
             margin: 20px 0;
+            min-height: 80px;
         }
         
         .instruction {
@@ -54,6 +55,22 @@
             font-size: 12px;
             color: #666;
         }
+        
+        .reload-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        
+        .reload-btn:hover {
+            background: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -61,9 +78,13 @@
         <h1 class="auth-title">Авторизация</h1>
         <p class="auth-subtitle">Войдите для доступа к сайту</p>
         
-        <div class="google-btn-container">
+        <div class="google-btn-container" id="googleBtnContainer">
             <div id="googleAuthBtn"></div>
         </div>
+        
+        <button class="reload-btn" onclick="reloadAuth()" id="reloadBtn" style="display: none;">
+            🔄 Показать список аккаунтов
+        </button>
         
         <div class="instruction">
             <p>📱 После авторизации закройте это окно</p>
@@ -76,14 +97,16 @@
             google.accounts.id.initialize({
                 client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
                 callback: handleAuthResponse,
-                auto_select: true, // Автоматически предлагать аккаунты
+                auto_select: true,
                 ux_mode: "popup"
             });
 
             // Показываем One-Tap если доступно
             google.accounts.id.prompt((notification) => {
                 if (notification.isNotDisplayed() || notification.isSkipped()) {
-                    // Если One-Tap не показан, показываем обычную кнопку
+                    // Если One-Tap не показан, показываем обычную кнопку и кнопку восстановления
+                    document.getElementById('reloadBtn').style.display = 'block';
+                    
                     google.accounts.id.renderButton(
                         document.getElementById("googleAuthBtn"),
                         {
@@ -95,6 +118,58 @@
                     );
                 }
             });
+            
+            // Всегда рендерим кнопку для надежности
+            google.accounts.id.renderButton(
+                document.getElementById("googleAuthBtn"),
+                {
+                    theme: "filled_blue",
+                    size: "large",
+                    width: 300,
+                    text: "continue_with"
+                }
+            );
+        }
+
+        function reloadAuth() {
+            const container = document.getElementById('googleBtnContainer');
+            const reloadBtn = document.getElementById('reloadBtn');
+            
+            // Скрываем кнопку на время перезагрузки
+            reloadBtn.style.display = 'none';
+            container.innerHTML = '<div style="color: #666;">Загрузка...</div>';
+            
+            setTimeout(() => {
+                container.innerHTML = '<div id="googleAuthBtn"></div>';
+                
+                // Переинициализируем Google Auth
+                google.accounts.id.initialize({
+                    client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+                    callback: handleAuthResponse,
+                    auto_select: true,
+                    ux_mode: "popup"
+                });
+
+                // Снова показываем One-Tap
+                google.accounts.id.prompt();
+                
+                // Рендерим кнопку
+                google.accounts.id.renderButton(
+                    document.getElementById("googleAuthBtn"),
+                    {
+                        theme: "filled_blue",
+                        size: "large",
+                        width: 300,
+                        text: "continue_with"
+                    }
+                );
+                
+                // Показываем кнопку восстановления через 3 секунды
+                setTimeout(() => {
+                    reloadBtn.style.display = 'block';
+                }, 3000);
+                
+            }, 1000);
         }
 
         function handleAuthResponse(response) {
@@ -122,6 +197,9 @@
                     '<p style="color: green; font-weight: bold;">✅ Авторизация успешна!</p>' +
                     '<p>Закройте это окно</p>';
                 
+                // Скрываем кнопку восстановления
+                document.getElementById('reloadBtn').style.display = 'none';
+                
                 // Автозакрытие через 2 секунды
                 setTimeout(() => {
                     window.close();
@@ -131,7 +209,6 @@
 
         // Инициализация при загрузке
         window.addEventListener('load', function() {
-            // Даем время на загрузку Google API
             setTimeout(initGoogleAuth, 100);
         });
     </script>
