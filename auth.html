@@ -3,15 +3,17 @@
 <head>
     <title>Авторизация</title>
     <script>
-        // Сразу делаем redirect на страницу выбора аккаунтов
+        // Используем тот же redirect_uri что и в рабочем URL
         window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?' + new URLSearchParams({
             client_id: '1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com',
             scope: 'openid email profile',
-            response_type: 'id_token',
-            redirect_uri: 'https://wow4ik-wow.github.io/vizitnica/auth.html',
+            response_type: 'id_token', 
+            redirect_uri: 'gis_transform', // Как в рабочем URL
             prompt: 'select_account',
             display: 'popup',
-            origin: 'https://wow4ik-wow.github.io'
+            origin: 'https://wow4ik-wow.github.io',
+            gsiwebsdk: 'gis_attributes',
+            response_mode: 'form_post'
         });
     </script>
 </head>
