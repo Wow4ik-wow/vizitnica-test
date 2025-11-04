@@ -879,10 +879,8 @@ function initGoogleAuth() {
     
     if (!googleAuthBtn) return;
 
-    // Очищаем контейнер
     googleAuthBtn.innerHTML = '';
     
-    // Создаем кнопку
     const loginBtn = document.createElement('button');
     loginBtn.className = 'unified-login-btn';
     loginBtn.innerHTML = 'ВХОД';
@@ -890,9 +888,8 @@ function initGoogleAuth() {
     loginBtn.style.height = '100%';
     
     loginBtn.onclick = () => {
-        // Открываем auth.html в отдельном окне
         const width = 500;
-        const height = 700;
+        const height = 600;
         const left = (screen.width - width) / 2;
         const top = (screen.height - height) / 2;
         
