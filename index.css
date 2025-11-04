@@ -14,13 +14,13 @@ body {
 }
 
 body {
-  background: #4c1fc7 !important;
+  background: #f0cda6 url("main-bg.webp") repeat-y center top !important;
   background-repeat: repeat-y;
   background-size: 1920px auto;
   background-position: center top;
   font-family: Arial, sans-serif;
   padding: 20px;
-  background: #2b0c8e;
+  background: #f0cda6;
   margin: 0;
   padding: 0;
 }
