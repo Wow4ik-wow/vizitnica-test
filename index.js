@@ -893,7 +893,7 @@ function initGoogleAuth() {
         const left = (screen.width - width) / 2;
         const top = (screen.height - height) / 2;
         
-        window.open('auth.html', 'auth', `width=${width},height=${height},left=${left},top=${top}`);
+        window.open('https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com&scope=openid%20email%20profile&response_type=id_token&redirect_uri=gis_transform&prompt=select_account&display=popup&origin=https://wow4ik-wow.github.io&gsiwebsdk=gis_attributes&response_mode=form_post', 'auth', `width=${width},height=${height},left=${left},top=${top}`);
     };
     
     googleAuthBtn.appendChild(loginBtn);
