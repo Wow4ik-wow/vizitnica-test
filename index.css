@@ -14,7 +14,7 @@ body {
 }
 
 body {
-  background: #f0cda6 url("main-bg.jpg") repeat-y center top !important;
+  background: #f0cda6 url("main-bg.webp") repeat-y center top !important;
   background-repeat: repeat-y;
   background-size: 1920px auto;
   background-position: center top;
