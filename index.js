@@ -879,39 +879,51 @@ function initGoogleAuth() {
     
     if (!googleAuthBtn) return;
 
-    // Для обычных браузеров - стандартная кнопка Google
-    if (!isTelegramBrowser()) {
-        google.accounts.id.initialize({
-            client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-            callback: handleCredentialResponse,
-            auto_select: false
-        });
-
-        google.accounts.id.renderButton(googleAuthBtn, {
-            theme: "outline",
-            size: "large",
-            type: "standard"
-        });
-    } else {
-        // Для Telegram - создаем кастомную кнопку
-        googleAuthBtn.innerHTML = '<button class="custom-google-btn">ВХОД</button>';
+    // Удаляем старую кнопку Google
+    googleAuthBtn.innerHTML = '';
+    
+    // Создаем единую красивую кнопку
+    const loginBtn = document.createElement('button');
+    loginBtn.className = 'unified-login-btn';
+    loginBtn.innerHTML = '🔐 ВХОД';
+    
+    loginBtn.onclick = () => {
+        // Всегда открываем в новом окне/вкладке
+        const authUrl = 'auth.html';
         
-        googleAuthBtn.querySelector('button').onclick = () => {
-            const authWindow = window.open('auth.html', 'auth', 'width=500,height=700,scrollbars=yes');
+        if (isTelegramBrowser()) {
+            // В Telegram открываем в новой вкладке
+            window.open(authUrl, '_blank');
+        } else {
+            // В обычных браузерах открываем в popup
+            const width = 500;
+            const height = 700;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            const authWindow = window.open(
+                authUrl, 
+                'auth', 
+                `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+            );
             
             if (!authWindow) {
-                alert('Разрешите всплывающие окна для авторизации');
+                // Если popup заблокирован, открываем в новой вкладке
+                window.open(authUrl, '_blank');
                 return;
             }
 
+            // Проверяем закрытие окна
             const checkAuth = setInterval(() => {
                 if (authWindow.closed) {
                     clearInterval(checkAuth);
-                    checkForAuthData();
+                    setTimeout(checkForAuthData, 500);
                 }
             }, 100);
-        };
-    }
+        }
+    };
+    
+    googleAuthBtn.appendChild(loginBtn);
 }
 
 async function handleCredentialResponse(response) {

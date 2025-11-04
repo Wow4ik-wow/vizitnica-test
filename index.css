@@ -13,16 +13,15 @@ body {
   box-sizing: border-box;
 }
 
+/* Фон сайта */
 body {
-  background: #f0cda6 url("main-bg.webp") repeat-y center top !important;
+  background-image: url("main-bg.webp");
   background-repeat: repeat-y;
   background-size: 1920px auto;
   background-position: center top;
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background: #f0cda6;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
 }
 
 .header {
@@ -100,34 +99,54 @@ body {
   background: #2563eb;
 }
 
-/* Стили для кастомной кнопки входа */
-.custom-google-btn {
+/* Единая красивая кнопка входа */
+.unified-login-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #4285f4;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 4px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 500;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    min-width: 120px;
+    min-width: 140px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
-.custom-google-btn:hover {
-    background: #357ae8;
+.unified-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.unified-login-btn:active {
+    transform: translateY(0);
 }
 
 /* Контейнер для кнопки */
 .auth-login-wrapper {
     position: absolute;
-    width: 120px;
-    height: 40px;
+    width: 140px;
+    height: 50px;
     z-index: 1000;
     top: 20px;
     left: 100px;
+}
+
+/* Фон сайта */
+body {
+  background-image: url("main-bg.webp");
+  background-repeat: repeat-y;
+  background-size: 1920px auto;
+  background-position: center top;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
 /* Боковые блоки */
