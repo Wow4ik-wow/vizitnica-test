@@ -892,19 +892,73 @@ window.onload = () => {
 
 
 function initGoogleAuth() {
-  google.accounts.id.initialize({
-    client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
-    callback: handleCredentialResponse,
-    auto_select: false,
-    prompt: "select_account"  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+  // Параметры клиента
+  const CLIENT_ID = "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com";
+  const REDIRECT_URI = location.origin + "/"; // <- укажи здесь точный redirect URI, который зарегистрирован в Google Console
+  const SCOPE = encodeURIComponent("openid email profile");
+  const PROMPT = "select_account";
+
+  const googleBtnContainer = document.getElementById("googleAuthBtn");
+
+  // Удаляем стандартный iframe-контейнер (если был), чтобы разместить собственную кнопку
+  googleBtnContainer.innerHTML = "";
+
+  // Создаём пользовательскую кнопку, чтобы иметь контроль над кликом
+  const btn = document.createElement("button");
+  btn.className = "unified-login-btn";
+  btn.type = "button";
+  btn.innerHTML = '<span style="margin-right:8px">🔐</span> Войти через Google';
+  googleBtnContainer.appendChild(btn);
+
+  // Функция, которая формирует URL для начала OAuth (implicit flow для простоты)
+  function buildGoogleAuthUrl() {
+    // Используем implicit (response_type=token) для быстрого client-side решения.
+    // Альтернатива (более безопасная) — code + PKCE, но потребуется сервер.
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      response_type: "token", // или "token id_token" при необходимости id_token
+      scope: "openid email profile",
+      include_granted_scopes: "true",
+      prompt: PROMPT,
+      nonce: Date.now().toString()
+    });
+    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  }
+
+  // Обработчик клика: открываем OAuth в новой вкладке (user gesture — Telegram предложит открыть внешним браузером)
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Если находимся в Telegram WebView, важно открыть в _blank — это даёт системе шанс открыть внешний браузер
+    const authUrl = buildGoogleAuthUrl();
+    const newWin = window.open(authUrl, "_blank");
+
+    if (!newWin) {
+      // Если окно не открылось (редкий случай), покажем подсказку
+      alert("Не удалось открыть окно авторизации. Пожалуйста, откройте сайт во внешнем браузере.");
+    }
   });
 
-  google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
-    theme: "outline", 
-    size: "large",
-    type: "standard"
-  });
+  // Дополнительно: если GSI всё-таки доступен (не WebView), пробуем показать стандартную кнопку под него.
+  try {
+    if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+      // Отложенно — рендерим стандартную кнопку (но скрываем, чтобы не мешать)
+      // Это позволяем пользователям вне Telegram пользоваться нормальной GSI.
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse,
+        auto_select: false,
+        prompt: PROMPT
+      });
+      // Но мы НЕ рендерим стандартную кнопку, т.к. у нас собственный UI
+      // google.accounts.id.renderButton(googleBtnContainer, { theme: "outline", size: "large", type: "standard" });
+    }
+  } catch (e) {
+    console.warn("GSI init skipped:", e);
+  }
 }
+
 
 async function handleCredentialResponse(response) {
   try {
