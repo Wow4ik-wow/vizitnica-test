@@ -1,6 +1,46 @@
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 
+// --- Обход проблемы авторизации в Telegram WebView ---
+(function fixTelegramAuthIssue() {
+  const isTelegramWebView = /Telegram/i.test(navigator.userAgent);
+
+  if (!isTelegramWebView) return;
+
+  // Если уже перезапускали — открываем во внешнем браузере
+  if (sessionStorage.getItem("tgReloaded")) {
+    // Попробуем открыть во внешнем браузере
+    try {
+      const newTab = window.open(location.href, "_blank");
+      if (newTab) {
+        // Успешно открылось — закрываем Telegram вкладку
+        document.body.innerHTML = `
+          <div style="font-family:sans-serif;text-align:center;margin-top:50px;">
+            <h3>Открываем сайт во внешнем браузере...</h3>
+            <p>Если не открылось автоматически — нажмите <b>⋮ → Открыть в браузере</b>.</p>
+          </div>`;
+        setTimeout(() => window.close(), 2000);
+      } else {
+        // Если окно не открылось — просто покажем сообщение
+        document.body.innerHTML = `
+          <div style="font-family:sans-serif;text-align:center;margin-top:50px;">
+            ⚠️ Telegram ограничивает авторизацию Google.<br>
+            Пожалуйста, нажмите ⋮ → "Открыть в браузере".
+          </div>`;
+      }
+    } catch (e) {
+      console.warn("Не удалось открыть внешний браузер:", e);
+    }
+    return;
+  }
+
+  // Первый запуск — делаем автоперезагрузку
+  sessionStorage.setItem("tgReloaded", "true");
+  console.log("Обнаружен Telegram WebView → выполняется перезагрузка страницы для корректной работы Google Auth");
+  location.reload();
+})();
+
+
 const API_USER_URL =
   "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
 let currentUser = null;
