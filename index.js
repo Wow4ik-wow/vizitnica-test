@@ -904,12 +904,14 @@ function initGoogleAuth() {
   // при клике открываем окно авторизации в браузере
   btn.addEventListener("click", () => {
     const url =
-      "https://accounts.google.com/o/oauth2/v2/auth" +
-      "?client_id=1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com" +
-      "&redirect_uri=https://google.com" +
-      "&response_type=token" +
-      "&scope=openid%20email%20profile" +
-      "&prompt=select_account";
+  "https://accounts.google.com/o/oauth2/v2/auth" +
+  "?client_id=1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com" +
+  "&redirect_uri=https://google.com" +
+  "&response_type=token" +
+  "&scope=openid%20email%20profile" +
+  "&include_granted_scopes=true" +
+  "&prompt=select_account";
+
 
     window.open(url, "_blank");
   });
