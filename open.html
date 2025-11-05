@@ -4,14 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Открывается сайт...</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 60px;
+      color: #222;
+    }
+    a {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 24px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 18px;
+    }
+  </style>
 </head>
-<body style="font-family:sans-serif;text-align:center;margin-top:50px;">
-  <h3>Открывается сайт...</h3>
-  <p>Если не открылось автоматически — нажмите кнопку ниже 👇</p>
-  <a id="openLink" href="https://vizitnica.netlify.app" 
-     target="_blank" rel="noopener"
-     style="display:inline-block;margin-top:20px;padding:10px 20px;
-            background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;">
+<body>
+  <h2>Открывается сайт...</h2>
+  <p>Если ничего не произошло, нажмите кнопку ниже 👇</p>
+
+  <a id="openLink"
+     href="https://wow4ik-wow.github.io/vizitnica-test/"
+     target="_blank"
+     rel="noopener">
      Открыть во внешнем браузере
   </a>
 
@@ -20,13 +39,13 @@
       const link = document.getElementById('openLink');
       const opened = window.open(link.href, '_blank');
       if (!opened) {
-        // если окно не открылось — показываем кнопку
+        // если браузер не дал открыть автоматически — оставляем кнопку
         link.style.display = 'inline-block';
       } else {
-        document.body.innerHTML = '<h3>Открываем сайт...</h3>';
+        document.body.innerHTML = '<h2>Открываем сайт...</h2>';
         setTimeout(() => window.close(), 2000);
       }
-    }, 500);
+    }, 400);
   </script>
 </body>
 </html>
