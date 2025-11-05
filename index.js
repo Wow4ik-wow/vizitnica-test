@@ -840,6 +840,17 @@ window.onload = () => {
   };
 };
 
+// --- Проверка Telegram WebView и автоперезагрузка ---
+(function checkTelegramWebView() {
+  const isTelegramWebView = /Telegram/i.test(navigator.userAgent);
+  if (isTelegramWebView && !sessionStorage.getItem("tgReloaded")) {
+    sessionStorage.setItem("tgReloaded", "true");
+    console.log("Обнаружен Telegram WebView — выполняется перезагрузка для корректной авторизации Google");
+    location.reload();
+  }
+})();
+
+
 function initGoogleAuth() {
   google.accounts.id.initialize({
     client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
