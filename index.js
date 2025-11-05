@@ -7,31 +7,6 @@ let currentUser = null;
 
 let allServices = [];
 
-// Функция для определения браузера Telegram
-function isTelegramBrowser() {
-  return (
-    navigator.userAgent.includes("Telegram") ||
-    navigator.userAgent.includes("WebApp")
-  );
-}
-
-// Новая функция для проверки данных авторизации
-function checkForAuthData() {
-    const credential = localStorage.getItem('googleAuthCredential');
-    const timestamp = localStorage.getItem('googleAuthTimestamp');
-    
-    if (credential && timestamp && (Date.now() - timestamp < 30000)) {
-        console.log('Найдены данные авторизации, обрабатываем...');
-        handleCredentialResponse({ credential: credential });
-        localStorage.removeItem('googleAuthCredential');
-        localStorage.removeItem('googleAuthTimestamp');
-    } else if (credential) {
-        // Данные устарели - очищаем
-        localStorage.removeItem('googleAuthCredential');
-        localStorage.removeItem('googleAuthTimestamp');
-    }
-}
-
 async function loadServices() {
   const CACHE_KEY = "services_cache";
   const CACHE_TIME = 3600000;
@@ -262,19 +237,13 @@ function renderCards(services) {
     }
 
     // 6. Добавляем кнопки
-    contentHTML += `
+contentHTML += `
 <div class="card-buttons">
   <button class="btn small back-to-search" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
-  ${
-    currentUser?.role === "admin"
-      ? '<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>'
-      : ""
-  }
+  ${currentUser?.role === 'admin' ? '<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>' : ''}
 </div>
 
-${
-  currentUser?.role === "admin"
-    ? `
+${currentUser?.role === 'admin' ? `
 <div class="card-rating-block">
   <div class="rating-container">
     <div class="rating-text">
@@ -289,9 +258,7 @@ ${
   <button class="btn small edit-btn">РЕДАКТИРОВАТЬ</button>
   <button class="btn small publish-btn">ОПУБЛИКОВАТЬ</button>
 </div>
-`
-    : ""
-}
+` : ''}
 
 <div class="card-id">ID: ${id}</div>
 </div>`;
@@ -846,7 +813,6 @@ function showNotification(message) {
 }
 
 window.onload = () => {
-  checkForAuthData();
   restoreRegionCity();
   loadServices();
   document.getElementById("logoutBtn").onclick = () => {
@@ -875,28 +841,18 @@ window.onload = () => {
 };
 
 function initGoogleAuth() {
-    const googleAuthBtn = document.getElementById('googleAuthBtn');
-    
-    if (!googleAuthBtn) return;
+  google.accounts.id.initialize({
+    client_id: "1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com",
+    callback: handleCredentialResponse,
+    auto_select: false,
+    prompt: "select_account"  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+  });
 
-    googleAuthBtn.innerHTML = '';
-    
-    const loginBtn = document.createElement('button');
-    loginBtn.className = 'unified-login-btn';
-    loginBtn.innerHTML = 'ВХОД';
-    loginBtn.style.width = '100%';
-    loginBtn.style.height = '100%';
-    
-    loginBtn.onclick = () => {
-        const width = 500;
-        const height = 600;
-        const left = (screen.width - width) / 2;
-        const top = (screen.height - height) / 2;
-        
-        window.open('https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=1060687932793-sk24egn7c7r0h6t6i1dedk4u6hrgdotc.apps.googleusercontent.com&scope=openid%20email%20profile&response_type=id_token&redirect_uri=gis_transform&prompt=select_account&display=popup&origin=https://wow4ik-wow.github.io&gsiwebsdk=gis_attributes&response_mode=form_post', 'auth', `width=${width},height=${height},left=${left},top=${top}`);
-    };
-    
-    googleAuthBtn.appendChild(loginBtn);
+  google.accounts.id.renderButton(document.getElementById("googleAuthBtn"), {
+    theme: "outline", 
+    size: "large",
+    type: "standard"
+  });
 }
 
 async function handleCredentialResponse(response) {
@@ -1312,19 +1268,12 @@ function manageRoleBasedButtons() {
 }
 
 function updateRolesVisibility() {
-  const elements = document.querySelectorAll("[data-role]");
-  const userRole = currentUser?.role || "guest"; // Если пользователя нет, роль 'guest'
+  const elements = document.querySelectorAll('[data-role]');
+  const userRole = currentUser?.role || 'guest'; // Если пользователя нет, роль 'guest'
 
   elements.forEach((element) => {
-    const allowedRoles = element.getAttribute("data-role").split(",");
+    const allowedRoles = element.getAttribute('data-role').split(',');
     // Скрываем элемент, если роль пользователя не входит в разрешенные
-    element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
-  });
-
-  // Обработчик сообщений от окна авторизации
-  window.addEventListener("message", (event) => {
-    if (event.data.type === "GOOGLE_AUTH_SUCCESS") {
-      handleCredentialResponse({ credential: event.data.credential });
-    }
+    element.style.display = allowedRoles.includes(userRole) ? 'block' : 'none';
   });
 }
