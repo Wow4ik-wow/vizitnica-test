@@ -6,7 +6,6 @@
     <title>Визитница — Главная</title>
 
     <!-- Десктопные стили по умолчанию -->
-    <link rel="preload" href="main-bg.webp" as="image" />
     <link rel="stylesheet" href="index.css" id="main-css" />
 
     <script>
@@ -159,12 +158,7 @@
         </button>
 
         <!-- После фильтров, перед рекламой -->
-        <img
-          src="header-bg.webp"
-          class="mobile-only-image"
-          alt="Нужен ас? - Смотри у нас!"
-          style="display: none"
-        />
+<img src="header-bg.webp" class="mobile-only-image" alt="Нужен ас? - Смотри у нас!" style="display: none;">
 
         <!-- Нижние рекламные блоки -->
         <div id="bottomBlock1" class="bottomBlock1">Пост низ1</div>
@@ -207,6 +201,7 @@
       window.addEventListener("resize", updateSize);
       updateSize(); // первый вызов при загрузке
     </script>
+    
 
     <style>
       #window-size {
