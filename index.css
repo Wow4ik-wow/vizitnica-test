@@ -13,16 +13,24 @@ body {
   box-sizing: border-box;
 }
 
-body {
+/* Фон сайта */
+html, body {
+  height: 100%;
   background-image: url("main-bg.webp");
   background-repeat: repeat-y;
   background-size: 1920px auto;
   background-position: center top;
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background: #f0cda6;
+  background-attachment: scroll;
+  background-color: transparent !important;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  z-index: 0;
+}
+
+/* Гарантируем, что контейнеры не заливают фон */
+.main-wrapper, .container, .page, .content {
+  background: transparent !important;
 }
 
 .header {
