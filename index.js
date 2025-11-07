@@ -5,6 +5,25 @@ const API_USER_URL =
   "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
 let currentUser = null;
 
+// Проверяем, открыт ли сайт внутри Telegram WebApp
+const isTelegramWebApp =
+  typeof window.Telegram !== "undefined" && Telegram.WebApp;
+
+// Если внутри Telegram — автоматически считаем, что пользователь авторизован
+if (isTelegramWebApp) {
+  const tgUser = Telegram.WebApp.initDataUnsafe?.user;
+  if (tgUser) {
+    currentUser = {
+      id: tgUser.id,
+      name:
+        tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+      username: tgUser.username || "",
+      role: "user", // базово пользователь
+    };
+    localStorage.setItem("user", JSON.stringify(currentUser));
+  }
+}
+
 let allServices = [];
 
 async function loadServices() {
@@ -237,13 +256,19 @@ function renderCards(services) {
     }
 
     // 6. Добавляем кнопки
-contentHTML += `
+    contentHTML += `
 <div class="card-buttons">
   <button class="btn small back-to-search" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">НАЗАД К ПОИСКУ</button>
-  ${currentUser?.role === 'admin' ? '<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>' : ''}
+  ${
+    currentUser?.role === "admin"
+      ? '<button class="btn small add-to-favorites">В ИЗБРАННОЕ</button>'
+      : ""
+  }
 </div>
 
-${currentUser?.role === 'admin' ? `
+${
+  currentUser?.role === "admin"
+    ? `
 <div class="card-rating-block">
   <div class="rating-container">
     <div class="rating-text">
@@ -258,7 +283,9 @@ ${currentUser?.role === 'admin' ? `
   <button class="btn small edit-btn">РЕДАКТИРОВАТЬ</button>
   <button class="btn small publish-btn">ОПУБЛИКОВАТЬ</button>
 </div>
-` : ''}
+`
+    : ""
+}
 
 <div class="card-id">ID: ${id}</div>
 </div>`;
@@ -954,6 +981,16 @@ function logout() {
 }
 
 function updateAuthUI() {
+  // Если открыто в Telegram — скрываем все Google-кнопки
+  if (isTelegramWebApp) {
+    const googleAuthBtn = document.getElementById("googleAuthBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const authLoginWrapper = document.querySelector(".auth-login-wrapper");
+    if (googleAuthBtn) googleAuthBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    if (authLoginWrapper) authLoginWrapper.style.display = "none";
+    return; // не продолжаем остальной код
+  }
   const googleAuthBtn = document.getElementById("googleAuthBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const roleInfo = document.getElementById("roleInfo");
@@ -1268,12 +1305,12 @@ function manageRoleBasedButtons() {
 }
 
 function updateRolesVisibility() {
-  const elements = document.querySelectorAll('[data-role]');
-  const userRole = currentUser?.role || 'guest'; // Если пользователя нет, роль 'guest'
+  const elements = document.querySelectorAll("[data-role]");
+  const userRole = currentUser?.role || "guest"; // Если пользователя нет, роль 'guest'
 
   elements.forEach((element) => {
-    const allowedRoles = element.getAttribute('data-role').split(',');
+    const allowedRoles = element.getAttribute("data-role").split(",");
     // Скрываем элемент, если роль пользователя не входит в разрешенные
-    element.style.display = allowedRoles.includes(userRole) ? 'block' : 'none';
+    element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
   });
 }
