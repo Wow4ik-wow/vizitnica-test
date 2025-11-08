@@ -7,7 +7,7 @@ let currentUser = null;
 
 // Проверяем, открыт ли сайт внутри Telegram WebApp
 // === Проверяем, открыт ли сайт внутри Telegram WebApp ===
-let isTelegramWebApp = false;
+/*let isTelegramWebApp = false;
 let tgUser = null;
 
 function isReallyTelegramWebApp() {
@@ -54,7 +54,7 @@ if (isReallyTelegramWebApp()) {
   }
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
-}
+}*/
 // Визуальная диагностика TG
 const debugInfo = document.createElement('div');
 debugInfo.style.cssText = 'position:fixed; top:10px; left:10px; background:red; color:white; padding:10px; z-index:9999;';
