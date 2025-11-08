@@ -1,19 +1,3 @@
-// === Telegram WebApp detection ===
-const isTelegramWebApp =
-  typeof window.Telegram !== "undefined" && !!Telegram.WebApp;
-let tgUser = null;
-
-if (isTelegramWebApp) {
-  try {
-    tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
-    console.log("Telegram WebApp user detected:", tgUser);
-  } catch (e) {
-    console.warn("Telegram user read error:", e);
-  }
-} else {
-  console.log("Opened in regular browser (not Telegram).");
-}
-
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 
@@ -22,25 +6,33 @@ const API_USER_URL =
 let currentUser = null;
 
 // Проверяем, открыт ли сайт внутри Telegram WebApp
-const isTelegramWebApp =
-  typeof window.Telegram !== "undefined" && Telegram.WebApp;
+// === Проверяем, открыт ли сайт внутри Telegram WebApp ===
+let isTelegramWebApp = false;
+let tgUser = null;
 
-if (isTelegramWebApp) {
-  const tgUser = Telegram.WebApp.initDataUnsafe?.user;
-  if (tgUser) {
-    currentUser = {
-      id: tgUser.id,
-      name:
-        tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
-      username: tgUser.username || "",
-      role: "user", // базовая роль
-      source: "telegram",
-    };
-    localStorage.setItem("user", JSON.stringify(currentUser));
-    console.log("Авторизация через Telegram:", currentUser);
-  } else {
-    console.warn("Telegram WebApp не вернул данных пользователя");
+if (typeof window.Telegram !== "undefined" && !!Telegram.WebApp) {
+  isTelegramWebApp = true;
+  try {
+    tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+    if (tgUser) {
+      currentUser = {
+        id: tgUser.id,
+        name:
+          tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+        username: tgUser.username || "",
+        role: "user", // базовая роль
+        source: "telegram",
+      };
+      localStorage.setItem("user", JSON.stringify(currentUser));
+      console.log("Авторизация через Telegram:", currentUser);
+    } else {
+      console.warn("Telegram WebApp не вернул данных пользователя");
+    }
+  } catch (e) {
+    console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
+} else {
+  console.log("Открыт не в Telegram, обычный браузер");
 }
 
 let allServices = [];
