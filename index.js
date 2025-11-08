@@ -3,7 +3,7 @@ window.onerror = function(msg, url, lineNo, columnNo, error) {
   alert("JS Error: " + msg + "\nLine: " + lineNo);
   return false;
 };
-
+/*
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 
@@ -66,7 +66,10 @@ const debugInfo = document.createElement('div');
 debugInfo.style.cssText = 'position:fixed; top:10px; left:10px; background:red; color:white; padding:10px; z-index:9999;';
 debugInfo.innerHTML = `TG: ${isTelegramWebApp}<br>User: ${tgUser ? tgUser.first_name : 'NO'}`;
 document.body.appendChild(debugInfo);
+let allServices = [];*/
+
 let allServices = [];
+alert("Дошли до allServices!");
 
 async function loadServices() {
   const CACHE_KEY = "services_cache";
