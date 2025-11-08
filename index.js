@@ -26,6 +26,8 @@ function isReallyTelegramWebApp() {
   );
 }
 
+alert("Проверка TG: " + isReallyTelegramWebApp());
+
 if (isReallyTelegramWebApp()) {
   isTelegramWebApp = true;
   try {
