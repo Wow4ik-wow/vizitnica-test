@@ -55,7 +55,8 @@ if (isReallyTelegramWebApp()) {
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
 }
-
+// Временный alert для тестирования TG
+alert("Проверка TG: isTelegramWebApp=" + isTelegramWebApp + ", tgUser=" + (tgUser ? tgUser.first_name : "null"));
 let allServices = [];
 
 async function loadServices() {
