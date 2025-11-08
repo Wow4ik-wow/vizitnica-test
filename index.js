@@ -10,7 +10,11 @@ let currentUser = null;
 let isTelegramWebApp = false;
 let tgUser = null;
 
-if (typeof window.Telegram !== "undefined" && !!Telegram.WebApp) {
+if (
+  typeof window.Telegram !== "undefined" &&
+  Telegram.WebApp &&
+  Telegram.WebApp.platform // <-- есть только в Telegram WebView
+) {
   isTelegramWebApp = true;
   try {
     tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
