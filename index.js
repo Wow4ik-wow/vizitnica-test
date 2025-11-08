@@ -10,28 +10,45 @@ let currentUser = null;
 let isTelegramWebApp = false;
 let tgUser = null;
 
-if (
-  typeof window.Telegram !== "undefined" &&
-  Telegram.WebApp &&
-  Telegram.WebApp.platform // <-- есть только в Telegram WebView
-) {
+function isReallyTelegramWebApp() {
+  return (
+    typeof window.Telegram !== "undefined" &&
+    window.Telegram.WebApp &&
+    window.Telegram.WebApp.initData && // Есть данные инициализации
+    window.Telegram.WebApp.platform && // Есть платформа
+    window.Telegram.WebApp.platform !== "unknown" // Не "unknown"
+  );
+}
+
+if (isReallyTelegramWebApp()) {
   isTelegramWebApp = true;
   try {
     tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
     if (tgUser) {
-      currentUser = {
-        id: tgUser.id,
-        name:
-          tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
-        username: tgUser.username || "",
-        role: "user", // базовая роль
-        source: "telegram",
-      };
-      localStorage.setItem("user", JSON.stringify(currentUser));
-      console.log("Авторизация через Telegram:", currentUser);
-    } else {
-      console.warn("Telegram WebApp не вернул данных пользователя");
-    }
+      const tgUserData = await handleTelegramUser(tgUser);
+  if (tgUserData) {
+    currentUser = {
+      id: tgUserData.uid,
+      name: tgUserData.name,
+      username: tgUser.username || "",
+      role: tgUserData.role,
+      source: "telegram",
+    };
+  } else {
+    // Fallback на локальную логику если GAS не ответил
+    currentUser = {
+      id: "tg_" + tgUser.id,
+      name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+      username: tgUser.username || "",
+      role: "user",
+      source: "telegram",
+    };
+  }
+  localStorage.setItem("user", JSON.stringify(currentUser));
+  console.log("Авторизация через Telegram:", currentUser);
+} else {
+  console.warn("Telegram WebApp не вернул данных пользователя");
+}
   } catch (e) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
@@ -1331,4 +1348,32 @@ function updateRolesVisibility() {
     // Скрываем элемент, если роль пользователя не входит в разрешенные
     element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
   });
+}
+
+// Функция для обработки TG пользователя через GAS
+async function handleTelegramUser(tgUser) {
+  try {
+    console.log("Отправка данных TG пользователя в GAS...");
+    
+    const tgData = JSON.stringify({
+      id: tgUser.id,
+      first_name: tgUser.first_name,
+      last_name: tgUser.last_name,
+      username: tgUser.username
+    });
+    
+    const response = await fetch(`${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log("TG пользователь обработан через GAS:", result.user);
+      return result.user;
+    } else {
+      console.error("Ошибка обработки TG пользователя:", result.error);
+      return null;
+    }
+  } catch (error) {
+    console.error("Ошибка связи с GAS:", error);
+    return null;
+  }
 }
