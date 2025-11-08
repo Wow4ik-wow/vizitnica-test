@@ -230,21 +230,21 @@
       }
     </style>
     <script>
-  // Самая простая проверка JS в TG
-  alert("Базовый JS работает в TG!");
-</script>
-<script>
-  // Проверка нашей TG логики
-  console.log("Проверка TG логики...");
-  if (typeof isTelegramWebApp !== 'undefined') {
-    alert("isTelegramWebApp: " + isTelegramWebApp);
-  } else {
-    alert("isTelegramWebApp не определен");
-  }
+// Полная диагностика TG
+setTimeout(() => {
+  const diagnostics = [
+    `CSS: ${document.styleSheets.length} загружено`,
+    `LocalStorage: ${typeof localStorage}`,
+    `Fetch: ${typeof fetch}`,
+    `Click events: ${typeof document.addEventListener}`,
+    `UserAgent: ${navigator.userAgent}`
+  ];
+  alert("DIAGNOSTICS:\n" + diagnostics.join('\n'));
+}, 1000);
 </script>
 <script>
   // Маркер версии - удали потом
-  alert("Версия: 17.1 - TG логика отключена");
+  alert("А писюнчик у Вовчика всего-то 9см");
 </script>
   </body>
 </html>
