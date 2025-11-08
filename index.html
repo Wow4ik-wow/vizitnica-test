@@ -229,19 +229,6 @@
         pointer-events: none; /* чтобы не мешало кликам */
       }
     </style>
-    <script>
-// Полная диагностика TG
-setTimeout(() => {
-  const diagnostics = [
-    `CSS: ${document.styleSheets.length} загружено`,
-    `LocalStorage: ${typeof localStorage}`,
-    `Fetch: ${typeof fetch}`,
-    `Click events: ${typeof document.addEventListener}`,
-    `UserAgent: ${navigator.userAgent}`
-  ];
-  alert("DIAGNOSTICS:\n" + diagnostics.join('\n'));
-}, 1000);
-</script>
 <script>
   // Маркер версии - удали потом
   alert("А писюнчик у Вовчика малюсенький, всего-лишь 9см");
