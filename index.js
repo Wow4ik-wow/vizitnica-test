@@ -71,6 +71,49 @@ let allServices = [];*/
 let allServices = [];
 alert("Дошли до allServices!");
 
+function updateAuthUI() {
+  // Если сайт открыт в Telegram — скрываем элементы входа/выхода
+  if (typeof isTelegramWebApp !== "undefined" && isTelegramWebApp) {
+    const googleAuthBtn = document.getElementById("googleAuthBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const authLoginWrapper = document.querySelector(".auth-login-wrapper");
+
+    if (googleAuthBtn) googleAuthBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    if (authLoginWrapper) authLoginWrapper.style.display = "none";
+
+    return; // выходим — остальное не нужно
+  }
+
+  const googleAuthBtn = document.getElementById("googleAuthBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const roleInfo = document.getElementById("roleInfo");
+  const authLoginWrapper = document.querySelector(".auth-login-wrapper");
+
+  if (currentUser && currentUser.role) {
+    // Авторизованный пользователь
+    if (authLoginWrapper) authLoginWrapper.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "block";
+
+    // Обновляем информацию о роли
+    if (roleInfo) {
+      if (currentUser.role === "admin") {
+        roleInfo.innerText = "Вы сейчас админ";
+      } else {
+        roleInfo.innerText = "Вы сегодня молодец!";
+      }
+    }
+  } else {
+    // Неавторизованный
+    if (authLoginWrapper) authLoginWrapper.style.display = "block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    if (roleInfo) roleInfo.innerText = "Вы не авторизованы";
+  }
+
+  // Управляем ВСЕМИ элементами с ролями
+  updateRolesVisibility();
+}
+
 async function loadServices() {
   const CACHE_KEY = "services_cache";
   const CACHE_TIME = 3600000;
@@ -1025,48 +1068,7 @@ function logout() {
   applyFilters();
 }
 
-function updateAuthUI() {
-  // Если сайт открыт в Telegram — скрываем элементы входа/выхода
-  if (typeof isTelegramWebApp !== "undefined" && isTelegramWebApp) {
-    const googleAuthBtn = document.getElementById("googleAuthBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const authLoginWrapper = document.querySelector(".auth-login-wrapper");
 
-    if (googleAuthBtn) googleAuthBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    if (authLoginWrapper) authLoginWrapper.style.display = "none";
-
-    return; // выходим — остальное не нужно
-  }
-
-  const googleAuthBtn = document.getElementById("googleAuthBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const roleInfo = document.getElementById("roleInfo");
-  const authLoginWrapper = document.querySelector(".auth-login-wrapper");
-
-  if (currentUser && currentUser.role) {
-    // Авторизованный пользователь
-    if (authLoginWrapper) authLoginWrapper.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "block";
-
-    // Обновляем информацию о роли
-    if (roleInfo) {
-      if (currentUser.role === "admin") {
-        roleInfo.innerText = "Вы сейчас админ";
-      } else {
-        roleInfo.innerText = "Вы сегодня молодец!";
-      }
-    }
-  } else {
-    // Неавторизованный
-    if (authLoginWrapper) authLoginWrapper.style.display = "block";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    if (roleInfo) roleInfo.innerText = "Вы не авторизованы";
-  }
-
-  // Управляем ВСЕМИ элементами с ролями
-  updateRolesVisibility();
-}
 
 (function setupCustomTypeDropdown() {
   const input = document.getElementById("filterType");
