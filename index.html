@@ -229,5 +229,14 @@
   // Самая простая проверка JS в TG
   alert("Базовый JS работает в TG!");
 </script>
+<script>
+  // Проверка нашей TG логики
+  console.log("Проверка TG логики...");
+  if (typeof isTelegramWebApp !== 'undefined') {
+    alert("isTelegramWebApp: " + isTelegramWebApp);
+  } else {
+    alert("isTelegramWebApp не определен");
+  }
+</script>
   </body>
 </html>
