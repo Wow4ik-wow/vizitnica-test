@@ -1,3 +1,19 @@
+// === Telegram WebApp detection ===
+const isTelegramWebApp =
+  typeof window.Telegram !== "undefined" && !!Telegram.WebApp;
+let tgUser = null;
+
+if (isTelegramWebApp) {
+  try {
+    tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+    console.log("Telegram WebApp user detected:", tgUser);
+  } catch (e) {
+    console.warn("Telegram user read error:", e);
+  }
+} else {
+  console.log("Opened in regular browser (not Telegram).");
+}
+
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 
