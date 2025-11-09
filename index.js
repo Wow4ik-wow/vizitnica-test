@@ -880,8 +880,9 @@ filterFields.forEach((id) => {
       if (id === "filterProfile") {
         populateList("listProfile", filtered, "Профиль деятельности");
       } else if (id === "filterType") {
-        const list = document.getElementById("listType");
-        list.innerHTML = "";
+  const list = document.getElementById("listType");
+  if (!list) return; // Если элемента нет - выходим
+  list.innerHTML = "";
 
         const valuesSet = new Set();
         filtered.forEach((service) => {
