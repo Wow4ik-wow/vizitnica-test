@@ -46,6 +46,7 @@ if (isReallyTelegramWebApp()) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
   updateAuthUI();
+  setupTelegramNavigation();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
 }
@@ -117,6 +118,35 @@ function updateRolesVisibility() {
     const allowedRoles = element.getAttribute("data-role").split(",");
     // Скрываем элемент, если роль пользователя не входит в разрешенные
     element.style.display = allowedRoles.includes(userRole) ? "block" : "none";
+  });
+}
+
+// Умная навигация для TG
+function setupTelegramNavigation() {
+  if (!isTelegramWebApp) return;
+  
+  document.querySelectorAll('a[href]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      
+      // Страницы нашего сайта
+      const isInternalPage = href.includes('.html') || 
+                            href === '/' || 
+                            href.includes('add.html') ||
+                            href.includes('favorites.html') ||
+                            href.includes('cabinet.html');
+      
+      // Рекламные ссылки  
+      const isAdLink = href.includes('reclama') || 
+                      href.includes('ad=');
+      
+      if (isInternalPage) {
+        // Страницы сайта - внутри WebApp
+        e.preventDefault();
+        Telegram.WebApp.openLink(window.location.origin + href);
+      }
+      // Рекламные ссылки откроются в браузере (ничего не делаем)
+    });
   });
 }
 
