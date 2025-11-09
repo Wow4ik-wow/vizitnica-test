@@ -4,7 +4,7 @@ const API_USER_URL = "test";
 let currentUser = null;
 let allServices = [];
 
-alert("index.js выполняется!");
+alert("19");
 
 // TG логика
 let isTelegramWebApp = false;
@@ -22,12 +22,9 @@ function isReallyTelegramWebApp() {
   if (!window.Telegram.WebApp.platform) return false;
   alert("2.5 - Проверка platform !== unknown");
   if (window.Telegram.WebApp.platform === "unknown") return false;
-  
   return true;
 }
 
-alert("3 - Функция создана");
+isReallyTelegramWebApp();
 
-alert("3.1 - Простая строка");
-alert("3.2 - Еще одна простая строка");
-alert("4 - Проверяем TG: " + "простой текст");
+alert("3 - Функция создана");
