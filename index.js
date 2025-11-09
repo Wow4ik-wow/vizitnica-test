@@ -29,8 +29,8 @@ function isReallyTelegramWebApp() {
 alert("3 - Функция создана");
 
 alert("4 - Перед вызовом функции");
-const result = isReallyTelegramWebApp();
-alert("4.1 - После вызова функции: " + result);
+const tgCheckResult = isReallyTelegramWebApp();
+alert("4.1 - Результат проверки TG: " + tgCheckResult);
 
 if (isReallyTelegramWebApp()) {
   alert("5 - Это TG WebApp!");
