@@ -1394,30 +1394,29 @@ function manageRoleBasedButtons() {
 async function handleTelegramUser(tgUser) {
   try {
     console.log("Отправка данных TG пользователя в GAS...");
-
+    
     const tgData = JSON.stringify({
       id: tgUser.id,
       first_name: tgUser.first_name,
       last_name: tgUser.last_name,
-      username: tgUser.username,
+      username: tgUser.username
     });
-
-    const response = await fetch(
-      `${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(
-        tgData
-      )}`
-    );
+    
+    // ДОБАВЬ ДИАГНОСТИКУ:
+    alert("Отправляем TG данные в GAS: " + tgData);
+    
+    const response = await fetch(`${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`);
     const result = await response.json();
-
+    
     if (result.success) {
-      console.log("TG пользователь обработан через GAS:", result.user);
+      alert("TG пользователь записан в GAS: " + result.user.name);
       return result.user;
     } else {
-      console.error("Ошибка обработки TG пользователя:", result.error);
+      alert("Ошибка GAS: " + result.error);
       return null;
     }
   } catch (error) {
-    console.error("Ошибка связи с GAS:", error);
+    alert("Ошибка связи с GAS: " + error);
     return null;
   }
 }
