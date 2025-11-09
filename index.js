@@ -42,9 +42,9 @@ if (isReallyTelegramWebApp()) {
   } catch (e) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
+  updateAuthUI();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
-updateAuthUI();
 }
 
 // Визуальная диагностика TG
