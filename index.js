@@ -4,7 +4,7 @@ const API_USER_URL = "test";
 let currentUser = null;
 let allServices = [];
 
-alert("19");
+alert("20");
 
 // TG логика
 let isTelegramWebApp = false;
@@ -28,3 +28,15 @@ function isReallyTelegramWebApp() {
 isReallyTelegramWebApp();
 
 alert("3 - Функция создана");
+
+const tgResult = isReallyTelegramWebApp();
+alert("TG результат: " + tgResult);
+
+if (tgResult) {
+  alert("Это TG WebApp!");
+  isTelegramWebApp = true;
+  tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+  alert("TG пользователь: " + (tgUser ? tgUser.first_name : "нет"));
+} else {
+  alert("Это не TG");
+}
