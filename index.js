@@ -39,6 +39,7 @@ if (isReallyTelegramWebApp()) {
       };
       localStorage.setItem("user", JSON.stringify(currentUser));
       console.log("Авторизация через Telegram:", currentUser);
+      handleTelegramUser(tgUser);
     } else {
       console.warn("Telegram WebApp не вернул данных пользователя");
     }
@@ -70,12 +71,12 @@ function updateAuthUI() {
     const authLoginWrapper = document.querySelector(".auth-login-wrapper");
     if (googleAuthBtn) googleAuthBtn.style.display = "none";
     if (logoutBtn) {
-  logoutBtn.style.display = "none";
-  logoutBtn.style.visibility = "hidden";
-  logoutBtn.style.opacity = "0";
-  logoutBtn.style.position = "absolute";
-  logoutBtn.style.left = "-9999px";
-}
+      logoutBtn.style.display = "none";
+      logoutBtn.style.visibility = "hidden";
+      logoutBtn.style.opacity = "0";
+      logoutBtn.style.position = "absolute";
+      logoutBtn.style.left = "-9999px";
+    }
     if (authLoginWrapper) authLoginWrapper.style.display = "none";
 
     return;
@@ -124,22 +125,22 @@ function updateRolesVisibility() {
 // Умная навигация для TG
 function setupTelegramNavigation() {
   if (!isTelegramWebApp) return;
-  
-  document.querySelectorAll('a[href]').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const href = link.getAttribute('href');
-      
+
+  document.querySelectorAll("a[href]").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+
       // Страницы нашего сайта
-      const isInternalPage = href.includes('.html') || 
-                            href === '/' || 
-                            href.includes('add.html') ||
-                            href.includes('favorites.html') ||
-                            href.includes('cabinet.html');
-      
-      // Рекламные ссылки  
-      const isAdLink = href.includes('reclama') || 
-                      href.includes('ad=');
-      
+      const isInternalPage =
+        href.includes(".html") ||
+        href === "/" ||
+        href.includes("add.html") ||
+        href.includes("favorites.html") ||
+        href.includes("cabinet.html");
+
+      // Рекламные ссылки
+      const isAdLink = href.includes("reclama") || href.includes("ad=");
+
       if (isInternalPage) {
         // Страницы сайта - внутри WebApp
         e.preventDefault();
