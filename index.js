@@ -1393,7 +1393,7 @@ function manageRoleBasedButtons() {
 // Функция для обработки TG пользователя через GAS
 async function handleTelegramUser(tgUser) {
   try {
-    console.log("Отправка данных TG пользователя в GAS...");
+    alert("Начало handleTelegramUser");
     
     const tgData = JSON.stringify({
       id: tgUser.id,
@@ -1402,21 +1402,27 @@ async function handleTelegramUser(tgUser) {
       username: tgUser.username
     });
     
-    // ДОБАВЬ ДИАГНОСТИКУ:
-    alert("Отправляем TG данные в GAS: " + tgData);
+    const url = `${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`;
+    alert("URL создан: " + url);
     
-    const response = await fetch(`${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`);
-    const result = await response.json();
+    const response = await fetch(url);
+    alert("Получен ответ, статус: " + response.status);
+    
+    const resultText = await response.text();
+    alert("Текст ответа: " + resultText);
+    
+    const result = JSON.parse(resultText);
+    alert("JSON распарсен: " + JSON.stringify(result));
     
     if (result.success) {
-      alert("TG пользователь записан в GAS: " + result.user.name);
+      alert("УСПЕХ: TG пользователь записан в GAS: " + result.user.name);
       return result.user;
     } else {
-      alert("Ошибка GAS: " + result.error);
+      alert("ОШИБКА GAS: " + result.error);
       return null;
     }
   } catch (error) {
-    alert("Ошибка связи с GAS: " + error);
+    alert("ОШИБКА СВЯЗИ: " + error.message);
     return null;
   }
 }
