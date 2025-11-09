@@ -234,18 +234,19 @@ document.head.appendChild(script);
   // Проверка заголовков
   const title = document.querySelector('.page-title');
   const subtitle = document.querySelector('.page-subtitle');
-  alert("Заголовок: " + (title ? "есть" : "нет") + ", Подзаголовок: " + (subtitle ? "есть" : "нет"));
+  alert("Загол: " + (title ? "есть" : "нет") + ", Подзагол: " + (subtitle ? "есть" : "нет"));
 </script>
   </body>
 </html>
 <style>
-  /* Временные стили для диагностики */
+  /* Временные стили для диагностики позиции */
   .page-title, .page-subtitle {
     color: red !important;
     font-size: 20px !important;
     background: yellow !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    position: fixed !important;
+    top: 50px !important;
+    left: 10px !important;
+    z-index: 99999 !important;
   }
 </style>
