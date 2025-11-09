@@ -74,7 +74,13 @@ function updateAuthUI() {
     alert("logoutBtn: " + (logoutBtn ? "найден" : "НЕ НАЙДЕН"));
     
     if (googleAuthBtn) googleAuthBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "none";
+    if (logoutBtn) {
+  logoutBtn.style.display = "none";
+  logoutBtn.style.visibility = "hidden";
+  logoutBtn.style.opacity = "0";
+  logoutBtn.style.position = "absolute";
+  logoutBtn.style.left = "-9999px";
+}
     if (authLoginWrapper) authLoginWrapper.style.display = "none";
 
     return;
