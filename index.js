@@ -44,6 +44,7 @@ if (isReallyTelegramWebApp()) {
   }
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
+updateAuthUI();
 }
 
 // Визуальная диагностика TG
