@@ -45,8 +45,6 @@ if (isReallyTelegramWebApp()) {
   } catch (e) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
-  alert("Вызываем updateAuthUI в TG");
-
   updateAuthUI();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
@@ -69,10 +67,6 @@ function updateAuthUI() {
     const googleAuthBtn = document.getElementById("googleAuthBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const authLoginWrapper = document.querySelector(".auth-login-wrapper");
-
-    // ДОБАВЬ ДИАГНОСТИКУ:
-    alert("logoutBtn: " + (logoutBtn ? "найден" : "НЕ НАЙДЕН"));
-    
     if (googleAuthBtn) googleAuthBtn.style.display = "none";
     if (logoutBtn) {
   logoutBtn.style.display = "none";
