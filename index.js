@@ -1,11 +1,13 @@
 // Включаем логирование ошибок
-window.onerror = function(msg, url, lineNo, columnNo, error) {
+window.onerror = function (msg, url, lineNo, columnNo, error) {
   alert("JS Error: " + msg + "\nLine: " + lineNo);
   return false;
 };
 
-const apiUrl = "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
-const API_USER_URL = "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
+const apiUrl =
+  "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
+const API_USER_URL =
+  "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
 let currentUser = null;
 
 // TG логика
@@ -29,7 +31,8 @@ if (isReallyTelegramWebApp()) {
     if (tgUser) {
       currentUser = {
         id: "tg_" + tgUser.id,
-        name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+        name:
+          tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
         username: tgUser.username || "",
         role: "user",
         source: "telegram",
@@ -42,15 +45,20 @@ if (isReallyTelegramWebApp()) {
   } catch (e) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
+  alert("Вызываем updateAuthUI в TG");
+
   updateAuthUI();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
 }
 
 // Визуальная диагностика TG
-const debugInfo = document.createElement('div');
-debugInfo.style.cssText = 'position:fixed; top:10px; left:10px; background:red; color:white; padding:10px; z-index:9999;';
-debugInfo.innerHTML = `TG: ${isTelegramWebApp}<br>User: ${tgUser ? tgUser.first_name : 'NO'}`;
+const debugInfo = document.createElement("div");
+debugInfo.style.cssText =
+  "position:fixed; top:10px; left:10px; background:red; color:white; padding:10px; z-index:9999;";
+debugInfo.innerHTML = `TG: ${isTelegramWebApp}<br>User: ${
+  tgUser ? tgUser.first_name : "NO"
+}`;
 document.body.appendChild(debugInfo);
 
 let allServices = [];
@@ -881,9 +889,9 @@ filterFields.forEach((id) => {
       if (id === "filterProfile") {
         populateList("listProfile", filtered, "Профиль деятельности");
       } else if (id === "filterType") {
-  const list = document.getElementById("listType");
-  if (!list) return; // Если элемента нет - выходим
-  list.innerHTML = "";
+        const list = document.getElementById("listType");
+        if (!list) return; // Если элемента нет - выходим
+        list.innerHTML = "";
 
         const valuesSet = new Set();
         filtered.forEach((service) => {
@@ -1063,8 +1071,6 @@ function logout() {
   updateRolesVisibility();
   applyFilters();
 }
-
-
 
 (function setupCustomTypeDropdown() {
   const input = document.getElementById("filterType");
@@ -1350,23 +1356,25 @@ function manageRoleBasedButtons() {
   });
 }
 
-
-
 // Функция для обработки TG пользователя через GAS
 async function handleTelegramUser(tgUser) {
   try {
     console.log("Отправка данных TG пользователя в GAS...");
-    
+
     const tgData = JSON.stringify({
       id: tgUser.id,
       first_name: tgUser.first_name,
       last_name: tgUser.last_name,
-      username: tgUser.username
+      username: tgUser.username,
     });
-    
-    const response = await fetch(`${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`);
+
+    const response = await fetch(
+      `${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(
+        tgData
+      )}`
+    );
     const result = await response.json();
-    
+
     if (result.success) {
       console.log("TG пользователь обработан через GAS:", result.user);
       return result.user;
