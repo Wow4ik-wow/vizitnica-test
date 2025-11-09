@@ -231,8 +231,10 @@ document.head.appendChild(script);
       }
     </style>
 <script>
-  // Маркер версии - удали потом
-  alert("23");
+  // Проверка заголовков
+  const title = document.querySelector('.page-title');
+  const subtitle = document.querySelector('.page-subtitle');
+  alert("Заголовок: " + (title ? "есть" : "нет") + ", Подзаголовок: " + (subtitle ? "есть" : "нет"));
 </script>
   </body>
 </html>
