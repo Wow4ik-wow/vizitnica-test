@@ -23,3 +23,18 @@ function isReallyTelegramWebApp() {
 }
 
 alert("3 - Функция создана");
+
+alert("4 - Проверяем TG: " + isReallyTelegramWebApp());
+
+if (isReallyTelegramWebApp()) {
+  alert("5 - Это TG WebApp!");
+  isTelegramWebApp = true;
+  try {
+    tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+    alert("6 - TG User: " + (tgUser ? tgUser.first_name : "null"));
+  } catch (e) {
+    alert("7 - Ошибка TG: " + e);
+  }
+} else {
+  alert("8 - Это не TG");
+}
