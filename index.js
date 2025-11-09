@@ -70,11 +70,14 @@ function updateAuthUI() {
     const logoutBtn = document.getElementById("logoutBtn");
     const authLoginWrapper = document.querySelector(".auth-login-wrapper");
 
+    // ДОБАВЬ ДИАГНОСТИКУ:
+    alert("logoutBtn: " + (logoutBtn ? "найден" : "НЕ НАЙДЕН"));
+    
     if (googleAuthBtn) googleAuthBtn.style.display = "none";
     if (logoutBtn) logoutBtn.style.display = "none";
     if (authLoginWrapper) authLoginWrapper.style.display = "none";
 
-    return; // выходим — остальное не нужно
+    return;
   }
 
   const googleAuthBtn = document.getElementById("googleAuthBtn");
