@@ -4,7 +4,7 @@ const API_USER_URL = "test";
 let currentUser = null;
 let allServices = [];
 
-alert("20");
+alert("21");
 
 // TG логика
 let isTelegramWebApp = false;
@@ -35,7 +35,15 @@ alert("TG результат: " + tgResult);
 if (tgResult) {
   alert("Это TG WebApp!");
   isTelegramWebApp = true;
-  tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+  
+  // Проверяем desktop TG
+  if (Telegram.WebApp.platform === "tdesktop" || Telegram.WebApp.platform === "macos") {
+    alert("Это Desktop TG - ограниченная функциональность");
+    tgUser = { id: 0, first_name: "Desktop User" }; // Заглушка для desktop
+  } else {
+    tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
+  }
+  
   alert("TG пользователь: " + (tgUser ? tgUser.first_name : "нет"));
 } else {
   alert("Это не TG");
