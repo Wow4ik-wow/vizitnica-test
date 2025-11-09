@@ -9,8 +9,10 @@ alert("index.js выполняется!");
 // TG логика
 let isTelegramWebApp = false;
 let tgUser = null;
+alert("1 - Переменные TG объявлены");
 
 function isReallyTelegramWebApp() {
+  alert("2 - Проверка TG началась");
   return (
     typeof window.Telegram !== "undefined" &&
     window.Telegram.WebApp &&
@@ -20,4 +22,4 @@ function isReallyTelegramWebApp() {
   );
 }
 
-alert("TG логика добавлена!");
+alert("3 - Функция создана");
