@@ -1402,7 +1402,7 @@ async function handleTelegramUser(tgUser) {
       username: tgUser.username
     });
     
-    const url = `${API_USER_URL}?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`;
+    const url = `https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`;
     alert("URL создан: " + url);
     
     const response = await fetch(url);
