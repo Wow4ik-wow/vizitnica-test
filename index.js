@@ -1,9 +1,3 @@
-// Включаем логирование ошибок
-window.onerror = function (msg, url, lineNo, columnNo, error) {
-  alert("JS Error: " + msg + "\nLine: " + lineNo);
-  return false;
-};
-
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
 const API_USER_URL = "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
@@ -58,15 +52,6 @@ if (isReallyTelegramWebApp()) {
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
 }
-
-// Визуальная диагностика TG
-const debugInfo = document.createElement("div");
-debugInfo.style.cssText =
-  "position:fixed; top:10px; left:10px; background:red; color:white; padding:10px; z-index:9999;";
-debugInfo.innerHTML = `TG: ${isTelegramWebApp}<br>User: ${
-  tgUser ? tgUser.first_name : "NO"
-}`;
-document.body.appendChild(debugInfo);
 
 let allServices = [];
 
