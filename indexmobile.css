@@ -1159,3 +1159,15 @@ html.mobile-device .mobile-ad-container-second > div {
   aspect-ratio: 1 / 1 !important;
   position: relative !important;
 }
+
+.mobile-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  z-index: 10;
+}
