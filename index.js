@@ -1288,7 +1288,6 @@ function initCommonDropdown(inputId) {
   }
   // Функция для добавления крестиков
   function setupClearButtons() {
-    alert("setupClearButtons вызвана, isMobile: " + (typeof isMobile !== 'undefined'));
     const inputIds = [
       "filterRegion",
       "filterCity",
@@ -1353,9 +1352,6 @@ function initCommonDropdown(inputId) {
       }
     });
   }
-
-  // Вызываем при загрузке
-  document.addEventListener("DOMContentLoaded", setupClearButtons);
 }
 
 // Инициализация для всех полей
@@ -1410,3 +1406,5 @@ async function handleTelegramUser(tgUser) {
     return null;
   }
 }
+// Крестики для полей ввода
+setTimeout(setupClearButtons, 100);
