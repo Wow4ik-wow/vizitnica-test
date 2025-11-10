@@ -1288,18 +1288,22 @@ function initCommonDropdown(inputId) {
   }
   // Функция для добавления крестиков
   function setupClearButtons() {
-    const inputIds = [
-      "filterRegion",
-      "filterCity",
-      "filterProfile",
-      "filterType",
-      "filterDistrict",
-      "filterName",
-    ];
+  alert("Добавляем крестики...");
+  
+  const inputIds = [
+    "filterRegion",
+    "filterCity", 
+    "filterProfile",
+    "filterType",
+    "filterDistrict",
+    "filterName",
+  ];
 
-    inputIds.forEach((id) => {
-      const input = document.getElementById(id);
-      if (!input) return;
+  inputIds.forEach((id) => {
+    const input = document.getElementById(id);
+    alert("Обрабатываем поле: " + id + ", найдено: " + (input ? "да" : "нет"));
+    
+    if (!input) return;
 
       // Для мобильной версии - простой крестик без обертки
       if (isMobile) {
@@ -1352,6 +1356,9 @@ function initCommonDropdown(inputId) {
       }
     });
   }
+
+  // Вызываем при загрузке
+  document.addEventListener("DOMContentLoaded", setupClearButtons);
 }
 
 // Инициализация для всех полей
@@ -1406,5 +1413,3 @@ async function handleTelegramUser(tgUser) {
     return null;
   }
 }
-// Крестики для полей ввода
-setTimeout(setupClearButtons, 100);
