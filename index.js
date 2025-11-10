@@ -1288,6 +1288,10 @@ function initCommonDropdown(inputId) {
   }
   // Функция для добавления крестиков
   function setupClearButtons() {
+    if (typeof isMobile === 'undefined') {
+    console.log('isMobile не определена');
+    return;
+  }
     const inputIds = [
       "filterRegion",
       "filterCity",
