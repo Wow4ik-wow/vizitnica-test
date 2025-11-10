@@ -29,24 +29,36 @@ if (isReallyTelegramWebApp()) {
   try {
     tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
     if (tgUser) {
-      currentUser = {
-        id: "tg_" + tgUser.id,
-        name:
-          tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
-        username: tgUser.username || "",
-        role: "user",
-        source: "telegram",
-      };
+      // ЖДЕМ ответ от GAS
+      const tgUserData = await handleTelegramUser(tgUser);
+      
+      if (tgUserData && tgUserData.role) {
+        // Берем роль ИЗ ТАБЛИЦЫ
+        currentUser = {
+          id: tgUserData.uid,
+          name: tgUserData.name,
+          username: tgUser.username || "",
+          role: tgUserData.role, // ← РОЛЬ ИЗ GAS!
+          source: "telegram",
+        };
+      } else {
+        // Fallback
+        currentUser = {
+          id: "tg_" + tgUser.id,
+          name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+          username: tgUser.username || "",
+          role: "user",
+          source: "telegram",
+        };
+      }
+      
       localStorage.setItem("user", JSON.stringify(currentUser));
-      console.log("Авторизация через Telegram:", currentUser);
-      handleTelegramUser(tgUser);
-    } else {
-      console.warn("Telegram WebApp не вернул данных пользователя");
+      updateAuthUI();
+      updateRolesVisibility();
     }
   } catch (e) {
-    console.warn("Ошибка чтения Telegram WebApp данных:", e);
+    console.warn("Ошибка:", e);
   }
-  updateAuthUI();
   setupTelegramNavigation();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
