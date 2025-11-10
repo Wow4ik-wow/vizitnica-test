@@ -29,29 +29,17 @@ if (isReallyTelegramWebApp()) {
   try {
     tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
     if (tgUser) {
-      const tgUserData = await handleTelegramUser(tgUser);
-      if (tgUserData) {
-        currentUser = {
-          id: tgUserData.uid,
-          name: tgUserData.name,
-          username: tgUser.username || "",
-          role: tgUserData.role,
-          source: "telegram",
-        };
-      } else {
-        currentUser = {
-          id: "tg_" + tgUser.id,
-          name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
-          username: tgUser.username || "",
-          role: "user",
-          source: "telegram",
-        };
-      }
+      currentUser = {
+        id: "tg_" + tgUser.id,
+        name:
+          tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+        username: tgUser.username || "",
+        role: "user",
+        source: "telegram",
+      };
       localStorage.setItem("user", JSON.stringify(currentUser));
       console.log("Авторизация через Telegram:", currentUser);
-      
-      updateAuthUI();
-      updateRolesVisibility();
+      handleTelegramUser(tgUser);
     } else {
       console.warn("Telegram WebApp не вернул данных пользователя");
     }
