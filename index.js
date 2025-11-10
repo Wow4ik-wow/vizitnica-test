@@ -6,8 +6,8 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
-const API_USER_URL =
-  "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
+const API_USER_URL = "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
+const API_TG_URL = "https://script.google.com/macros/s/AKfycbxjECFiBLd5Y2X760SVngkL5vPDAlQ8-5SJofbdKWofhmAD3zxzwSrw_Lm01Z4wDmA/exec";
 let currentUser = null;
 
 // TG логика
@@ -1402,7 +1402,7 @@ async function handleTelegramUser(tgUser) {
       username: tgUser.username
     });
     
-    const url = `https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec?action=handleTelegramUser&tgData=${encodeURIComponent(tgData)}`;
+    const url = `https://script.google.com/macros/s/AKfycbxjECFiBLd5Y2X760SVngkL5vPDAlQ8-5SJofbdKWofhmAD3zxzwSrw_Lm01Z4wDmA/exec?tgData=${encodeURIComponent(tgData)}`;
     alert("URL создан: " + url);
     
     const response = await fetch(url);
