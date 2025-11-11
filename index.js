@@ -1301,23 +1301,23 @@ function initCommonDropdown(inputId) {
       const input = document.getElementById(id);
       if (!input) return;
 
-      // Для мобильной версии - используем input-clear-desktop вместо input-clear-mobile
+      // Для мобильной версии - простой крестик без обертки
 if (isMobile) {
-  if (input.nextElementSibling?.classList.contains("input-clear-desktop"))
+  if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
     return;
 
   const clearBtn = document.createElement("button");
-  clearBtn.className = "input-clear-desktop";
+  clearBtn.className = "input-clear-mobile";
   clearBtn.innerHTML = "×";
   clearBtn.type = "button";
   input.parentNode.insertBefore(clearBtn, input.nextSibling);
 
-        clearBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          input.value = "";
-          input.focus();
-        });
-      }
+  clearBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    input.value = "";
+    input.focus();
+  });
+}
       // Для десктопа - версия с оберткой
       else {
         if (input.parentNode.classList.contains("input-wrapper-dt")) return;

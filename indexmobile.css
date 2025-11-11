@@ -9,7 +9,7 @@ html.mobile-device body {
   width: 100% !important;
   min-height: 100% !important;
   overflow-x: hidden !important;
-  background: #f0cda6 url("main-bg.webp") repeat-y center top !important; /* те самые «доски» */
+  background: #f0cda6 url("main-bg.webp") repeat-y center top !important;
   background-size: 1920px auto !important;
   box-sizing: border-box !important;
 }
@@ -30,10 +30,10 @@ img {
 html.mobile-device {
   --pad-x: 10px;
   --pad-y: 10px;
-  --gap-x: 8px; /* горизонтальные отступы в сетке */
-  --gap-y: 8px; /* вертикальные отступы в сетке */
-  --row-h: 48px; /* высота строки под поле/кнопку */
-  --ad-h: 170px; /* высота рекламного блока */
+  --gap-x: 8px;
+  --gap-y: 8px;
+  --row-h: 48px;
+  --ad-h: 170px;
   --radius: 8px;
   --btn-bg: #3b82f6;
   --btn-bg-hover: #2563eb;
@@ -46,7 +46,6 @@ html.mobile-device {
    HEADER GRID (TOP LAYOUT)
    ========================= */
 
-/* ВАЖНО: сносим абсолюты/координаты, которые ставит index-header-desktop-keys.js */
 html.mobile-device .header,
 html.mobile-device .header * {
   position: static !important;
@@ -57,7 +56,6 @@ html.mobile-device .header * {
   transform: none !important;
 }
 
-/* Сама шапка: построим общую сетку 2/3 vs 1/3 */
 html.mobile-device .header {
   width: 100% !important;
   padding: var(--pad-y) var(--pad-x) !important;
@@ -72,14 +70,12 @@ html.mobile-device .header {
   background-position: top left !important;
 }
 
-/* «Сплющим» обёртки, чтобы их дети стали элементами общей grid */
 html.mobile-device .filters-container,
 html.mobile-device .filters-container .filter-row,
 html.mobile-device .auth-container {
   display: contents !important;
 }
 
-/* Полностью убираем заголовок и подзаголовок из потока */
 html.mobile-device .pageTitle,
 html.mobile-device .pageSubtitle {
   display: none !important;
@@ -92,7 +88,6 @@ html.mobile-device .pageSubtitle {
   z-index: -9999 !important;
 }
 
-/* Показываем картинку только в мобильной версии */
 html.mobile-device .mobile-only-image {
   display: block !important;
   grid-column: 1 / 3 !important;
@@ -105,10 +100,10 @@ html.mobile-device .mobile-only-image {
   align-self: start !important;
 }
 
-/* Универсальные стили инпутов (все шесть) */
 html.mobile-device .input-wrapper-dt {
   display: block !important;
   width: 100% !important;
+  position: relative !important;
 }
 
 html.mobile-device .input-wrapper-dt input {
@@ -131,11 +126,6 @@ html.mobile-device .input-wrapper-dt input:focus {
 html.mobile-device .input-wrapper-dt input::placeholder {
   color: #646363 !important;
   opacity: 1 !important;
-}
-
-/* Десктопный крестик внутри поля — пусть работает как раньше */
-html.mobile-device .input-wrapper-dt {
-  position: relative !important;
 }
 
 html.mobile-device .input-wrapper-dt .input-clear-desktop {
@@ -183,8 +173,6 @@ html.mobile-device .input-wrapper-dt:has(#filterName) {
   grid-row: 7 !important;
 }
 
-/* Правая колонка — кнопки по строкам.
-   ВХОД (google) и ВЫХОД ставим в одну строку: будет видна только актуальная. */
 html.mobile-device .auth-login-wrapper {
   grid-column: 2 !important;
   grid-row: 2 !important;
@@ -206,13 +194,12 @@ html.mobile-device #cabinetBtn {
   grid-column: 2 !important;
   grid-row: 5 !important;
 }
-/* Строка 5 — намеренно пустая (напротив «Район») */
+
 html.mobile-device .searchBtn {
   grid-column: 2 !important;
   grid-row: 7 !important;
 }
 
-/* Общие стили кнопок */
 html.mobile-device .btn,
 html.mobile-device #logoutBtn {
   width: 100% !important;
@@ -227,16 +214,17 @@ html.mobile-device #logoutBtn {
   cursor: pointer !important;
   white-space: nowrap !important;
 }
+
 html.mobile-device .btn:hover,
 html.mobile-device #logoutBtn:hover {
   background: var(--btn-bg-hover) !important;
 }
 
-/* Google auth iframe фиксируем по месту строки */
 html.mobile-device .auth-login-wrapper {
   width: 100% !important;
   height: var(--row-h) !important;
 }
+
 html.mobile-device #googleAuthBtn,
 html.mobile-device #googleAuthBtn > div,
 html.mobile-device #googleAuthBtn iframe {
@@ -246,7 +234,6 @@ html.mobile-device #googleAuthBtn iframe {
   border: none !important;
 }
 
-/* Визуал рекламы */
 html.mobile-device #sideBlockLeft,
 html.mobile-device #sideBlockRight,
 html.mobile-device #bottomBlock1,
@@ -281,7 +268,6 @@ html.mobile-device #bottomBlock4:hover {
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35) !important;
 }
 
-/* Внутренняя карточка рекламы (совместимо с твоим index.css) */
 html.mobile-device .info-card {
   width: 100% !important;
   height: 100% !important;
@@ -290,6 +276,7 @@ html.mobile-device .info-card {
   box-shadow: 0 4px 12px rgba(15, 9, 1, 0.25) !important;
   overflow: hidden !important;
 }
+
 html.mobile-device .info-card img {
   width: 100% !important;
   height: 100% !important;
@@ -297,307 +284,7 @@ html.mobile-device .info-card img {
   object-position: center !important;
   transition: transform 0.3s ease !important;
 }
-html.mobile-device .info-card:hover img {
-  transform: scale(1.04) !important;
-}
 
-/* =========================
-   MOBILE ONLY BASE / RESET
-   ========================= */
-
-html.mobile-device,
-html.mobile-device body {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
-  min-height: 100% !important;
-  overflow-x: hidden !important;
-  background: #f0cda6 url("main-bg.webp") repeat-y center top !important; /* те самые «доски» */
-  background-size: 1920px auto !important;
-  box-sizing: border-box !important;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-img {
-  max-width: 100% !important;
-  height: auto !important;
-  display: block !important;
-}
-
-/* Глобальные переменные мобильной сетки */
-html.mobile-device {
-  --pad-x: 10px;
-  --pad-y: 10px;
-  --gap-x: 8px; /* горизонтальные отступы в сетке */
-  --gap-y: 8px; /* вертикальные отступы в сетке */
-  --row-h: 48px; /* высота строки под поле/кнопку */
-  --ad-h: 170px; /* высота рекламного блока */
-  --radius: 8px;
-  --btn-bg: #3b82f6;
-  --btn-bg-hover: #2563eb;
-  --input-bg: #eec0c0;
-  --input-bg-focus: #f78585;
-  --text: #222;
-}
-
-/* =========================
-   HEADER GRID (TOP LAYOUT)
-   ========================= */
-
-/* ВАЖНО: сносим абсолюты/координаты, которые ставит index-header-desktop-keys.js */
-html.mobile-device .header,
-html.mobile-device .header * {
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-}
-
-/* Сама шапка: построим общую сетку 2/3 vs 1/3 */
-html.mobile-device .header {
-  width: 100% !important;
-  padding: var(--pad-y) var(--pad-x) !important;
-  display: grid !important;
-  grid-template-columns: 2fr 1fr !important;
-  grid-auto-rows: auto !important;
-  grid-column-gap: var(--gap-x) !important;
-  grid-row-gap: 2px !important;
-  background-image: none !important;
-  background-repeat: no-repeat !important;
-  background-size: auto !important;
-  background-position: top left !important;
-}
-
-/* «Сплющим» обёртки, чтобы их дети стали элементами общей grid */
-html.mobile-device .filters-container,
-html.mobile-device .filters-container .filter-row,
-html.mobile-device .auth-container {
-  display: contents !important;
-}
-
-/* Полностью убираем заголовок и подзаголовок из потока */
-html.mobile-device .pageTitle,
-html.mobile-device .pageSubtitle {
-  display: none !important;
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  z-index: -9999 !important;
-}
-
-/* Показываем картинку только в мобильной версии */
-html.mobile-device .mobile-only-image {
-  display: block !important;
-  grid-column: 1 / 3 !important;
-  grid-row: 8 !important;
-  width: 100% !important;
-  height: auto !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  object-fit: contain !important;
-  align-self: start !important;
-}
-
-/* Универсальные стили инпутов (все шесть) */
-html.mobile-device .input-wrapper-dt {
-  display: block !important;
-  width: 100% !important;
-}
-
-html.mobile-device .input-wrapper-dt input {
-  width: 100% !important;
-  height: var(--row-h) !important;
-  padding: 10px !important;
-  border: 1px solid #a0a0a0 !important;
-  border-radius: var(--radius) !important;
-  background: var(--input-bg) !important;
-  color: var(--text) !important;
-  font-size: 15px !important;
-}
-
-html.mobile-device .input-wrapper-dt input:focus {
-  border-color: var(--btn-bg) !important;
-  background: var(--input-bg-focus) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
-}
-
-html.mobile-device .input-wrapper-dt input::placeholder {
-  color: #646363 !important;
-  opacity: 1 !important;
-}
-
-/* Десктопный крестик внутри поля — пусть работает как раньше */
-html.mobile-device .input-wrapper-dt .input-clear-desktop {
-  position: absolute !important;
-  right: 10px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  background: none !important;
-  border: none !important;
-  font-size: 20px !important;
-  color: #555 !important;
-  cursor: pointer !important;
-  display: none; /* показывается при фокусе ниже */
-  z-index: 10;
-}
-html.mobile-device .input-wrapper-dt input:focus + .input-clear-desktop,
-html.mobile-device
-  .input-wrapper-dt
-  input:not(:placeholder-shown)
-  + .input-clear-desktop {
-  display: block !important;
-}
-
-/* === РАСКЛАДКА: левая колонка (6 полей), правая колонка (кнопки) === */
-html.mobile-device .input-wrapper-dt:has(#filterRegion) {
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-}
-html.mobile-device .input-wrapper-dt:has(#filterCity) {
-  grid-column: 1 !important;
-  grid-row: 3 !important;
-}
-html.mobile-device .input-wrapper-dt:has(#filterProfile) {
-  grid-column: 1 !important;
-  grid-row: 4 !important;
-}
-html.mobile-device .input-wrapper-dt:has(#filterType) {
-  grid-column: 1 !important;
-  grid-row: 5 !important;
-}
-html.mobile-device .input-wrapper-dt:has(#filterDistrict) {
-  grid-column: 1 !important;
-  grid-row: 6 !important;
-}
-html.mobile-device .input-wrapper-dt:has(#filterName) {
-  grid-column: 1 !important;
-  grid-row: 7 !important;
-}
-
-/* Правая колонка — кнопки по строкам.
-   ВХОД (google) и ВЫХОД ставим в одну строку: будет видна только актуальная. */
-html.mobile-device .auth-login-wrapper {
-  grid-column: 2 !important;
-  grid-row: 2 !important;
-}
-html.mobile-device #logoutBtn {
-  grid-column: 2 !important;
-  grid-row: 2 !important;
-}
-
-html.mobile-device #adminBtn {
-  grid-column: 2 !important;
-  grid-row: 3 !important;
-}
-html.mobile-device #addServiceBtn {
-  grid-column: 2 !important;
-  grid-row: 4 !important;
-}
-html.mobile-device #cabinetBtn {
-  grid-column: 2 !important;
-  grid-row: 5 !important;
-}
-/* Строка 5 — намеренно пустая (напротив «Район») */
-html.mobile-device .searchBtn {
-  grid-column: 2 !important;
-  grid-row: 7 !important;
-}
-
-/* Общие стили кнопок */
-html.mobile-device .btn,
-html.mobile-device #logoutBtn {
-  width: 100% !important;
-  height: var(--row-h) !important;
-  padding: 8px 12px !important;
-  border: none !important;
-  border-radius: var(--radius) !important;
-  background: var(--btn-bg) !important;
-  color: #fff !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
-}
-html.mobile-device .btn:hover,
-html.mobile-device #logoutBtn:hover {
-  background: var(--btn-bg-hover) !important;
-}
-
-/* Google auth iframe фиксируем по месту строки */
-html.mobile-device .auth-login-wrapper {
-  width: 100% !important;
-  height: var(--row-h) !important;
-}
-html.mobile-device #googleAuthBtn,
-html.mobile-device #googleAuthBtn > div,
-html.mobile-device #googleAuthBtn iframe {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 0 !important;
-  border: none !important;
-}
-
-/* Визуал рекламы */
-html.mobile-device #sideBlockLeft,
-html.mobile-device #sideBlockRight,
-html.mobile-device #bottomBlock1,
-html.mobile-device #bottomBlock2,
-html.mobile-device #bottomBlock3,
-html.mobile-device #bottomBlock4 {
-  width: 100% !important;
-  height: var(--ad-h) !important;
-  min-height: var(--ad-h) !important;
-  border-radius: var(--radius) !important;
-  background: rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  color: #333 !important;
-  font-size: 14px !important;
-  cursor: pointer !important;
-  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
-  overflow: hidden !important;
-  z-index: auto !important;
-}
-
-html.mobile-device #sideBlockLeft:hover,
-html.mobile-device #sideBlockRight:hover,
-html.mobile-device #bottomBlock1:hover,
-html.mobile-device #bottomBlock2:hover,
-html.mobile-device #bottomBlock3:hover,
-html.mobile-device #bottomBlock4:hover {
-  transform: scale(1.03) !important;
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35) !important;
-}
-
-/* Внутренняя карточка рекламы (совместимо с твоим index.css) */
-html.mobile-device .info-card {
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: calc(var(--radius) + 1px) !important;
-  border: 9px solid #5e2c03 !important;
-  box-shadow: 0 4px 12px rgba(15, 9, 1, 0.25) !important;
-  overflow: hidden !important;
-}
-html.mobile-device .info-card img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  transition: transform 0.3s ease !important;
-}
 html.mobile-device .info-card:hover img {
   transform: scale(1.04) !important;
 }
@@ -606,11 +293,9 @@ html.mobile-device .info-card:hover img {
    ДРОПДАУНЫ / ФУЛЛСКРИН
    ========================= */
 
-/* Общие dropdown (как в старом коде) */
-/* Правильное позиционирование dropdown */
 html.mobile-device .dropdown-common-style {
   position: fixed !important;
-  top: 60px !important; /* Высота фиксированного поля */
+  top: 60px !important;
   left: 10px !important;
   right: 10px !important;
   max-height: 60vh !important;
@@ -622,6 +307,7 @@ html.mobile-device .dropdown-common-style {
   padding: 6px 0 !important;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15) !important;
 }
+
 html.mobile-device .dropdown-common-style div,
 html.mobile-device #customTypeDropdown div {
   padding: 12px 16px !important;
@@ -629,12 +315,12 @@ html.mobile-device #customTypeDropdown div {
   border-bottom: 1px solid #f0f0f0 !important;
   cursor: pointer !important;
 }
+
 html.mobile-device .dropdown-common-style div:hover,
 html.mobile-device #customTypeDropdown div:hover {
   background: #f5f5f5 !important;
 }
 
-/* Фиксация активного поля наверху экрана при раскрытом списке */
 html.mobile-device .input-fixed-absolute {
   position: fixed !important;
   top: 0 !important;
@@ -648,7 +334,27 @@ html.mobile-device .input-fixed-absolute {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Контейнер подсказок на весь экран (как раньше) */
+/* Крестик для закрытия фуллскрина */
+html.mobile-device .input-clear-mobile {
+  position: fixed !important;
+  right: 18px !important;
+  top: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  text-align: center !important;
+  font-size: 24px !important;
+  background: none !important;
+  border: none !important;
+  color: #646363 !important;
+  cursor: pointer !important;
+  display: none !important;
+  z-index: 10001 !important;
+}
+html.mobile-device .input-fixed-absolute ~ .input-clear-mobile {
+  display: block !important;
+}
+
 html.mobile-device .mobile-suggestions-container {
   position: fixed !important;
   top: 60px !important;
@@ -683,7 +389,6 @@ html.mobile-device .search-count {
   max-width: 92% !important;
 }
 
-/* Сетка карточек */
 html.mobile-device #cards {
   width: 100% !important;
   padding: 0 var(--pad-x) !important;
@@ -692,6 +397,7 @@ html.mobile-device #cards {
   gap: 14px !important;
   box-sizing: border-box !important;
 }
+
 @media (orientation: landscape) {
   html.mobile-device #cards {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -708,8 +414,6 @@ html.mobile-device .card {
   font-size: 16px !important;
 }
 
-/* Кнопки в карточке */
-/* СЕТКА - 2 кнопки в ряд */
 html.mobile-device .card-buttons {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
@@ -719,7 +423,6 @@ html.mobile-device .card-buttons {
   border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
 }
 
-/* ОБЩИЕ СТИЛИ КНОПОК */
 html.mobile-device .card-buttons .btn {
   padding: 8px 6px !important;
   font-size: 12px !important;
@@ -735,7 +438,6 @@ html.mobile-device .card-buttons .btn {
   transition: all 0.2s ease !important;
 }
 
-/* ЦВЕТА КНОПОК */
 html.mobile-device .back-to-search,
 html.mobile-device .edit-btn {
   background: #4f46e5 !important;
@@ -756,7 +458,6 @@ html.mobile-device .reviews-btn {
   white-space: nowrap !important;
 }
 
-/* Ховер-эффекты */
 html.mobile-device .back-to-search:hover,
 html.mobile-device .edit-btn:hover {
   background: #4338ca !important;
@@ -774,16 +475,12 @@ html.mobile-device .reviews-btn:hover {
   transform: translateY(-1px) !important;
 }
 
-/* КНОПКА ОТЗЫВЫ - сохраняем её специфичные стили */
-html.mobile-device
-  .card-buttons
-  .btn[style*="background-color:rgb(176, 204, 236)"] {
+html.mobile-device .card-buttons .btn[style*="background-color:rgb(176, 204, 236)"] {
   background: #b0ccec !important;
   color: rgb(5, 29, 68) !important;
   cursor: default !important;
 }
 
-/* БЛОК РЕЙТИНГА - ОЦЕНИ и ОТЗЫВЫ в одной строке */
 html.mobile-device .card-rating-block {
   display: grid !important;
   grid-template-columns: 1fr auto !important;
@@ -811,7 +508,6 @@ html.mobile-device .rating-stars {
   color: #f59e0b !important;
 }
 
-/* Кнопка «Наверх» */
 html.mobile-device .back-to-top {
   width: calc(100% - 2 * var(--pad-x)) !important;
   margin: 20px auto !important;
@@ -819,7 +515,6 @@ html.mobile-device .back-to-top {
   bottom: 20px !important;
 }
 
-/* Нотификация */
 html.mobile-device .notification {
   position: fixed !important;
   top: 20px !important;
@@ -834,7 +529,6 @@ html.mobile-device .notification {
   font-size: 14px !important;
 }
 
-/* Стиль для ID карточки */
 .card-id {
   text-align: right !important;
   font-size: 11px !important;
@@ -843,17 +537,10 @@ html.mobile-device .notification {
   width: 100% !important;
 }
 
-/* =========================
-   ПРОЧЕЕ / СЕРВИСНЫЕ
-   ========================= */
-
-/* Скрывалка по ролям остаётся как в твоём JS (по data-role/классам),
-   мы только гарантируем корректные места элементов. */
 html.mobile-device .hidden {
   display: none !important;
 }
 
-/* Виджет размера окна — фиксируем в углу */
 html.mobile-device #window-size {
   position: fixed !important;
   top: 10px !important;
@@ -868,7 +555,6 @@ html.mobile-device #window-size {
   pointer-events: none !important;
 }
 
-/* Мелкие адаптации */
 @media (max-width: 360px) {
   html.mobile-device {
     --row-h: 44px;
@@ -876,7 +562,6 @@ html.mobile-device #window-size {
   }
 }
 
-/* УБРАТЬ ЛЮБЫЕ СКРЫТЫЕ ЭЛЕМЕНТЫ ИЗ СЕТКИ */
 html.mobile-device .pageTitle,
 html.mobile-device .pageSubtitle {
   display: none !important;
@@ -888,7 +573,6 @@ html.mobile-device .pageSubtitle {
   padding: 0 !important;
 }
 
-/* УМЕНЬШИТЬ ВЫСОТУ СТРОК СЕТКИ */
 html.mobile-device .header {
   grid-auto-rows: min-content !important;
   align-items: start !important;
@@ -898,7 +582,6 @@ html.mobile-device .header {
    НОВАЯ СЕТКА ДЛЯ РЕКЛАМЫ (3 В РЯД)
    ========================= */
 
-/* Позиционируем блоки внутри псевдо-контейнера */
 html.mobile-device #sideBlockLeft {
   grid-area: 1 / 1 / 2 / 2 !important;
 }
@@ -923,7 +606,6 @@ html.mobile-device #bottomBlock4 {
   grid-area: 2 / 3 / 3 / 4 !important;
 }
 
-/* Гарантированно квадратные блоки */
 html.mobile-device #sideBlockLeft,
 html.mobile-device #sideBlockRight,
 html.mobile-device #bottomBlock1,
@@ -933,20 +615,10 @@ html.mobile-device #bottomBlock4 {
   width: 100% !important;
   aspect-ratio: 1 / 1 !important;
   position: relative !important;
-}
-
-/* Сбрасываем старые стили высоты */
-html.mobile-device #sideBlockLeft,
-html.mobile-device #sideBlockRight,
-html.mobile-device #bottomBlock1,
-html.mobile-device #bottomBlock2,
-html.mobile-device #bottomBlock3,
-html.mobile-device #bottomBlock4 {
   height: auto !important;
   min-height: auto !important;
 }
 
-/* Мобильные рекламные блоки */
 html.mobile-device .mobile-ad-container,
 html.mobile-device .mobile-ad-container-second {
   display: grid !important;
@@ -961,183 +633,3 @@ html.mobile-device .mobile-ad-container-second > div {
   aspect-ratio: 1 / 1 !important;
   position: relative !important;
 }
-
-/* Контейнер подсказок на весь экран (как раньше) */
-html.mobile-device .mobile-suggestions-container {
-  position: fixed !important;
-  top: 60px !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  overflow-y: auto !important;
-  background: #fff !important;
-  z-index: 9999 !important;
-  padding: var(--pad-x) !important;
-  -webkit-overflow-scrolling: touch !important;
-  transform: translateZ(0) !important;
-}
-
-/* =========================
-   КАРТОЧКИ СПИСКА / ПРОЧЕЕ
-   ========================= */
-
-html.mobile-device #scrollTarget {
-  height: 1px !important;
-}
-
-html.mobile-device .search-count {
-  text-align: center !important;
-  font-size: 16px !important;
-  font-weight: 700 !important;
-  color: #2c3e50 !important;
-  margin: 10px auto !important;
-  padding: 8px !important;
-  background: rgba(235, 214, 196, 0.85) !important;
-  border-radius: var(--radius) !important;
-  max-width: 92% !important;
-}
-
-/* Сетка карточек */
-html.mobile-device #cards {
-  width: 100% !important;
-  padding: 0 var(--pad-x) !important;
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 14px !important;
-  box-sizing: border-box !important;
-}
-@media (orientation: landscape) {
-  html.mobile-device #cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-html.mobile-device .card {
-  width: 100% !important;
-  background: #ebd6c4 !important;
-  padding: 14px !important;
-  border-radius: var(--radius) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
-  margin: 0 auto !important;
-  font-size: 16px !important;
-}
-
-/* =========================
-   ПРОЧЕЕ / СЕРВИСНЫЕ
-   ========================= */
-
-/* Скрывалка по ролям остаётся как в твоём JS (по data-role/классам),
-   мы только гарантируем корректные места элементов. */
-html.mobile-device .hidden {
-  display: none !important;
-}
-
-/* Виджет размера окна — фиксируем в углу */
-html.mobile-device #window-size {
-  position: fixed !important;
-  top: 10px !important;
-  right: 10px !important;
-  background: rgba(0, 0, 0, 0.6) !important;
-  color: #fff !important;
-  font-size: 13px !important;
-  padding: 5px 8px !important;
-  border-radius: 6px !important;
-  font-family: monospace !important;
-  z-index: 9999 !important;
-  pointer-events: none !important;
-}
-
-/* Мелкие адаптации */
-@media (max-width: 360px) {
-  html.mobile-device {
-    --row-h: 44px;
-    --ad-h: 150px;
-  }
-}
-
-/* УБРАТЬ ЛЮБЫЕ СКРЫТЫЕ ЭЛЕМЕНТЫ ИЗ СЕТКИ */
-html.mobile-device .pageTitle,
-html.mobile-device .pageSubtitle {
-  display: none !important;
-  grid-row: unset !important;
-  grid-column: unset !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* УМЕНЬШИТЬ ВЫСОТУ СТРОК СЕТКИ */
-html.mobile-device .header {
-  grid-auto-rows: min-content !important;
-  align-items: start !important;
-}
-
-/* =========================
-   НОВАЯ СЕТКА ДЛЯ РЕКЛАМЫ (3 В РЯД)
-   ========================= */
-
-/* Позиционируем блоки внутри псевдо-контейнера */
-html.mobile-device #sideBlockLeft {
-  grid-area: 1 / 1 / 2 / 2 !important;
-}
-
-html.mobile-device #bottomBlock1 {
-  grid-area: 1 / 2 / 2 / 3 !important;
-}
-
-html.mobile-device #sideBlockRight {
-  grid-area: 1 / 3 / 2 / 4 !important;
-}
-
-html.mobile-device #bottomBlock2 {
-  grid-area: 2 / 1 / 3 / 2 !important;
-}
-
-html.mobile-device #bottomBlock3 {
-  grid-area: 2 / 2 / 3 / 3 !important;
-}
-
-html.mobile-device #bottomBlock4 {
-  grid-area: 2 / 3 / 3 / 4 !important;
-}
-
-/* Гарантированно квадратные блоки */
-html.mobile-device #sideBlockLeft,
-html.mobile-device #sideBlockRight,
-html.mobile-device #bottomBlock1,
-html.mobile-device #bottomBlock2,
-html.mobile-device #bottomBlock3,
-html.mobile-device #bottomBlock4 {
-  width: 100% !important;
-  aspect-ratio: 1 / 1 !important;
-  position: relative !important;
-}
-
-/* Сбрасываем старые стили высоты */
-html.mobile-device #sideBlockLeft,
-html.mobile-device #sideBlockRight,
-html.mobile-device #bottomBlock1,
-html.mobile-device #bottomBlock2,
-html.mobile-device #bottomBlock3,
-html.mobile-device #bottomBlock4 {
-  height: auto !important;
-  min-height: auto !important;
-}
-
-/* Мобильные рекламные блоки */
-html.mobile-device .mobile-ad-container,
-html.mobile-device .mobile-ad-container-second {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 8px !important;
-  width: 100% !important;
-}
-
-html.mobile-device .mobile-ad-container > div,
-html.mobile-device .mobile-ad-container-second > div {
-  width: 100% !important;
-  aspect-ratio: 1 / 1 !important;
-  position: relative !important;
-}
-
