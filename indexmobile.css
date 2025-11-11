@@ -351,7 +351,8 @@ html.mobile-device .input-clear-mobile {
   display: none !important;
   z-index: 10001 !important;
 }
-html.mobile-device .input-fixed-absolute ~ .input-clear-mobile {
+html.mobile-device .input-wrapper-dt input:focus + .input-clear-mobile,
+html.mobile-device .input-wrapper-dt input:not(:placeholder-shown) + .input-clear-mobile {
   display: block !important;
 }
 
