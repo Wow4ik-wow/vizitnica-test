@@ -1456,3 +1456,64 @@ setTimeout(function() {
     console.log('Функция setupClearButtons не найдена');
   }
 }, 1000);
+
+// Принудительная инициализация крестиков с проверкой мобильности
+function initCrossButtons() {
+  console.log('Инициализация крестиков, мобильный:', isMobile);
+  
+  const inputIds = [
+    "filterRegion", "filterCity", "filterProfile", 
+    "filterType", "filterDistrict", "filterName"
+  ];
+
+  inputIds.forEach((id) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    // Удаляем старые крестики
+    const oldClear = input.nextElementSibling;
+    if (oldClear && oldClear.classList.contains('input-clear-mobile')) {
+      oldClear.remove();
+    }
+
+    if (isMobile) {
+      const clearBtn = document.createElement("button");
+      clearBtn.className = "input-clear-mobile";
+      clearBtn.innerHTML = "×";
+      clearBtn.type = "button";
+      clearBtn.style.display = "none";
+      
+      input.parentNode.insertBefore(clearBtn, input.nextSibling);
+
+      input.addEventListener("focus", function() {
+        console.log('Фокус на поле', id);
+        clearBtn.style.display = "block";
+        input.classList.add('input-fixed-absolute');
+      });
+
+      input.addEventListener("blur", function() {
+        setTimeout(() => {
+          clearBtn.style.display = "none";
+          input.classList.remove('input-fixed-absolute');
+        }, 200);
+      });
+
+      clearBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        input.value = "";
+        clearBtn.style.display = "none";
+        input.focus();
+      });
+
+      if (input.value.trim() !== "") {
+        clearBtn.style.display = "block";
+      }
+    }
+  });
+}
+
+// Вызываем при загрузке и при изменении размера
+document.addEventListener("DOMContentLoaded", initCrossButtons);
+window.addEventListener('load', initCrossButtons);
+setTimeout(initCrossButtons, 1000);
