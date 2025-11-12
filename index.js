@@ -48,7 +48,7 @@ if (isReallyTelegramWebApp()) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
   updateAuthUI();
-  // setupTelegramNavigation();
+  setupTelegramNavigation();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
 }
@@ -1303,21 +1303,91 @@ function initCommonDropdown(inputId) {
 
       // Для мобильной версии - простой крестик без обертки
 if (isMobile) {
-  if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
-    return;
+  // если уже есть мобильный крестик рядом - пропустить
+  if (input.nextElementSibling?.classList.contains("input-clear-mobile")) return;
 
   const clearBtn = document.createElement("button");
   clearBtn.className = "input-clear-mobile";
   clearBtn.innerHTML = "×";
   clearBtn.type = "button";
+  // скрываем по умолчанию (на всякий случай)
+  clearBtn.style.display = "none";
   input.parentNode.insertBefore(clearBtn, input.nextSibling);
 
+  // функция показать крестик и подвинуть его к активному полю
+  function showClear() {
+    // скрыть все другие мобильные крестики, чтобы был виден только один
+    document.querySelectorAll(".input-clear-mobile").forEach((b) => {
+      if (b !== clearBtn) b.style.display = "none";
+    });
+
+    // позиционируем крестик рядом с активным полем (фиксированно от окна)
+    const rect = input.getBoundingClientRect();
+    // отступ сверху — подстраховка, чтобы крестик был внутри визуальной области поля
+    const top = Math.max(8, rect.top + 6);
+    clearBtn.style.top = top + "px";
+    clearBtn.style.right = "18px";
+    clearBtn.style.display = "block";
+  }
+
+  function hideClear() {
+    clearBtn.style.display = "none";
+  }
+
+  // Показать при фокусе
+  input.addEventListener("focus", function () {
+    // небольшая задержка нужна, чтобы позиции после изменения layout успели примениться
+    setTimeout(showClear, 30);
+    // при фокусе поле может получить класс для фиксации; наблюдаем за ним и обновляем позицию
+    // простой периодический апдейт на время фокуса
+    let updater = setInterval(() => {
+      if (document.activeElement !== input) {
+        clearInterval(updater);
+        return;
+      }
+      const rect = input.getBoundingClientRect();
+      const top = Math.max(8, rect.top + 6);
+      clearBtn.style.top = top + "px";
+    }, 60);
+    // при blur остановим апдейт и спрячем крестик через короткую задержку (чтобы клик по кресту сработал)
+    input.addEventListener(
+      "blur",
+      function onBlur() {
+        setTimeout(hideClear, 120);
+        input.removeEventListener("blur", onBlur);
+        clearInterval(updater);
+      },
+      { once: true }
+    );
+  });
+
+  // Также показывать крестик, если в поле уже есть значение и пользователь нажал в область (вариант просмотров)
+  input.addEventListener("input", function () {
+    if (input === document.activeElement) {
+      showClear();
+    }
+  });
+
+  // Обработчик клика по кресту: очистить и вернуть фокус (а также скрыть крестик)
   clearBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     input.value = "";
-    input.focus();
+    // скрыть подсказки/список, если есть функция hideSuggestions
+    if (typeof hideSuggestions === "function") hideSuggestions(input);
+    input.blur();
+    hideClear();
+  });
+
+  // На ресайз/скролл пересчитываем позицию при видимости
+  window.addEventListener("scroll", function () {
+    if (clearBtn.style.display === "block") {
+      const rect = input.getBoundingClientRect();
+      const top = Math.max(8, rect.top + 6);
+      clearBtn.style.top = top + "px";
+    }
   });
 }
+
       // Для десктопа - версия с оберткой
       else {
         if (input.parentNode.classList.contains("input-wrapper-dt")) return;

@@ -103,6 +103,7 @@ html.mobile-device .mobile-only-image {
 html.mobile-device .input-wrapper-dt {
   display: block !important;
   width: 100% !important;
+  position: relative !important;
 }
 
 html.mobile-device .input-wrapper-dt input {
@@ -137,8 +138,8 @@ html.mobile-device .input-wrapper-dt .input-clear-desktop {
   font-size: 20px !important;
   color: #555 !important;
   cursor: pointer !important;
-  display: none;
-  z-index: 10;
+  display: none !important;
+  z-index: 10 !important;
 }
 
 html.mobile-device .input-wrapper-dt input:focus + .input-clear-desktop,
@@ -151,38 +152,31 @@ html.mobile-device .input-wrapper-dt:has(#filterRegion) {
   grid-column: 1 !important;
   grid-row: 2 !important;
 }
-
 html.mobile-device .input-wrapper-dt:has(#filterCity) {
   grid-column: 1 !important;
   grid-row: 3 !important;
 }
-
 html.mobile-device .input-wrapper-dt:has(#filterProfile) {
   grid-column: 1 !important;
   grid-row: 4 !important;
 }
-
 html.mobile-device .input-wrapper-dt:has(#filterType) {
   grid-column: 1 !important;
   grid-row: 5 !important;
 }
-
 html.mobile-device .input-wrapper-dt:has(#filterDistrict) {
   grid-column: 1 !important;
   grid-row: 6 !important;
 }
-
 html.mobile-device .input-wrapper-dt:has(#filterName) {
   grid-column: 1 !important;
   grid-row: 7 !important;
 }
 
-/* Правая колонка - кнопки */
 html.mobile-device .auth-login-wrapper {
   grid-column: 2 !important;
   grid-row: 2 !important;
 }
-
 html.mobile-device #logoutBtn {
   grid-column: 2 !important;
   grid-row: 2 !important;
@@ -192,12 +186,10 @@ html.mobile-device #adminBtn {
   grid-column: 2 !important;
   grid-row: 3 !important;
 }
-
 html.mobile-device #addServiceBtn {
   grid-column: 2 !important;
   grid-row: 4 !important;
 }
-
 html.mobile-device #cabinetBtn {
   grid-column: 2 !important;
   grid-row: 5 !important;
@@ -241,10 +233,6 @@ html.mobile-device #googleAuthBtn iframe {
   min-width: 0 !important;
   border: none !important;
 }
-
-/* =========================
-   РЕКЛАМНЫЕ БЛОКИ
-   ========================= */
 
 html.mobile-device #sideBlockLeft,
 html.mobile-device #sideBlockRight,
@@ -346,11 +334,11 @@ html.mobile-device .input-fixed-absolute {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
 }
 
+/* Крестик для закрытия фуллскрина */
 html.mobile-device .input-clear-mobile {
-  position: absolute !important;
-  right: 8px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+  position: fixed !important;
+  right: 18px !important;
+  top: 12px !important;
   width: 32px !important;
   height: 32px !important;
   line-height: 32px !important;
@@ -361,14 +349,10 @@ html.mobile-device .input-clear-mobile {
   color: #646363 !important;
   cursor: pointer !important;
   display: none !important;
-  z-index: 10 !important;
+  z-index: 10001 !important;
 }
-
-html.mobile-device .input-fixed-absolute ~ .input-clear-mobile {
-  position: fixed !important;
-  right: 18px !important;
-  top: 12px !important;
-  z-index: 10002 !important;
+html.mobile-device .input-wrapper-dt input:focus + .input-clear-mobile,
+html.mobile-device .input-wrapper-dt input:not(:placeholder-shown) + .input-clear-mobile {
   display: block !important;
 }
 
@@ -387,7 +371,7 @@ html.mobile-device .mobile-suggestions-container {
 }
 
 /* =========================
-   КАРТОЧКИ СПИСКА
+   КАРТОЧКИ СПИСКА / ПРОЧЕЕ
    ========================= */
 
 html.mobile-device #scrollTarget {
@@ -553,10 +537,6 @@ html.mobile-device .notification {
   margin-top: 4px !important;
   width: 100% !important;
 }
-
-/* =========================
-   СЕРВИСНЫЕ СТИЛИ
-   ========================= */
 
 html.mobile-device .hidden {
   display: none !important;
