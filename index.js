@@ -461,8 +461,6 @@ ${
 }
 
 function applyFilters() {
-  console.log('Apply filters called - mobile version'); // ← ОТЛАДКА
-  
   const region = document
     .getElementById("filterRegion")
     .value.trim()
@@ -479,16 +477,12 @@ function applyFilters() {
     .toLowerCase();
   const name = document.getElementById("filterName").value.trim().toLowerCase();
 
-  console.log('Filter values:', { region, city, profile, type, district, name }); // ← ОТЛАДКА
-
   if (!region || !city) {
-    console.log('Showing notification: fill region and city'); // ← ОТЛАДКА
     showNotification("Пожалуйста, заполните поля Область и Город.");
     return;
   }
 
   if (!profile && !type && !district && !name) {
-    console.log('Showing notification: fill at least one field'); // ← ОТЛАДКА
     showNotification(
       "Заполните хотя бы одно из полей: Профиль, Вид, Район, Имя."
     );
@@ -967,8 +961,28 @@ filterFields.forEach((id) => {
 
 function showNotification(message) {
   const el = document.getElementById("notification");
+  if (!el) {
+    console.error('Notification element not found!');
+    return;
+  }
+  
   el.textContent = message;
   el.style.display = "block";
+  el.style.zIndex = "99999";
+  
+  // Принудительно показываем поверх всего
+  el.style.position = "fixed";
+  el.style.top = "20px";
+  el.style.left = "10px";
+  el.style.right = "10px";
+  el.style.background = "rgba(240, 147, 147, 0.95)";
+  el.style.color = "#0f0c0c";
+  el.style.padding = "15px";
+  el.style.borderRadius = "8px";
+  el.style.textAlign = "center";
+  el.style.fontSize = "16px";
+  el.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+  
   setTimeout(() => {
     el.style.display = "none";
   }, 5000);
