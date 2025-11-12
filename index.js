@@ -1303,91 +1303,51 @@ function initCommonDropdown(inputId) {
 
       // Для мобильной версии - простой крестик без обертки
 if (isMobile) {
-  // если уже есть мобильный крестик рядом - пропустить
-  if (input.nextElementSibling?.classList.contains("input-clear-mobile")) return;
+  // Удаляем существующий крестик если есть
+  const existingClear = input.nextElementSibling;
+  if (existingClear && existingClear.classList.contains("input-clear-mobile")) {
+    existingClear.remove();
+  }
 
   const clearBtn = document.createElement("button");
   clearBtn.className = "input-clear-mobile";
   clearBtn.innerHTML = "×";
   clearBtn.type = "button";
-  // скрываем по умолчанию (на всякий случай)
-  clearBtn.style.display = "none";
+  clearBtn.style.display = "none"; // Сначала скрыт
+  
   input.parentNode.insertBefore(clearBtn, input.nextSibling);
 
-  // функция показать крестик и подвинуть его к активному полю
-  function showClear() {
-    // скрыть все другие мобильные крестики, чтобы был виден только один
-    document.querySelectorAll(".input-clear-mobile").forEach((b) => {
-      if (b !== clearBtn) b.style.display = "none";
-    });
-
-    // позиционируем крестик рядом с активным полем (фиксированно от окна)
-    const rect = input.getBoundingClientRect();
-    // отступ сверху — подстраховка, чтобы крестик был внутри визуальной области поля
-    const top = Math.max(8, rect.top + 6);
-    clearBtn.style.top = top + "px";
-    clearBtn.style.right = "18px";
+  // Показываем крестик при фокусе
+  input.addEventListener("focus", function() {
     clearBtn.style.display = "block";
-  }
-
-  function hideClear() {
-    clearBtn.style.display = "none";
-  }
-
-  // Показать при фокусе
-  input.addEventListener("focus", function () {
-    // небольшая задержка нужна, чтобы позиции после изменения layout успели примениться
-    setTimeout(showClear, 30);
-    // при фокусе поле может получить класс для фиксации; наблюдаем за ним и обновляем позицию
-    // простой периодический апдейт на время фокуса
-    let updater = setInterval(() => {
-      if (document.activeElement !== input) {
-        clearInterval(updater);
-        return;
-      }
-      const rect = input.getBoundingClientRect();
-      const top = Math.max(8, rect.top + 6);
-      clearBtn.style.top = top + "px";
-    }, 60);
-    // при blur остановим апдейт и спрячем крестик через короткую задержку (чтобы клик по кресту сработал)
-    input.addEventListener(
-      "blur",
-      function onBlur() {
-        setTimeout(hideClear, 120);
-        input.removeEventListener("blur", onBlur);
-        clearInterval(updater);
-      },
-      { once: true }
-    );
   });
 
-  // Также показывать крестик, если в поле уже есть значение и пользователь нажал в область (вариант просмотров)
-  input.addEventListener("input", function () {
-    if (input === document.activeElement) {
-      showClear();
-    }
+  // Скрываем крестик при потере фокуса
+  input.addEventListener("blur", function() {
+    setTimeout(() => {
+      clearBtn.style.display = "none";
+    }, 200);
   });
 
-  // Обработчик клика по кресту: очистить и вернуть фокус (а также скрыть крестик)
   clearBtn.addEventListener("click", function (e) {
+    e.preventDefault();
     e.stopPropagation();
     input.value = "";
-    // скрыть подсказки/список, если есть функция hideSuggestions
-    if (typeof hideSuggestions === "function") hideSuggestions(input);
-    input.blur();
-    hideClear();
+    input.focus();
+    
+    // Скрываем дропдаун если открыт
+    const dropdown = document.querySelector(".dropdown-common-style");
+    if (dropdown) dropdown.style.display = "none";
+    
+    // Скрываем крестик после очистки
+    clearBtn.style.display = "none";
   });
 
-  // На ресайз/скролл пересчитываем позицию при видимости
-  window.addEventListener("scroll", function () {
-    if (clearBtn.style.display === "block") {
-      const rect = input.getBoundingClientRect();
-      const top = Math.max(8, rect.top + 6);
-      clearBtn.style.top = top + "px";
-    }
-  });
+  // Показываем крестик если поле не пустое при загрузке
+  if (input.value.trim() !== "") {
+    clearBtn.style.display = "block";
+  }
 }
-
       // Для десктопа - версия с оберткой
       else {
         if (input.parentNode.classList.contains("input-wrapper-dt")) return;
@@ -1426,6 +1386,13 @@ if (isMobile) {
   // Вызываем при загрузке
   document.addEventListener("DOMContentLoaded", setupClearButtons);
 }
+
+// Убедимся что функция вызывается после полной загрузки  
+document.addEventListener("DOMContentLoaded", function() {
+  if (typeof setupClearButtons === 'function') {
+    setupClearButtons();
+  }
+});
 
 // Инициализация для всех полей
 [
@@ -1479,3 +1446,13 @@ async function handleTelegramUser(tgUser) {
     return null;
   }
 }
+
+// Принудительный вызов крестиков
+setTimeout(function() {
+  if (typeof setupClearButtons === 'function') {
+    setupClearButtons();
+    console.log('Крестики инициализированы');
+  } else {
+    console.log('Функция setupClearButtons не найдена');
+  }
+}, 1000);
