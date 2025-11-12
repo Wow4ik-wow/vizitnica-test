@@ -461,6 +461,8 @@ ${
 }
 
 function applyFilters() {
+  console.log('Apply filters called - mobile version'); // ← ОТЛАДКА
+  
   const region = document
     .getElementById("filterRegion")
     .value.trim()
@@ -477,12 +479,16 @@ function applyFilters() {
     .toLowerCase();
   const name = document.getElementById("filterName").value.trim().toLowerCase();
 
+  console.log('Filter values:', { region, city, profile, type, district, name }); // ← ОТЛАДКА
+
   if (!region || !city) {
+    console.log('Showing notification: fill region and city'); // ← ОТЛАДКА
     showNotification("Пожалуйста, заполните поля Область и Город.");
     return;
   }
 
   if (!profile && !type && !district && !name) {
+    console.log('Showing notification: fill at least one field'); // ← ОТЛАДКА
     showNotification(
       "Заполните хотя бы одно из полей: Профиль, Вид, Район, Имя."
     );
