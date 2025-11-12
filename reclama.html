@@ -517,9 +517,10 @@
           }
 
           // Описание
-          if (order["Описание"]) {
-            html += `<div class="offer-description">${order["Описание"]}</div>`;
-          }
+          let description = order["Описание (до 700 симв)"] || order["Описание"];
+if (description) {
+  html += `<div class="offer-description">${description}</div>`;
+}
 
           // Дополнительная информация
           const detailFields = [
