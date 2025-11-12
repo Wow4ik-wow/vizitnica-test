@@ -1286,75 +1286,8 @@ function initCommonDropdown(inputId) {
       });
     });
   }
-  // Функция для добавления крестиков
-  function setupClearButtons() {
-    const inputIds = [
-      "filterRegion",
-      "filterCity",
-      "filterProfile",
-      "filterType",
-      "filterDistrict",
-      "filterName",
-    ];
-
-    inputIds.forEach((id) => {
-      const input = document.getElementById(id);
-      if (!input) return;
-
-      // Для мобильной версии - простой крестик без обертки
-      if (isMobile) {
-        if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
-          return;
-
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "input-clear-mobile";
-        clearBtn.innerHTML = "×";
-        clearBtn.type = "button";
-        input.parentNode.insertBefore(clearBtn, input.nextSibling);
-
-        clearBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          input.value = "";
-          input.focus();
-        });
-      }
-      // Для десктопа - версия с оберткой
-      else {
-        if (input.parentNode.classList.contains("input-wrapper-dt")) return;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "input-wrapper-dt";
-        Object.assign(wrapper.style, {
-          position: "relative",
-          flex: "1 1 auto",
-          minWidth: "0",
-          width: "100%",
-        });
-
-        // Сохраняем все существующие классы и атрибуты
-        const parent = input.parentNode;
-        parent.insertBefore(wrapper, input);
-        wrapper.appendChild(input);
-
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "input-clear-desktop";
-        clearBtn.innerHTML = "×";
-        clearBtn.type = "button";
-        wrapper.appendChild(clearBtn);
-
-        clearBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          input.value = "";
-          input.focus();
-          const dropdown = document.querySelector(".dropdown-common-style");
-          if (dropdown) dropdown.style.display = "none";
-        });
-      }
-    });
-  }
-
-  // Вызываем при загрузке
-  document.addEventListener("DOMContentLoaded", setupClearButtons);
+  
+    setupClearButtons();
 }
 
 // Инициализация для всех полей
