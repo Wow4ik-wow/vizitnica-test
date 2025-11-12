@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест крестиков</title>
+    <style>
+        body { padding: 20px; }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест крестиков</h1>
+    
+    <input type="text" placeholder="Поле 1" id="field1">
+    <input type="text" placeholder="Поле 2" id="field2">
+    <input type="text" placeholder="Поле 3" id="field3">
+
+    <script>
+        // Простейший код крестиков БЕЗ TG авторизации
+        function setupTestClearButtons() {
+            ['field1', 'field2', 'field3'].forEach(id => {
+                const input = document.getElementById(id);
+                const clearBtn = document.createElement('button');
+                clearBtn.innerHTML = '×';
+                clearBtn.style.cssText = 'position:absolute; right:10px; top:50%; transform:translateY(-50%); display:none;';
+                input.parentNode.style.position = 'relative';
+                input.parentNode.appendChild(clearBtn);
+
+                input.addEventListener('focus', () => clearBtn.style.display = 'block');
+                input.addEventListener('blur', () => clearBtn.style.display = 'none');
+                clearBtn.addEventListener('click', () => input.value = '');
+            });
+        }
+
+        setupTestClearButtons();
+    </script>
+</body>
+</html>
