@@ -61,6 +61,8 @@ function updateAuthUI() {
     const googleAuthBtn = document.getElementById("googleAuthBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const authLoginWrapper = document.querySelector(".auth-login-wrapper");
+    const roleInfo = document.getElementById("roleInfo");
+    
     if (googleAuthBtn) googleAuthBtn.style.display = "none";
     if (logoutBtn) {
       logoutBtn.style.display = "none";
@@ -70,6 +72,15 @@ function updateAuthUI() {
       logoutBtn.style.left = "-9999px";
     }
     if (authLoginWrapper) authLoginWrapper.style.display = "none";
+    
+    // НЕ скрываем информацию о роли в Telegram
+    if (roleInfo && currentUser) {
+      if (currentUser.role === "admin") {
+        roleInfo.innerText = "Вы сейчас админ";
+      } else {
+        roleInfo.innerText = "Вы сегодня молодец!";
+      }
+    }
 
     return;
   }
