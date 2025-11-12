@@ -532,19 +532,15 @@ html.mobile-device .back-to-top {
 html.mobile-device .notification {
   position: fixed !important;
   top: 20px !important;
-  left: 10px !important;
-  right: 10px !important;
-  transform: none !important;
-  background: rgba(240, 147, 147, 0.95) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(240, 147, 147, 0.75) !important;
   color: #0f0c0c !important;
-  padding: 15px 20px !important;
+  padding: 10px 20px !important;
   border-radius: var(--radius) !important;
   display: none !important;
   z-index: 9999 !important;
-  font-size: 16px !important;
-  text-align: center !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(200, 100, 100, 0.3) !important;
+  font-size: 14px !important;
 }
 
 .card-id {
