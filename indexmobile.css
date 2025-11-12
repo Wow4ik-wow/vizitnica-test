@@ -369,6 +369,7 @@ html.mobile-device .input-fixed-absolute ~ .input-clear-mobile {
   right: 18px !important;
   top: 12px !important;
   z-index: 10002 !important;
+  display: block !important;
 }
 
 html.mobile-device .mobile-suggestions-container {
