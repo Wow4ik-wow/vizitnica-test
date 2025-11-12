@@ -347,9 +347,10 @@ html.mobile-device .input-fixed-absolute {
 }
 
 html.mobile-device .input-clear-mobile {
-  position: fixed !important;
-  right: 18px !important;
-  top: 12px !important;
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   width: 32px !important;
   height: 32px !important;
   line-height: 32px !important;
@@ -360,11 +361,14 @@ html.mobile-device .input-clear-mobile {
   color: #646363 !important;
   cursor: pointer !important;
   display: none !important;
-  z-index: 10001 !important;
+  z-index: 10 !important;
 }
 
 html.mobile-device .input-fixed-absolute ~ .input-clear-mobile {
-  display: block !important;
+  position: fixed !important;
+  right: 18px !important;
+  top: 12px !important;
+  z-index: 10002 !important;
 }
 
 html.mobile-device .mobile-suggestions-container {
