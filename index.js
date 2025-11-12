@@ -48,7 +48,7 @@ if (isReallyTelegramWebApp()) {
     console.warn("Ошибка чтения Telegram WebApp данных:", e);
   }
   updateAuthUI();
-  setupTelegramNavigation();
+  // setupTelegramNavigation();
 } else {
   console.log("Открыт не в Telegram, обычный браузер");
 }
@@ -1301,46 +1301,23 @@ function initCommonDropdown(inputId) {
       const input = document.getElementById(id);
       if (!input) return;
 
-            // Для мобильной версии - простой крестик без обертки
-      if (isMobile) {
-        if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
-          return;
+      // Для мобильной версии - простой крестик без обертки
+if (isMobile) {
+  if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
+    return;
 
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "input-clear-mobile";
-        clearBtn.innerHTML = "×";
-        clearBtn.type = "button";
-        clearBtn.style.display = "none"; // Изначально скрыт
-        input.parentNode.insertBefore(clearBtn, input.nextSibling);
+  const clearBtn = document.createElement("button");
+  clearBtn.className = "input-clear-mobile";
+  clearBtn.innerHTML = "×";
+  clearBtn.type = "button";
+  input.parentNode.insertBefore(clearBtn, input.nextSibling);
 
-        // Показываем крестик только когда поле активно и фиксировано
-        input.addEventListener("focus", function() {
-          clearBtn.style.display = "block";
-        });
-
-        input.addEventListener("blur", function() {
-          setTimeout(() => {
-            clearBtn.style.display = "none";
-          }, 200);
-        });
-
-        clearBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          input.value = "";
-          input.focus();
-          // Скрываем выпадающие списки
-          document.querySelectorAll(".dropdown-common-style").forEach(dropdown => {
-            dropdown.style.display = "none";
-          });
-        });
-
-        // Скрываем крестик если поле пустое
-        input.addEventListener("input", function() {
-          if (input.value.trim() === "") {
-            clearBtn.style.display = "none";
-          }
-        });
-      }
+  clearBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    input.value = "";
+    input.focus();
+  });
+}
       // Для десктопа - версия с оберткой
       else {
         if (input.parentNode.classList.contains("input-wrapper-dt")) return;
