@@ -1286,8 +1286,11 @@ function initCommonDropdown(inputId) {
       });
     });
   }
-  
-    setupClearButtons();
+  // Функция для добавления крестиков - используем основную функцию
+  setupClearButtons();
+
+  // Вызываем при загрузке
+  document.addEventListener("DOMContentLoaded", setupClearButtons);
 }
 
 // Инициализация для всех полей
