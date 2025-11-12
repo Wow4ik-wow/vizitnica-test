@@ -1,235 +1,44 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Визитница — Главная</title>
-
-    <!-- Десктопные стили по умолчанию -->
-    <link rel="stylesheet" href="index.css" id="main-css" />
-
-    <script>
-      // Определение мобильного устройства
-      const isMobile =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-
-      if (isMobile) {
-        // Полная замена CSS на мобильную версию
-        document.getElementById("main-css").href = "indexmobile.css";
-        document.documentElement.classList.add("mobile-device");
-      }
-    </script>
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-MSBJNF664Y"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-MSBJNF664Y");
-    </script>
-  </head>
-  <body>
-    <div class="header">
-      <h1 class="page-title pageTitle">Нужен ас? - Смотри у нас! 170</h1>
-      <div class="page-subtitle pageSubtitle">Мы поможем найти специалиста</div>
-
-      <!-- Кнопки шапки -->
-      <div class="auth-container">
-        <div class="auth-login-wrapper">
-          <div id="googleAuthBtn" class="authLogin"></div>
-        </div>
-        <button id="logoutBtn" class="btn authLogin" data-role="user,admin">
-          ВЫХОД
-        </button>
-        <button id="adminBtn" class="btn authAdmin" data-role="admin">
-          Админка
-        </button>
-        <button id="addServiceBtn" class="btn authAddService" data-role="admin">
-          Добавить услугу
-        </button>
-        <button id="cabinetBtn" class="btn authProfile" data-role="admin">
-          Личный кабинет
-        </button>
-      </div>
-
-      <div
-        id="roleInfo"
-        style="margin-top: 10px; font-weight: bold; color: #2c3e50"
-      ></div>
-
-      <!-- Блок фильтров в шапке -->
-      <div class="filters-container">
-        <!-- Боковые рекламные блоки -->
-        <div id="sideBlockLeft" class="sideBlockLeft">Пост левый</div>
-        <div id="sideBlockRight" class="sideBlockRight">Пост правый</div>
-
-        <!-- Первая строка фильтров -->
-        <div class="filter-row">
-          <div class="input-wrapper-dt">
-            <input
-              type="text"
-              id="filterRegion"
-              class="filter1"
-              placeholder="Область"
-              autocomplete="off"
-            />
-            <button class="input-clear-desktop">×</button>
-            <datalist id="listRegion"></datalist>
-          </div>
-
-          <div class="input-wrapper-dt">
-            <input
-              type="text"
-              id="filterCity"
-              class="filter2"
-              placeholder="Населённый пункт"
-              autocomplete="off"
-            />
-            <button class="input-clear-desktop">×</button>
-            <datalist id="listCity"></datalist>
-          </div>
-        </div>
-
-        <!-- Вторая строка фильтров -->
-        <div class="filter-row">
-          <div class="input-wrapper-dt">
-            <input
-              type="text"
-              id="filterProfile"
-              class="filter3"
-              placeholder="Профиль"
-              autocomplete="off"
-            />
-            <button class="input-clear-desktop">×</button>
-            <datalist id="listProfile"></datalist>
-          </div>
-
-          <div class="input-wrapper-dt">
-            <input
-              type="text"
-              id="filterType"
-              class="filter4"
-              list="listType"
-              placeholder="Вид деятельности"
-              autocomplete="off"
-            />
-            <button class="input-clear-desktop">×</button>
-          </div>
-        </div>
-
-        <!-- Третья строка фильтров -->
-        <div class="filter-row">
-          <div class="input-wrapper-dt">
-            <input
-              type="text"
-              id="filterDistrict"
-              class="filter5"
-              placeholder="Район"
-              autocomplete="off"
-            />
-            <button class="input-clear-desktop">×</button>
-            <datalist id="listDistrict"></datalist>
-          </div>
-
-          <div class="input-wrapper-dt">
-            <input
-              type="text"
-              id="filterName"
-              class="filter6"
-              placeholder="Имя или Компания"
-              autocomplete="off"
-            />
-            <button class="input-clear-desktop">×</button>
-            <datalist id="listName"></datalist>
-          </div>
-        </div>
-
-        <!-- Кнопка поиска -->
-        <button onclick="applyFilters()" class="btn search-btn searchBtn">
-          Поиск
-        </button>
-
-        <!-- После фильтров, перед рекламой -->
-        <img
-          src="header-bg-mobile.webp"
-          class="mobile-only-image"
-          alt="Нужен ас? - Смотри у нас!"
-          style="display: none"
-        />
-
-        <!-- Нижние рекламные блоки -->
-        <div id="bottomBlock1" class="bottomBlock1">Пост низ1</div>
-        <div id="bottomBlock2" class="bottomBlock2">Пост низ2</div>
-        <div id="bottomBlock3" class="bottomBlock3">Пост низ3</div>
-        <div id="bottomBlock4" class="bottomBlock4">Пост низ4</div>
-      </div>
-    </div>
-
-    <!-- Якорь для прокрутки - ПОСЛЕ шапки -->
-    <div id="scrollTarget" style="position: relative; height: 1px"></div>
-
-    <!-- Надпись о количестве найденных - после якоря -->
-    <p id="searchCount" class="search-count"></p>
-
-    <div id="cards"></div>
-
-    <!-- Кнопка "Наверх" -->
-    <div
-      id="backToTopContainer"
-      style="width: 100%; text-align: center; margin-top: 20px"
-    ></div>
-    <div id="notification" class="notification"></div>
-
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="index-header-desktop-keys.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-// Динамическая загрузка JS с версией
-const script = document.createElement('script');
-script.src = 'index.js?v=' + Date.now();
-document.head.appendChild(script);
-</script>
-
-    <script src="reclama.js"></script>
-
-    <!-- ИЗМЕРЕНИЕ РАЗМЕРА ОКНА САЙТА -->
-    <div id="window-size" data-role="admin"></div>
-
-    <script>
-      const sizeBox = document.getElementById("window-size");
-
-      function updateSize() {
-        sizeBox.textContent = `${window.innerWidth} × ${window.innerHeight}`;
-      }
-
-      window.addEventListener("resize", updateSize);
-      updateSize(); // первый вызов при загрузке
-    </script>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест крестиков</title>
     <style>
-      #window-size {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.6);
-        color: #fff;
-        font-size: 14px;
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-family: monospace;
-        z-index: 9999;
-        pointer-events: none; /* чтобы не мешало кликам */
-      }
+        body { padding: 20px; }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            font-size: 16px;
+        }
     </style>
+</head>
+<body>
+    <h1>Тест крестиков</h1>
     
-  </body>
+    <input type="text" placeholder="Поле 1" id="field1">
+    <input type="text" placeholder="Поле 2" id="field2">
+    <input type="text" placeholder="Поле 3" id="field3">
+
+    <script>
+        // Простейший код крестиков БЕЗ TG авторизации
+        function setupTestClearButtons() {
+            ['field1', 'field2', 'field3'].forEach(id => {
+                const input = document.getElementById(id);
+                const clearBtn = document.createElement('button');
+                clearBtn.innerHTML = '×';
+                clearBtn.style.cssText = 'position:absolute; right:10px; top:50%; transform:translateY(-50%); display:none;';
+                input.parentNode.style.position = 'relative';
+                input.parentNode.appendChild(clearBtn);
+
+                input.addEventListener('focus', () => clearBtn.style.display = 'block');
+                input.addEventListener('blur', () => clearBtn.style.display = 'none');
+                clearBtn.addEventListener('click', () => input.value = '');
+            });
+        }
+
+        setupTestClearButtons();
+    </script>
+</body>
 </html>
