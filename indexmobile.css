@@ -337,13 +337,13 @@ html.mobile-device .input-fixed-absolute {
 /* Крестик для закрытия фуллскрина */
 html.mobile-device .input-clear-mobile {
   position: absolute !important;
-  right: 12px !important;
-  bottom: 8px !important;
+  right: 5px !important;
+  bottom: 15px !important;
   width: 32px !important;
   height: 32px !important;
   line-height: 32px !important;
   text-align: center !important;
-  font-size: 26px !important;
+  font-size: 36px !important;
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
