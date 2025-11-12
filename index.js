@@ -961,16 +961,11 @@ filterFields.forEach((id) => {
 
 function showNotification(message) {
   const el = document.getElementById("notification");
-  if (!el) {
-    console.error('Notification element not found!');
-    return;
-  }
+  if (!el) return;
   
+  // Принудительные стили для мобильной версии
   el.textContent = message;
   el.style.display = "block";
-  el.style.zIndex = "99999";
-  
-  // Принудительно показываем поверх всего
   el.style.position = "fixed";
   el.style.top = "20px";
   el.style.left = "10px";
@@ -981,6 +976,7 @@ function showNotification(message) {
   el.style.borderRadius = "8px";
   el.style.textAlign = "center";
   el.style.fontSize = "16px";
+  el.style.zIndex = "99999";
   el.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
   
   setTimeout(() => {
