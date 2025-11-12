@@ -961,27 +961,40 @@ filterFields.forEach((id) => {
 });
 
 function showNotification(message) {
-  const el = document.getElementById("notification");
-  if (!el) return;
+  // Удаляем старое уведомление если есть
+  const oldNotification = document.getElementById("notification");
+  if (oldNotification) {
+    oldNotification.remove();
+  }
   
-  // Принудительные стили для мобильной версии
-  el.textContent = message;
-  el.style.display = "block";
-  el.style.position = "fixed";
-  el.style.top = "20px";
-  el.style.left = "10px";
-  el.style.right = "10px";
-  el.style.background = "rgba(240, 147, 147, 0.95)";
-  el.style.color = "#0f0c0c";
-  el.style.padding = "15px";
-  el.style.borderRadius = "8px";
-  el.style.textAlign = "center";
-  el.style.fontSize = "16px";
-  el.style.zIndex = "99999";
-  el.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+  // Создаем новое уведомление
+  const notification = document.createElement("div");
+  notification.id = "notification";
+  notification.textContent = message;
   
+  // Стили для мобильной версии
+  notification.style.position = "fixed";
+  notification.style.top = "20px";
+  notification.style.left = "10px";
+  notification.style.right = "10px";
+  notification.style.background = "rgba(240, 147, 147, 0.95)";
+  notification.style.color = "#0f0c0c";
+  notification.style.padding = "15px 20px";
+  notification.style.borderRadius = "8px";
+  notification.style.textAlign = "center";
+  notification.style.fontSize = "16px";
+  notification.style.zIndex = "99999";
+  notification.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+  notification.style.fontWeight = "bold";
+  
+  // Добавляем в тело документа
+  document.body.appendChild(notification);
+  
+  // Автоскрытие через 5 секунд
   setTimeout(() => {
-    el.style.display = "none";
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
   }, 5000);
 }
 
