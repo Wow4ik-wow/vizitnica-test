@@ -1301,7 +1301,7 @@ function initCommonDropdown(inputId) {
       const input = document.getElementById(id);
       if (!input) return;
 
-      // Для мобильной версии - простой крестик без обертки
+            // Для мобильной версии - простой крестик без обертки
       if (isMobile) {
         if (input.nextElementSibling?.classList.contains("input-clear-mobile"))
           return;
@@ -1310,12 +1310,35 @@ function initCommonDropdown(inputId) {
         clearBtn.className = "input-clear-mobile";
         clearBtn.innerHTML = "×";
         clearBtn.type = "button";
+        clearBtn.style.display = "none"; // Изначально скрыт
         input.parentNode.insertBefore(clearBtn, input.nextSibling);
+
+        // Показываем крестик только когда поле активно и фиксировано
+        input.addEventListener("focus", function() {
+          clearBtn.style.display = "block";
+        });
+
+        input.addEventListener("blur", function() {
+          setTimeout(() => {
+            clearBtn.style.display = "none";
+          }, 200);
+        });
 
         clearBtn.addEventListener("click", function (e) {
           e.stopPropagation();
           input.value = "";
           input.focus();
+          // Скрываем выпадающие списки
+          document.querySelectorAll(".dropdown-common-style").forEach(dropdown => {
+            dropdown.style.display = "none";
+          });
+        });
+
+        // Скрываем крестик если поле пустое
+        input.addEventListener("input", function() {
+          if (input.value.trim() === "") {
+            clearBtn.style.display = "none";
+          }
         });
       }
       // Для десктопа - версия с оберткой
