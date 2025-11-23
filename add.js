@@ -124,25 +124,27 @@ async function fetchSheetData(sheet, range = "") {
 }
 
 async function loadRegionList() {
-    try {
-        const rows = await fetchSheetData("Населённые пункты");
-        const all = rows
-            .map((r) => (r[1] || "").split(","))
-            .flat()
-            .map(cleanText)
-            .filter(Boolean);
-        const list = countAndSort(all);
-        const select = document.getElementById("regionSelect");
-        
-        list.forEach((val) => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = val;
-            select.appendChild(opt);
-        });
-    } catch (error) {
-        showMessage('Ошибка загрузки списка областей', 'error');
-    }
+  try {
+    const rows = await fetchSheetData("Населённые пункты");
+    // Пропускаем первую строку (заголовки) и обрабатываем остальные
+    const dataRows = rows.slice(1); // пропускаем первую строку
+    const all = dataRows
+      .map((r) => (r[1] || "").split(",")) // берем второй столбец (области)
+      .flat()
+      .map(cleanText)
+      .filter(Boolean);
+    const list = countAndSort(all);
+    const select = document.getElementById("regionSelect");
+    
+    list.forEach((val) => {
+      const opt = document.createElement("option");
+      opt.value = val;
+      opt.textContent = val;
+      select.appendChild(opt);
+    });
+  } catch (error) {
+    showMessage('Ошибка загрузки списка областей', 'error');
+  }
 }
 
 async function loadTownsByRegion(region) {
