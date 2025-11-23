@@ -616,15 +616,15 @@ function updateProgress() {
   )}%`;
 }
 
-// Умный подсчёт символов для краткого описания с учётом переносов
+// Умный подсчёт символов для краткого описания с переносом слов ЦЕЛИКОМ
 function updateSmartCharCounter() {
-  const textarea = document.getElementById("descShort");
-  const counter = document.getElementById("descShortCounter");
-  const text = textarea.value;
-
-  // Создаем невидимый элемент для измерения текста
-  const measureDiv = document.createElement("div");
-  measureDiv.style.cssText = `
+    const textarea = document.getElementById("descShort");
+    const counter = document.getElementById("descShortCounter");
+    const text = textarea.value;
+    
+    // Создаем невидимый элемент для измерения текста
+    const measureDiv = document.createElement('div');
+    measureDiv.style.cssText = `
         position: absolute;
         left: -9999px;
         top: -9999px;
@@ -634,49 +634,47 @@ function updateSmartCharCounter() {
         word-wrap: break-word;
         line-height: ${getComputedStyle(textarea).lineHeight};
     `;
-  measureDiv.textContent = text;
-  document.body.appendChild(measureDiv);
-
-  // Получаем высоту текста и вычисляем количество строк
-  const lineHeight = parseInt(getComputedStyle(textarea).lineHeight);
-  const textHeight = measureDiv.clientHeight;
-  const lineCount = Math.round(textHeight / lineHeight);
-
-  // Вычисляем потери из-за переносов
-  const maxLines = 5;
-  const charsPerLine = 25;
-  const maxChars = 125;
-
-  let lostChars = 0;
-  if (lineCount > maxLines) {
-    // Если превысили 5 строк - запрещаем дальнейший ввод
-    lostChars = (lineCount - maxLines) * charsPerLine;
-  }
-
-  const usedChars = text.length;
-  const availableChars = maxChars - lostChars;
-  const remainingChars = Math.max(0, availableChars - usedChars);
-
-  // Обновляем счётчик
-  counter.textContent = `${usedChars}/${availableChars}`;
-
-  // Визуальная индикация
-  if (remainingChars < 20) {
-    counter.style.color = "#e74c3c";
-  } else if (remainingChars < 50) {
-    counter.style.color = "#f39c12";
-  } else {
-    counter.style.color = "#27ae60";
-  }
-
-  // Удаляем измерительный элемент
-  document.body.removeChild(measureDiv);
-
-  // Блокируем ввод если превышен лимит
-  if (usedChars >= availableChars && text.length > 0) {
-    textarea.value = text.substring(0, availableChars);
-    updateSmartCharCounter(); // Обновляем счётчик
-  }
+    measureDiv.textContent = text;
+    document.body.appendChild(measureDiv);
+    
+    // Получаем высоту текста и вычисляем количество строк
+    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight);
+    const textHeight = measureDiv.clientHeight;
+    const lineCount = Math.round(textHeight / lineHeight);
+    
+    // Вычисляем потери из-за переносов слов ЦЕЛИКОМ
+    const maxLines = 5;
+    const maxChars = 125;
+    
+    let lostChars = 0;
+    if (lineCount > maxLines) {
+        // Каждая лишняя строка "съедает" место
+        lostChars = (lineCount - maxLines) * 25; // примерно 25 символов на строку
+    }
+    
+    const usedChars = text.length;
+    const availableChars = maxChars - lostChars;
+    
+    // Обновляем счётчик
+    counter.textContent = `${usedChars}/${availableChars}`;
+    
+    // Визуальная индикация
+    if (availableChars - usedChars < 20) {
+        counter.style.color = '#e74c3c';
+    } else if (availableChars - usedChars < 50) {
+        counter.style.color = '#f39c12';
+    } else {
+        counter.style.color = '#27ae60';
+    }
+    
+    // Удаляем измерительный элемент
+    document.body.removeChild(measureDiv);
+    
+    // Блокируем ввод если превышен лимит
+    if (usedChars >= availableChars && text.length > 0) {
+        textarea.value = text.substring(0, availableChars);
+        updateSmartCharCounter(); // Обновляем счётчик
+    }
 }
 
 // Обновляем счётчики при загрузке
