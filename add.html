@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Визитница — Добавление услуги</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
     <!-- Только свои стили, без index.css -->
     <link rel="stylesheet" href="add.css" />
   </head>
@@ -14,7 +14,9 @@
     <div class="add-header">
       <div class="header-content">
         <h1 class="page-title">Добавление услуги</h1>
-        <div class="page-subtitle">Заполните форму для добавления новой услуги</div>
+        <div class="page-subtitle">
+          Заполните форму для добавления новой услуги
+        </div>
         <button id="backToMain" class="btn back-btn">← На главную</button>
       </div>
     </div>
@@ -27,7 +29,9 @@
           <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
           </div>
-          <div class="progress-text">Заполнено: <span id="progressPercent">0%</span></div>
+          <div class="progress-text">
+            Заполнено: <span id="progressPercent">0%</span>
+          </div>
         </div>
 
         <!-- 2. Область -->
@@ -35,7 +39,12 @@
           <label for="regionSelect" class="form-label">
             Область <span class="required">*</span>
           </label>
-          <select id="regionSelect" name="regionSelect" required class="form-input">
+          <select
+            id="regionSelect"
+            name="regionSelect"
+            required
+            class="form-input"
+          >
             <option value="">-- Выберите область --</option>
           </select>
           <input
@@ -52,26 +61,42 @@
             Населённые пункты <span class="required">*</span>
             <span class="limit-info">(до 10)</span>
           </label>
-          <select id="townSelect" name="townSelect" required class="form-input" disabled>
+          <select
+            id="townSelect"
+            name="townSelect"
+            required
+            class="form-input"
+            disabled
+          >
             <option value="">-- Выберите из списка --</option>
           </select>
 
-          <div id="selectedTownsContainer" class="selected-items-container"></div>
+          <div
+            id="selectedTownsContainer"
+            class="selected-items-container"
+          ></div>
 
           <input
             type="text"
             id="townCustom"
-            placeholder="Или введите свой населённый пункт"
+            placeholder="Если его нет в списке - введите его сюда"
             class="form-input"
           />
-          <div class="form-hint">Начните вводить название или выберите из списка</div>
+          <div class="form-hint">
+            Начните вводить название или выберите из списка
+          </div>
         </div>
 
         <!-- 4. Район города -->
         <div class="form-group">
           <label for="cityDistrict" class="form-label">Район города</label>
-          <input type="text" id="cityDistrict" maxlength="200" 
-                 placeholder="Можете указать при желании" class="form-input" />
+          <input
+            type="text"
+            id="cityDistrict"
+            maxlength="200"
+            placeholder="Можете указать при желании"
+            class="form-input"
+          />
         </div>
 
         <!-- 5. Профиль деятельности -->
@@ -79,7 +104,12 @@
           <label for="profileSelect" class="form-label">
             Профиль деятельности <span class="required">*</span>
           </label>
-          <select id="profileSelect" name="profileSelect" required class="form-input">
+          <select
+            id="profileSelect"
+            name="profileSelect"
+            required
+            class="form-input"
+          >
             <option value="">-- Выберите профиль --</option>
           </select>
         </div>
@@ -94,7 +124,10 @@
             <option value="">-- Выберите вид --</option>
           </select>
 
-          <div id="selectedKindsContainer" class="selected-items-container"></div>
+          <div
+            id="selectedKindsContainer"
+            class="selected-items-container"
+          ></div>
 
           <input
             type="text"
@@ -109,8 +142,13 @@
           <label for="nameInput" class="form-label">
             Имя <span class="required">*</span>
           </label>
-          <input type="text" id="nameInput" maxlength="20" 
-                 placeholder="Имя специалиста или контактного лица" class="form-input" />
+          <input
+            type="text"
+            id="nameInput"
+            maxlength="20"
+            placeholder="Имя специалиста или контактного лица"
+            class="form-input"
+          />
         </div>
 
         <!-- 8. Компания -->
@@ -118,20 +156,34 @@
           <label for="companyInput" class="form-label">
             Компания <span class="required">*</span>
           </label>
-          <input type="text" id="companyInput" maxlength="30" 
-                 placeholder="Название компании или организации" class="form-input" />
-          <div class="form-hint">Заполните хотя бы одно из полей: Имя или Компания</div>
+          <input
+            type="text"
+            id="companyInput"
+            maxlength="30"
+            placeholder="Название компании или организации"
+            class="form-input"
+          />
+          <div class="form-hint">
+            Заполните хотя бы одно из полей: Имя или Компания
+          </div>
         </div>
 
         <!-- 9. Краткое описание -->
         <div class="form-group">
           <label for="descShort" class="form-label">
-            Описание (до 75 символов) <span class="required">*</span>
+            Краткое описание <span class="required">*</span>
           </label>
-          <input type="text" id="descShort" maxlength="75" 
-                 placeholder="Краткое описание для карточки" required class="form-input" />
+          <div class="input-wrapper-dt">
+            <textarea
+              id="descShort"
+              placeholder="Краткое описание (5 строк, примерно по 25 символов)"
+              required
+              class="form-input textarea"
+              rows="5"
+            ></textarea>
+          </div>
           <div class="char-counter">
-            <span id="descShortCounter">0</span>/75 символов
+            <span id="descShortCounter">0</span>/125 символов
           </div>
         </div>
 
@@ -140,8 +192,13 @@
           <label for="descLong" class="form-label">
             Описание (до 700 символов) <span class="required">*</span>
           </label>
-          <textarea id="descLong" maxlength="700" placeholder="Полное описание услуги" 
-                   required class="form-input textarea"></textarea>
+          <textarea
+            id="descLong"
+            maxlength="700"
+            placeholder="Полное описание услуги"
+            required
+            class="form-input textarea"
+          ></textarea>
           <div class="char-counter">
             <span id="descLongCounter">0</span>/700 символов
           </div>
@@ -150,7 +207,12 @@
         <!-- 11. Адрес -->
         <div class="form-group">
           <label for="addressInput" class="form-label">Адрес</label>
-          <input type="text" id="addressInput" maxlength="200" class="form-input" />
+          <input
+            type="text"
+            id="addressInput"
+            maxlength="200"
+            class="form-input"
+          />
         </div>
 
         <!-- 12. Телефоны -->
@@ -161,9 +223,16 @@
           </label>
           <div id="phonesContainer" class="selected-items-container"></div>
           <div class="phone-input-row">
-            <input type="text" id="phoneInput" placeholder="380xxxxxxxxx" 
-                   class="form-input" maxlength="12" />
-            <button type="button" id="addPhoneBtn" class="btn small">Добавить телефон</button>
+            <input
+              type="text"
+              id="phoneInput"
+              placeholder="380xxxxxxxxx"
+              class="form-input"
+              maxlength="12"
+            />
+            <button type="button" id="addPhoneBtn" class="btn small">
+              Добавить телефон
+            </button>
           </div>
           <div class="form-hint">Формат: 380671112233</div>
         </div>
@@ -181,11 +250,19 @@
               <span class="link-checkbox-text">Email</span>
             </label>
             <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="instagram" />
+              <input
+                type="checkbox"
+                class="link-checkbox"
+                data-type="instagram"
+              />
               <span class="link-checkbox-text">Instagram</span>
             </label>
             <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="telegram" />
+              <input
+                type="checkbox"
+                class="link-checkbox"
+                data-type="telegram"
+              />
               <span class="link-checkbox-text">Telegram</span>
             </label>
             <label class="link-checkbox-label">
@@ -193,11 +270,19 @@
               <span class="link-checkbox-text">Viber</span>
             </label>
             <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="facebook" />
+              <input
+                type="checkbox"
+                class="link-checkbox"
+                data-type="facebook"
+              />
               <span class="link-checkbox-text">Facebook</span>
             </label>
             <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="whatsapp" />
+              <input
+                type="checkbox"
+                class="link-checkbox"
+                data-type="whatsapp"
+              />
               <span class="link-checkbox-text">WhatsApp</span>
             </label>
             <label class="link-checkbox-label">
@@ -211,8 +296,12 @@
         <!-- 14. Геолокация -->
         <div class="form-group">
           <label for="geoLocation" class="form-label">Геолокация</label>
-          <input type="text" id="geoLocation" placeholder="Ссылка на карты Google или другие" 
-                 class="form-input" />
+          <input
+            type="text"
+            id="geoLocation"
+            placeholder="Ссылка на карты Google или другие"
+            class="form-input"
+          />
         </div>
 
         <!-- Скрытые поля -->
@@ -231,7 +320,9 @@
         <!-- Кнопки отправки -->
         <div class="form-buttons">
           <button type="submit" class="btn primary">Добавить услугу</button>
-          <button type="reset" id="resetBtn" class="btn secondary">Сбросить форму</button>
+          <button type="reset" id="resetBtn" class="btn secondary">
+            Сбросить форму
+          </button>
         </div>
       </form>
     </div>

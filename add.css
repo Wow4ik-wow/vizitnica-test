@@ -541,3 +541,12 @@ select.form-input {
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+.char-counter {
+    text-align: right;
+    font-size: 13px;
+    color: #27ae60;
+    margin-top: 5px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
