@@ -800,7 +800,7 @@ function prepareFormData() {
     "Вид деятельности": kinds.join(", "),
     Имя: document.getElementById("nameInput").value.trim(),
     Компания: document.getElementById("companyInput").value.trim(),
-    "Описание (до 75 симв)": document.getElementById("descShort").value.trim(),
+    "Описание (до 75 симв)": document.getElementById("descShort").value.trim().replace(/(.{25})/g, '$1\n'),
     "Описание (до 700 симв)": document.getElementById("descLong").value.trim(),
     Адрес: document.getElementById("addressInput").value.trim(),
     Телефоны: Array.from(document.querySelectorAll(".phone-item"))
