@@ -597,80 +597,60 @@ function updateCharCounters() {
     const maxTotal = maxLines * charsPerLine; // 125
 
     const text = descShort.value;
+    const lines = text.split('\n');
     
     // Сохраняем позицию курсора
     const cursorPos = descShort.selectionStart;
     
-    // Проверяем, не превышены ли лимиты
-    const lines = text.split('\n');
-    let needsTrimming = false;
-    
-    // Проверяем количество строк
-    if (lines.length > maxLines) {
-        needsTrimming = true;
-    }
-    
-    // Проверяем длину каждой строки
-    for (let i = 0; i < lines.length; i++) {
+    let newText = text;
+    let needsUpdate = false;
+
+    // Обрабатываем каждую строку (кроме последней)
+    for (let i = 0; i < Math.min(lines.length, maxLines - 1); i++) {
         if (lines[i].length > charsPerLine) {
-            needsTrimming = true;
-            break;
-        }
-    }
-    
-    // Проверяем общее количество символов (без учета переносов строк)
-    const totalChars = text.replace(/\n/g, '').length;
-    if (totalChars > maxTotal) {
-        needsTrimming = true;
-    }
-    
-    // Если превышены лимиты, аккуратно обрезаем
-    if (needsTrimming) {
-        let newText = text;
-        
-        // Обрезаем общее количество символов (только если превышен общий лимит)
-        if (totalChars > maxTotal) {
-            let charsCount = 0;
-            let result = '';
+            const line = lines[i];
+            // Находим последний пробел до 25 символов
+            const lastSpaceIndex = line.lastIndexOf(' ', charsPerLine);
             
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                if (char !== '\n') {
-                    if (charsCount >= maxTotal) break;
-                    charsCount++;
+            if (lastSpaceIndex > 0) {
+                // Переносим часть после пробела на следующую строку
+                lines[i] = line.substring(0, lastSpaceIndex);
+                if (i + 1 < lines.length) {
+                    lines[i + 1] = line.substring(lastSpaceIndex + 1) + (lines[i + 1] ? ' ' + lines[i + 1] : '');
+                } else if (lines.length < maxLines) {
+                    lines.push(line.substring(lastSpaceIndex + 1));
                 }
-                result += char;
-            }
-            newText = result;
-        }
-        
-        // Обрезаем строки
-        const newLines = newText.split('\n').slice(0, maxLines);
-        const finalLines = [];
-        
-        for (let i = 0; i < newLines.length; i++) {
-            if (newLines[i].length > charsPerLine) {
-                finalLines.push(newLines[i].substring(0, charsPerLine));
             } else {
-                finalLines.push(newLines[i]);
+                // Если пробела нет, просто обрезаем
+                lines[i] = line.substring(0, charsPerLine);
             }
-        }
-        
-        newText = finalLines.join('\n');
-        
-        // Применяем только если текст изменился
-        if (newText !== text) {
-            descShort.value = newText;
-            
-            // Восстанавливаем позицию курсора (не дальше конца текста)
-            const newCursorPos = Math.min(cursorPos, newText.length);
-            descShort.setSelectionRange(newCursorPos, newCursorPos);
+            needsUpdate = true;
         }
     }
-    
+
+    // Для последней строки просто обрезаем если превышен лимит
+    if (lines.length === maxLines && lines[maxLines - 1].length > charsPerLine) {
+        lines[maxLines - 1] = lines[maxLines - 1].substring(0, charsPerLine);
+        needsUpdate = true;
+    }
+
+    // Обрезаем общее количество строк
+    if (lines.length > maxLines) {
+        lines.length = maxLines;
+        needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+        newText = lines.join('\n');
+        descShort.value = newText;
+        
+        // Восстанавливаем позицию курсора
+        const newCursorPos = Math.min(cursorPos, newText.length);
+        descShort.setSelectionRange(newCursorPos, newCursorPos);
+    }
+
     // Обновляем счетчик
-    const currentText = descShort.value;
-    const currentTotalChars = currentText.replace(/\n/g, '').length;
+    const currentTotalChars = descShort.value.replace(/\n/g, '').length;
     const remaining = Math.max(0, maxTotal - currentTotalChars);
     shortCounter.textContent = `${remaining} символов осталось`;
 
@@ -686,19 +666,35 @@ function updateCharCounters() {
     }
 }
 
-// ====== Упрощенные слушатели ======
+// ====== Слушатели ======
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
-    // Блокируем ввод ТОЛЬКО когда достигнут общий лимит в 125 символов
+    // Блокируем ввод только на 5й строке при 25 символах
     descShortEl.addEventListener("beforeinput", function (e) {
-        // Проверяем только общий лимит символов (125), не лимит строк
-        const currentText = this.value;
-        const currentTotalChars = currentText.replace(/\n/g, '').length;
-        const maxTotal = 5 * 25; // 125 символов
+        const text = this.value;
+        const lines = text.split('\n');
+        const cursorPos = this.selectionStart;
         
-        if (currentTotalChars >= maxTotal && 
-            e.inputType.startsWith('insert') &&
-            e.data !== " ") { // Разрешаем пробелы
+        // Определяем текущую строку и позицию в ней
+        let currentLine = 0;
+        let posInLine = cursorPos;
+        for (let i = 0; i < lines.length; i++) {
+            if (posInLine <= lines[i].length) {
+                currentLine = i;
+                break;
+            }
+            posInLine -= lines[i].length + 1; // +1 для \n
+        }
+        
+        // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
+        if (currentLine === 4 && posInLine >= 25 && e.inputType.startsWith('insert')) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Если общий лимит 125 символов достигнут - блокируем ввод
+        const currentTotalChars = text.replace(/\n/g, '').length;
+        if (currentTotalChars >= 125 && e.inputType.startsWith('insert')) {
             e.preventDefault();
             return;
         }
@@ -716,12 +712,9 @@ if (descShortEl) {
         const before = this.value.slice(0, selStart);
         const after = this.value.slice(selEnd);
         
-        // Вставляем текст
         this.value = before + paste + after;
         const newPos = before.length + paste.length;
         this.setSelectionRange(newPos, newPos);
-        
-        // Обновляем счётчик
         updateCharCounters();
     });
 
