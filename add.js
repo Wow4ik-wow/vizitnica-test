@@ -588,76 +588,178 @@ function updateProgress() {
     document.getElementById("progressPercent").textContent = `${Math.round(progress)}%`;
 }
 
-// Обновление счётчиков символов и блокировка ввода после 5 строк × 25 символов
+// ====== Обновление счётчиков символов, перенос слов целиком и блокировка ввода ======
 function updateCharCounters() {
     const descShort = document.getElementById("descShort");
     const shortCounter = document.getElementById("descShortCounter");
     const maxLines = 5;
     const charsPerLine = 25;
+    const maxTotal = maxLines * charsPerLine; // 125
 
-    // Разбиваем текст на строки по Enter
-    let lines = descShort.value.split(/\r?\n/);
+    // Получаем оригинальные строки (сохранить пустые строки)
+    const origLines = descShort.value.split(/\r?\n/);
 
-    // Ограничиваем максимум 5 строк
-    if (lines.length > maxLines) {
-        lines = lines.slice(0, maxLines);
-    }
-
+    // Ограничиваем обрабатываемые исходные строки — если пользователь ввёл больше, игнорируем лишние
+    // (но пустые строки сохраняем, чтобы пользователь мог форматировать)
+    // Будем перераспределять слова построчно с правилами переноса целиком.
     const newLines = [];
-    for (let line of lines) {
-        let words = line.split(' ').filter(Boolean);
-        let currentLine = '';
-        for (let word of words) {
+    let totalUsed = 0;
+
+    outer:
+    for (let i = 0; i < origLines.length; i++) {
+        if (newLines.length >= maxLines) break;
+        const rawLine = origLines[i];
+
+        // Если пользователь оставил пустую строку — сохраняем пустую строку (занимает 0 символов)
+        if (rawLine.trim() === "") {
+            newLines.push("");
+            continue;
+        }
+
+        // Разбиваем на слова (несколько пробелов считаем как один разделитель)
+        const words = rawLine.split(/\s+/);
+
+        let current = newLines.length ? (newLines[newLines.length - 1] === "" ? "" : null) : null;
+        // Если последний добавленный был непустой и мы не начали новую current, не используем его.
+        // Нам проще строить новые строки заново:
+        let curLine = "";
+
+        for (let wIndex = 0; wIndex < words.length; wIndex++) {
+            const word = words[wIndex];
+            if (!word) continue;
+
+            // Если слово длиннее charsPerLine — разобьём его на куски по charsPerLine
             if (word.length > charsPerLine) {
-                // Слово длиннее строки — переносим целиком, обрезаем по лимиту строк
-                if (newLines.length < maxLines) {
-                    newLines.push(word.substring(0, charsPerLine));
+                // сначала, если в curLine есть текст — запишем его (как завершённую)
+                if (curLine.length > 0) {
+                    if (newLines.length < maxLines) {
+                        newLines.push(curLine);
+                        totalUsed += curLine.length;
+                        curLine = "";
+                        if (totalUsed >= maxTotal) break outer;
+                    } else break outer;
                 }
+                // разрезаем длинное слово на куски
+                for (let p = 0; p < word.length; p += charsPerLine) {
+                    if (newLines.length >= maxLines) break outer;
+                    const part = word.substring(p, p + charsPerLine);
+                    newLines.push(part);
+                    totalUsed += part.length;
+                    if (totalUsed >= maxTotal) break outer;
+                }
+                // после длинного слова — следующий кусок начинается как пустой
                 continue;
             }
 
-            if ((currentLine.length ? currentLine.length + 1 : 0) + word.length <= charsPerLine) {
-                currentLine = currentLine ? currentLine + ' ' + word : word;
+            // если слово помещается в текущую линию (с учётом пробела, если строка не пустая)
+            const need = curLine.length === 0 ? word.length : (curLine.length + 1 + word.length);
+            if (need <= charsPerLine) {
+                curLine = curLine.length === 0 ? word : (curLine + ' ' + word);
             } else {
-                if (newLines.length < maxLines) newLines.push(currentLine);
-                currentLine = word;
+                // слово не влезает — переносим curLine в newLines и ставим слово в новую curLine
+                if (newLines.length < maxLines) {
+                    newLines.push(curLine);
+                    totalUsed += curLine.length;
+                    curLine = word;
+                } else {
+                    // уже нет места для новой строки
+                    break outer;
+                }
             }
-        }
-        if (currentLine && newLines.length < maxLines) newLines.push(currentLine);
-    }
 
-    // Записываем обратно в поле (с сохранением Enter)
+            // если после добавления слова общее количество символов превысит maxTotal — обрываем
+            if (totalUsed + curLine.length >= maxTotal) {
+                // если curLine можно ещё частично вместить — обрезаем его до оставшегося места
+                const left = maxTotal - totalUsed;
+                if (left > 0) {
+                    // но так как правило — слово не обрезать, то если оно не влезает целиком, мы НЕ добавляем его.
+                    // поэтому в этой ветке curLine — это либо одно слово, либо сочетание; проверим:
+                    if (curLine.length <= left) {
+                        // помещается — запишем
+                        if (newLines.length < maxLines) {
+                            newLines.push(curLine);
+                            totalUsed += curLine.length;
+                        }
+                    }
+                }
+                break outer;
+            }
+        } // конец перебора слов в строке
+
+        // после обработки всех слов исходной строки — если curLine есть — добавляем
+        if (curLine.length > 0 && newLines.length < maxLines) {
+            newLines.push(curLine);
+            totalUsed += curLine.length;
+            if (totalUsed >= maxTotal) break;
+        }
+    } // конец перебора исходных строк
+
+    // Если осталось меньше чем maxLines строк — но пользователь мог не заполнять всё — всё ок.
+    // Обрежем лишние строки, если вдруг
+    if (newLines.length > maxLines) newLines.length = maxLines;
+
+    // Записываем обратно — сохраняем пустые строки как есть
     descShort.value = newLines.join('\n');
 
-    // Подсчёт использованных и оставшихся символов
-    let usedChars = newLines.reduce((acc, l) => acc + l.length, 0);
-    let remaining = maxLines * charsPerLine - usedChars;
+    // Подсчёт использованных символов и оставшихся
+    const used = newLines.reduce((s, ln) => s + ln.length, 0);
+    const remaining = Math.max(0, maxTotal - used);
     shortCounter.textContent = `${remaining} символов осталось`;
 
-    // Меняем цвет счётчика по остаткам
-    if (remaining <= 25) {
+    // Цвет индикатора
+    if (remaining === 0) {
         shortCounter.style.color = '#e74c3c';
-    } else if (remaining <= 50) {
+    } else if (remaining <= 25) {
         shortCounter.style.color = '#f39c12';
     } else {
         shortCounter.style.color = '#27ae60';
     }
 
-    // Блокировка ввода, если достигнут лимит 125 символов
-    if (remaining <= 0) {
-        descShort.value = newLines.join('\n'); // фиксируем текст
-        descShort.dataset.maxReached = "true";
-    } else {
-        descShort.dataset.maxReached = "false";
-    }
+    // Флаг достижения лимита (используется в beforeinput)
+    descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
 
-// Дополнительно — предотвратить набор при достижении лимита
-document.getElementById("descShort").addEventListener("beforeinput", function(e) {
-    if (this.dataset.maxReached === "true") {
+// ====== Предотвращаем ввод, если лимит уже достигнут ======
+const descShortEl = document.getElementById("descShort");
+if (descShortEl) {
+    // Блокировка стандартного ввода (включая печать и Enter) когда достигнут лимит
+    descShortEl.addEventListener("beforeinput", function (e) {
+        // Если уже достигнут лимит — запрещаем любое изменение, кроме навигации (неправильное событие не даст изменить значение)
+        if (this.dataset.maxReached === "true") {
+            // Разрешим только некоторые навигационные/clipboard события (на всякий случай), но большинство — блокируем
+            e.preventDefault();
+            return;
+        }
+
+        // Для вставки — мы позволим, но потом переформатируем в 'input' обработчике
+    });
+
+    // При input (ввод, вставка, удаление) — перерабатываем и обновляем счётчик
+    descShortEl.addEventListener("input", function () {
+        updateCharCounters();
+    });
+
+    // При paste — предотвратить вставку, затем вставить очищённый/ограниченный вариант
+    descShortEl.addEventListener("paste", function (e) {
         e.preventDefault();
-    }
-});
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        // Вставим текст в текущую позицию курсора вручную, затем обновим
+        const selStart = this.selectionStart;
+        const selEnd = this.selectionEnd;
+        const before = this.value.slice(0, selStart);
+        const after = this.value.slice(selEnd);
+        const newValue = before + paste + after;
+        this.value = newValue;
+        // Перемещаем курсор в конец вставленного блока
+        const newPos = before.length + paste.length;
+        this.selectionStart = this.selectionEnd = newPos;
+        updateCharCounters();
+    });
+
+    // Инициалный прогон при загрузке страницы (если поле уже заполнено)
+    updateCharCounters();
+}
+
 
 
 // === ОТПРАВКА ФОРМЫ ===
