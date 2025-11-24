@@ -601,6 +601,13 @@ function updateCharCounters() {
     let selEnd = descShort.selectionEnd;
 
     const origValue = descShort.value;
+    
+    // Если текст не изменился, выходим чтобы избежать рекурсии
+    if (origValue === descShort.dataset.lastValue) {
+        return;
+    }
+    descShort.dataset.lastValue = origValue;
+
     const origLines = origValue.split(/\r?\n/);
     const newLines = [];
     let totalUsed = 0;
@@ -608,10 +615,15 @@ function updateCharCounters() {
     outer:
     for (let i = 0; i < origLines.length; i++) {
         if (newLines.length >= maxLines) break;
-        const rawLine = origLines[i];
+        let rawLine = origLines[i];
 
-        if (rawLine.trim() === "") {
-            newLines.push("");
+        // Сохраняем пробелы в конце строки для текущей строки
+        const trailingSpacesMatch = rawLine.match(/\s+$/);
+        const trailingSpaces = trailingSpacesMatch ? trailingSpacesMatch[0] : '';
+        rawLine = rawLine.trimEnd();
+
+        if (rawLine === "") {
+            newLines.push(trailingSpaces);
             continue;
         }
 
@@ -668,21 +680,34 @@ function updateCharCounters() {
         }
 
         if (curLine.length > 0 && newLines.length < maxLines) {
-            newLines.push(curLine);
-            totalUsed += curLine.length;
+            // Добавляем сохранённые пробелы в конец строки
+            newLines.push(curLine + trailingSpaces);
+            totalUsed += curLine.length + trailingSpaces.length;
             if (totalUsed >= maxTotal) break;
+        } else if (trailingSpaces && newLines.length < maxLines) {
+            // Если была строка только с пробелами
+            newLines.push(trailingSpaces);
+            totalUsed += trailingSpaces.length;
         }
     }
 
     if (newLines.length > maxLines) newLines.length = maxLines;
 
-    // Перезаписываем значение и сохраняем пробелы в конце строк
-    descShort.value = newLines.join('\n');
+    // Перезаписываем значение
+    const newValue = newLines.join('\n');
+    descShort.value = newValue;
 
-    // Восстанавливаем курсор после вставки/обновления
-    descShort.setSelectionRange(selStart, selEnd);
+    // Корректируем позицию курсора
+    const lengthDiff = newValue.length - origValue.length;
+    if (selStart > origValue.length) selStart = origValue.length;
+    if (selEnd > origValue.length) selEnd = origValue.length;
+    
+    let newSelStart = Math.max(0, Math.min(selStart + lengthDiff, newValue.length));
+    let newSelEnd = Math.max(0, Math.min(selEnd + lengthDiff, newValue.length));
+    
+    descShort.setSelectionRange(newSelStart, newSelEnd);
 
-    const used = newLines.reduce((s, ln) => s + ln.length, 0);
+    const used = newValue.replace(/\n/g, '').length;
     const remaining = Math.max(0, maxTotal - used);
     shortCounter.textContent = `${remaining} символов осталось`;
 
@@ -697,11 +722,16 @@ function updateCharCounters() {
     descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
 
-// ====== Слушатели ======
+// ====== Улучшенные слушатели ======
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
+    // Убираем строгую блокировку ввода - разрешаем пробелы
     descShortEl.addEventListener("beforeinput", function (e) {
-        if (this.dataset.maxReached === "true" && e.inputType !== "deleteContentBackward") {
+        if (this.dataset.maxReached === "true" && 
+            e.inputType !== "deleteContentBackward" &&
+            e.inputType !== "deleteContentForward" &&
+            e.inputType !== "deleteWordBackward" &&
+            e.data !== " ") { // Разрешаем пробелы даже при лимите
             e.preventDefault();
             return;
         }
@@ -718,13 +748,18 @@ if (descShortEl) {
         const selEnd = this.selectionEnd;
         const before = this.value.slice(0, selStart);
         const after = this.value.slice(selEnd);
+        
+        // Вставляем текст
         this.value = before + paste + after;
         const newPos = before.length + paste.length;
         this.setSelectionRange(newPos, newPos);
+        
+        // Обновляем счётчик
         updateCharCounters();
     });
 
-    // Прогон при загрузке
+    // Инициализация при загрузке
+    descShortEl.dataset.lastValue = descShortEl.value;
     updateCharCounters();
 }
 
