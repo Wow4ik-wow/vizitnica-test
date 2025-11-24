@@ -599,9 +599,6 @@ function updateCharCounters() {
     // Получаем оригинальные строки (сохранить пустые строки)
     const origLines = descShort.value.split(/\r?\n/);
 
-    // Ограничиваем обрабатываемые исходные строки — если пользователь ввёл больше, игнорируем лишние
-    // (но пустые строки сохраняем, чтобы пользователь мог форматировать)
-    // Будем перераспределять слова построчно с правилами переноса целиком.
     const newLines = [];
     let totalUsed = 0;
 
@@ -610,27 +607,26 @@ function updateCharCounters() {
         if (newLines.length >= maxLines) break;
         const rawLine = origLines[i];
 
-        // Если пользователь оставил пустую строку — сохраняем пустую строку (занимает 0 символов)
-        if (rawLine.trim() === "") {
+        // Сохраняем пустые строки
+        if (rawLine === "") {
             newLines.push("");
             continue;
         }
 
-        // Разбиваем на слова (несколько пробелов считаем как один разделитель)
-        const words = rawLine.split(/\s+/);
+        // Флаг: закончилась ли исходная строка пробелом — нужно сохранить этот trailing space, если возможно
+        const hasTrailingSpace = /\s$/.test(rawLine);
 
-        let current = newLines.length ? (newLines[newLines.length - 1] === "" ? "" : null) : null;
-        // Если последний добавленный был непустой и мы не начали новую current, не используем его.
-        // Нам проще строить новые строки заново:
+        // Разбиваем на слова (удаляем пустые фрагменты) — внутренние множественные пробелы сведутся к одному
+        const words = rawLine.trim().split(/\s+/);
+
         let curLine = "";
 
         for (let wIndex = 0; wIndex < words.length; wIndex++) {
             const word = words[wIndex];
             if (!word) continue;
 
-            // Если слово длиннее charsPerLine — разобьём его на куски по charsPerLine
+            // Если слово длиннее charsPerLine — разобьём его на куски
             if (word.length > charsPerLine) {
-                // сначала, если в curLine есть текст — запишем его (как завершённую)
                 if (curLine.length > 0) {
                     if (newLines.length < maxLines) {
                         newLines.push(curLine);
@@ -639,7 +635,6 @@ function updateCharCounters() {
                         if (totalUsed >= maxTotal) break outer;
                     } else break outer;
                 }
-                // разрезаем длинное слово на куски
                 for (let p = 0; p < word.length; p += charsPerLine) {
                     if (newLines.length >= maxLines) break outer;
                     const part = word.substring(p, p + charsPerLine);
@@ -647,35 +642,30 @@ function updateCharCounters() {
                     totalUsed += part.length;
                     if (totalUsed >= maxTotal) break outer;
                 }
-                // после длинного слова — следующий кусок начинается как пустой
                 continue;
             }
 
-            // если слово помещается в текущую линию (с учётом пробела, если строка не пустая)
+            // Нужно место с учётом пробела, если curLine не пустой
             const need = curLine.length === 0 ? word.length : (curLine.length + 1 + word.length);
+
             if (need <= charsPerLine) {
                 curLine = curLine.length === 0 ? word : (curLine + ' ' + word);
             } else {
-                // слово не влезает — переносим curLine в newLines и ставим слово в новую curLine
+                // перенос текущей линии и начало новой
                 if (newLines.length < maxLines) {
                     newLines.push(curLine);
                     totalUsed += curLine.length;
                     curLine = word;
                 } else {
-                    // уже нет места для новой строки
                     break outer;
                 }
             }
 
-            // если после добавления слова общее количество символов превысит maxTotal — обрываем
+            // Если накопление превысит общий лимит — проверяем и выходим
             if (totalUsed + curLine.length >= maxTotal) {
-                // если curLine можно ещё частично вместить — обрезаем его до оставшегося места
                 const left = maxTotal - totalUsed;
                 if (left > 0) {
-                    // но так как правило — слово не обрезать, то если оно не влезает целиком, мы НЕ добавляем его.
-                    // поэтому в этой ветке curLine — это либо одно слово, либо сочетание; проверим:
                     if (curLine.length <= left) {
-                        // помещается — запишем
                         if (newLines.length < maxLines) {
                             newLines.push(curLine);
                             totalUsed += curLine.length;
@@ -684,18 +674,22 @@ function updateCharCounters() {
                 }
                 break outer;
             }
-        } // конец перебора слов в строке
+        } // конец слов в строке
 
-        // после обработки всех слов исходной строки — если curLine есть — добавляем
-        if (curLine.length > 0 && newLines.length < maxLines) {
-            newLines.push(curLine);
-            totalUsed += curLine.length;
-            if (totalUsed >= maxTotal) break;
+        // Сохраняем trailing space, если в исходной строке он был и если в текущей строке есть место
+        if (curLine.length > 0) {
+            // пробел в конце занимает 1 символ — учитываем в лимите
+            if (hasTrailingSpace && curLine.length < charsPerLine && (totalUsed + curLine.length + 1) <= maxTotal) {
+                curLine = curLine + ' ';
+            }
+            if (newLines.length < maxLines) {
+                newLines.push(curLine);
+                totalUsed += curLine.length;
+                if (totalUsed >= maxTotal) break;
+            }
         }
     } // конец перебора исходных строк
 
-    // Если осталось меньше чем maxLines строк — но пользователь мог не заполнять всё — всё ок.
-    // Обрежем лишние строки, если вдруг
     if (newLines.length > maxLines) newLines.length = maxLines;
 
     // Записываем обратно — сохраняем пустые строки как есть
@@ -715,9 +709,10 @@ function updateCharCounters() {
         shortCounter.style.color = '#27ae60';
     }
 
-    // Флаг достижения лимита (используется в beforeinput)
+    // Флаг достижения лимита (используется в beforeinput, но beforeinput не блокирует ввод)
     descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
+
 
 // ====== Предотвращаем ввод, если лимит уже достигнут ======
 const descShortEl = document.getElementById("descShort");
