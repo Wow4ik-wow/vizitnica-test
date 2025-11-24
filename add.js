@@ -588,7 +588,7 @@ function updateProgress() {
     document.getElementById("progressPercent").textContent = `${Math.round(progress)}%`;
 }
 
-// ====== Обновление счётчиков символов, перенос слов целиком и блокировка ввода ======
+// ====== Обновление счётчиков символов ======
 function updateCharCounters() {
     const descShort = document.getElementById("descShort");
     const shortCounter = document.getElementById("descShortCounter");
@@ -596,119 +596,71 @@ function updateCharCounters() {
     const charsPerLine = 25;
     const maxTotal = maxLines * charsPerLine; // 125
 
-    // Сохраняем позицию курсора
-    let selStart = descShort.selectionStart;
-    let selEnd = descShort.selectionEnd;
-
-    const origValue = descShort.value;
+    const text = descShort.value;
+    const lines = text.split('\n');
     
-    // Если текст не изменился, выходим чтобы избежать рекурсии
-    if (origValue === descShort.dataset.lastValue) {
-        return;
+    // Проверяем, не превышены ли лимиты
+    let exceedsLimit = false;
+    
+    // Проверяем количество строк
+    if (lines.length > maxLines) {
+        exceedsLimit = true;
     }
-    descShort.dataset.lastValue = origValue;
-
-    const origLines = origValue.split(/\r?\n/);
-    const newLines = [];
-    let totalUsed = 0;
-
-    outer:
-    for (let i = 0; i < origLines.length; i++) {
-        if (newLines.length >= maxLines) break;
-        let rawLine = origLines[i];
-
-        // Сохраняем пробелы в конце строки для текущей строки
-        const trailingSpacesMatch = rawLine.match(/\s+$/);
-        const trailingSpaces = trailingSpacesMatch ? trailingSpacesMatch[0] : '';
-        rawLine = rawLine.trimEnd();
-
-        if (rawLine === "") {
-            newLines.push(trailingSpaces);
-            continue;
-        }
-
-        const words = rawLine.split(/\s+/);
-        let curLine = "";
-
-        for (let wIndex = 0; wIndex < words.length; wIndex++) {
-            const word = words[wIndex];
-            if (!word) continue;
-
-            // Если слово длиннее charsPerLine, разбиваем на куски
-            if (word.length > charsPerLine) {
-                if (curLine.length > 0) {
-                    if (newLines.length < maxLines) {
-                        newLines.push(curLine);
-                        totalUsed += curLine.length;
-                        curLine = "";
-                        if (totalUsed >= maxTotal) break outer;
-                    } else break outer;
-                }
-                for (let p = 0; p < word.length; p += charsPerLine) {
-                    if (newLines.length >= maxLines) break outer;
-                    const part = word.substring(p, p + charsPerLine);
-                    newLines.push(part);
-                    totalUsed += part.length;
-                    if (totalUsed >= maxTotal) break outer;
-                }
-                continue;
-            }
-
-            const need = curLine.length === 0 ? word.length : (curLine.length + 1 + word.length);
-            if (need <= charsPerLine) {
-                curLine = curLine.length === 0 ? word : (curLine + ' ' + word);
-            } else {
-                if (newLines.length < maxLines) {
-                    newLines.push(curLine);
-                    totalUsed += curLine.length;
-                    curLine = word;
-                } else {
-                    break outer;
-                }
-            }
-
-            if (totalUsed + curLine.length >= maxTotal) {
-                const left = maxTotal - totalUsed;
-                if (left > 0 && curLine.length <= left) {
-                    if (newLines.length < maxLines) {
-                        newLines.push(curLine);
-                        totalUsed += curLine.length;
-                    }
-                }
-                break outer;
-            }
-        }
-
-        if (curLine.length > 0 && newLines.length < maxLines) {
-            // Добавляем сохранённые пробелы в конец строки
-            newLines.push(curLine + trailingSpaces);
-            totalUsed += curLine.length + trailingSpaces.length;
-            if (totalUsed >= maxTotal) break;
-        } else if (trailingSpaces && newLines.length < maxLines) {
-            // Если была строка только с пробелами
-            newLines.push(trailingSpaces);
-            totalUsed += trailingSpaces.length;
+    
+    // Проверяем длину каждой строки
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].length > charsPerLine) {
+            exceedsLimit = true;
+            break;
         }
     }
-
-    if (newLines.length > maxLines) newLines.length = maxLines;
-
-    // Перезаписываем значение
-    const newValue = newLines.join('\n');
-    descShort.value = newValue;
-
-    // Корректируем позицию курсора
-    const lengthDiff = newValue.length - origValue.length;
-    if (selStart > origValue.length) selStart = origValue.length;
-    if (selEnd > origValue.length) selEnd = origValue.length;
     
-    let newSelStart = Math.max(0, Math.min(selStart + lengthDiff, newValue.length));
-    let newSelEnd = Math.max(0, Math.min(selEnd + lengthDiff, newValue.length));
+    // Проверяем общее количество символов
+    const totalChars = text.replace(/\n/g, '').length;
+    if (totalChars > maxTotal) {
+        exceedsLimit = true;
+    }
     
-    descShort.setSelectionRange(newSelStart, newSelEnd);
-
-    const used = newValue.replace(/\n/g, '').length;
-    const remaining = Math.max(0, maxTotal - used);
+    // Если превышены лимиты, обрезаем текст
+    if (exceedsLimit) {
+        // Сохраняем позицию курсора до обрезки
+        const cursorPos = descShort.selectionStart;
+        
+        // Обрезаем построчно
+        const newLines = [];
+        let totalCharsUsed = 0;
+        
+        for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+            let line = lines[i];
+            if (line.length > charsPerLine) {
+                line = line.substring(0, charsPerLine);
+            }
+            
+            // Проверяем общий лимит символов
+            const remainingChars = maxTotal - totalCharsUsed;
+            if (line.length > remainingChars) {
+                line = line.substring(0, remainingChars);
+            }
+            
+            if (line.length > 0) {
+                newLines.push(line);
+                totalCharsUsed += line.length;
+            }
+            
+            if (totalCharsUsed >= maxTotal) break;
+        }
+        
+        const newText = newLines.join('\n');
+        descShort.value = newText;
+        
+        // Восстанавливаем позицию курсора, но не дальше конца текста
+        const newCursorPos = Math.min(cursorPos, newText.length);
+        descShort.setSelectionRange(newCursorPos, newCursorPos);
+    }
+    
+    // Обновляем счетчик
+    const currentTotalChars = descShort.value.replace(/\n/g, '').length;
+    const remaining = Math.max(0, maxTotal - currentTotalChars);
     shortCounter.textContent = `${remaining} символов осталось`;
 
     if (remaining === 0) {
@@ -722,16 +674,17 @@ function updateCharCounters() {
     descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
 
-// ====== Улучшенные слушатели ======
+// ====== Упрощенные слушатели ======
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
-    // Убираем строгую блокировку ввода - разрешаем пробелы
+    // Блокируем ввод при достижении лимита
     descShortEl.addEventListener("beforeinput", function (e) {
         if (this.dataset.maxReached === "true" && 
             e.inputType !== "deleteContentBackward" &&
             e.inputType !== "deleteContentForward" &&
             e.inputType !== "deleteWordBackward" &&
-            e.data !== " ") { // Разрешаем пробелы даже при лимите
+            e.inputType !== "deleteWordForward" &&
+            e.data !== " ") {
             e.preventDefault();
             return;
         }
@@ -759,7 +712,6 @@ if (descShortEl) {
     });
 
     // Инициализация при загрузке
-    descShortEl.dataset.lastValue = descShortEl.value;
     updateCharCounters();
 }
 
