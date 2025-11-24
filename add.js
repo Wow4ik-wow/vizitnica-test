@@ -618,7 +618,7 @@ function updateCharCounters() {
         }
     }
     
-    // Проверяем общее количество символов
+    // Проверяем общее количество символов (без учета переносов строк)
     const totalChars = text.replace(/\n/g, '').length;
     if (totalChars > maxTotal) {
         needsTrimming = true;
@@ -628,7 +628,7 @@ function updateCharCounters() {
     if (needsTrimming) {
         let newText = text;
         
-        // Обрезаем общее количество символов
+        // Обрезаем общее количество символов (только если превышен общий лимит)
         if (totalChars > maxTotal) {
             let charsCount = 0;
             let result = '';
@@ -676,23 +676,29 @@ function updateCharCounters() {
 
     if (remaining === 0) {
         shortCounter.style.color = '#e74c3c';
+        descShort.dataset.maxReached = "true";
     } else if (remaining <= 25) {
         shortCounter.style.color = '#f39c12';
+        descShort.dataset.maxReached = "false";
     } else {
         shortCounter.style.color = '#27ae60';
+        descShort.dataset.maxReached = "false";
     }
-
-    descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
 
 // ====== Упрощенные слушатели ======
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
-    // Мягкая блокировка ввода
+    // Блокируем ввод ТОЛЬКО когда достигнут общий лимит в 125 символов
     descShortEl.addEventListener("beforeinput", function (e) {
-        if (this.dataset.maxReached === "true" && 
+        // Проверяем только общий лимит символов (125), не лимит строк
+        const currentText = this.value;
+        const currentTotalChars = currentText.replace(/\n/g, '').length;
+        const maxTotal = 5 * 25; // 125 символов
+        
+        if (currentTotalChars >= maxTotal && 
             e.inputType.startsWith('insert') &&
-            e.data !== " ") {
+            e.data !== " ") { // Разрешаем пробелы
             e.preventDefault();
             return;
         }
