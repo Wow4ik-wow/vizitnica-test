@@ -761,6 +761,16 @@ if (descShortEl) {
             posInLine -= lines[i].length + 1; // +1 для \n
         }
         
+        // Всегда разрешаем Enter (перенос строки)
+        if (e.inputType === 'insertLineBreak') {
+            // Но проверяем, не превышен ли лимит строк
+            if (lines.length >= 5 && currentLine >= 4) {
+                e.preventDefault();
+                return;
+            }
+            return; // Разрешаем Enter
+        }
+        
         // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
         if (currentLine === 4 && posInLine >= 25 && e.inputType.startsWith('insert')) {
             e.preventDefault();
