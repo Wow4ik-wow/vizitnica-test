@@ -596,9 +596,10 @@ function updateCharCounters() {
     const charsPerLine = 25;
     const maxTotal = maxLines * charsPerLine; // 125
 
-    // Получаем оригинальные строки (сохранить пустые строки)
-    const origLines = descShort.value.split(/\r?\n/);
+    // Сохраняем позицию курсора
+    let cursorPos = descShort.selectionStart;
 
+    const origLines = descShort.value.split(/\r?\n/);
     const newLines = [];
     let totalUsed = 0;
 
@@ -607,25 +608,18 @@ function updateCharCounters() {
         if (newLines.length >= maxLines) break;
         const rawLine = origLines[i];
 
-        // Сохраняем пустые строки
-        if (rawLine === "") {
+        if (rawLine.trim() === "") {
             newLines.push("");
             continue;
         }
 
-        // Флаг: закончилась ли исходная строка пробелом — нужно сохранить этот trailing space, если возможно
-        const hasTrailingSpace = /\s$/.test(rawLine);
-
-        // Разбиваем на слова (удаляем пустые фрагменты) — внутренние множественные пробелы сведутся к одному
-        const words = rawLine.trim().split(/\s+/);
-
+        const words = rawLine.split(/\s+/);
         let curLine = "";
 
         for (let wIndex = 0; wIndex < words.length; wIndex++) {
             const word = words[wIndex];
             if (!word) continue;
 
-            // Если слово длиннее charsPerLine — разобьём его на куски
             if (word.length > charsPerLine) {
                 if (curLine.length > 0) {
                     if (newLines.length < maxLines) {
@@ -645,74 +639,59 @@ function updateCharCounters() {
                 continue;
             }
 
-            // Нужно место с учётом пробела, если curLine не пустой
             const need = curLine.length === 0 ? word.length : (curLine.length + 1 + word.length);
-
             if (need <= charsPerLine) {
                 curLine = curLine.length === 0 ? word : (curLine + ' ' + word);
             } else {
-                // перенос текущей линии и начало новой
                 if (newLines.length < maxLines) {
                     newLines.push(curLine);
                     totalUsed += curLine.length;
                     curLine = word;
-                } else {
-                    break outer;
-                }
+                } else break outer;
             }
 
-            // Если накопление превысит общий лимит — проверяем и выходим
             if (totalUsed + curLine.length >= maxTotal) {
                 const left = maxTotal - totalUsed;
-                if (left > 0) {
-                    if (curLine.length <= left) {
-                        if (newLines.length < maxLines) {
-                            newLines.push(curLine);
-                            totalUsed += curLine.length;
-                        }
+                if (left > 0 && curLine.length <= left) {
+                    if (newLines.length < maxLines) {
+                        newLines.push(curLine);
+                        totalUsed += curLine.length;
                     }
                 }
                 break outer;
             }
-        } // конец слов в строке
-
-        // Сохраняем trailing space, если в исходной строке он был и если в текущей строке есть место
-        if (curLine.length > 0) {
-            // пробел в конце занимает 1 символ — учитываем в лимите
-            if (hasTrailingSpace && curLine.length < charsPerLine && (totalUsed + curLine.length + 1) <= maxTotal) {
-                curLine = curLine + ' ';
-            }
-            if (newLines.length < maxLines) {
-                newLines.push(curLine);
-                totalUsed += curLine.length;
-                if (totalUsed >= maxTotal) break;
-            }
         }
-    } // конец перебора исходных строк
+
+        if (curLine.length > 0 && newLines.length < maxLines) {
+            newLines.push(curLine);
+            totalUsed += curLine.length;
+            if (totalUsed >= maxTotal) break;
+        }
+    }
 
     if (newLines.length > maxLines) newLines.length = maxLines;
 
-    // Записываем обратно — сохраняем пустые строки как есть
-    descShort.value = newLines.join('\n');
+    // Обновляем значение поля **только если оно реально изменилось**
+    const newValue = newLines.join('\n');
+    if (descShort.value !== newValue) {
+        descShort.value = newValue;
+    }
 
-    // Подсчёт использованных символов и оставшихся
+    // Восстанавливаем позицию курсора (в конце текста, если он там был)
+    if (cursorPos >= descShort.value.length) {
+        descShort.selectionStart = descShort.selectionEnd = descShort.value.length;
+    } else {
+        descShort.selectionStart = descShort.selectionEnd = cursorPos;
+    }
+
+    // Подсчёт символов
     const used = newLines.reduce((s, ln) => s + ln.length, 0);
     const remaining = Math.max(0, maxTotal - used);
     shortCounter.textContent = `${remaining} символов осталось`;
 
-    // Цвет индикатора
-    if (remaining === 0) {
-        shortCounter.style.color = '#e74c3c';
-    } else if (remaining <= 25) {
-        shortCounter.style.color = '#f39c12';
-    } else {
-        shortCounter.style.color = '#27ae60';
-    }
-
-    // Флаг достижения лимита (используется в beforeinput, но beforeinput не блокирует ввод)
+    shortCounter.style.color = remaining === 0 ? '#e74c3c' : (remaining <= 25 ? '#f39c12' : '#27ae60');
     descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
-
 
 // ====== Предотвращаем ввод, если лимит уже достигнут ======
 const descShortEl = document.getElementById("descShort");
