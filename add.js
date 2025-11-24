@@ -615,9 +615,10 @@ function updateCharCounters() {
             const currentLine = updatedLines[i];
             const prevLine = updatedLines[i - 1];
             
-            // Если предыдущая строка имеет место и текущая строка может поместиться
+            // Если предыдущая строка НЕ заканчивается точным лимитом (25 символов), 
+            // то можно попробовать обратный перенос
             const spaceLeft = charsPerLine - prevLine.length;
-            if (spaceLeft > 0 && currentLine.length > 0) {
+            if (spaceLeft > 0 && currentLine.length > 0 && prevLine.length < charsPerLine) {
                 // Проверяем, может ли первое слово текущей строки поместиться в предыдущей
                 const wordsInCurrent = currentLine.split(' ');
                 if (wordsInCurrent.length > 0) {
@@ -764,7 +765,7 @@ if (descShortEl) {
         // Всегда разрешаем Enter (перенос строки)
         if (e.inputType === 'insertLineBreak') {
             // Но проверяем, не превышен ли лимит строк
-            if (lines.length >= 5 && currentLine >= 4) {
+            if (lines.length >= 5) {
                 e.preventDefault();
                 return;
             }
