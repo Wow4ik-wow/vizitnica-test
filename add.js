@@ -614,14 +614,19 @@ function updateCharCounters() {
     outer:
     for (let i = 0; i < origLines.length; i++) {
         if (newLines.length >= maxLines) break;
-        const rawLine = origLines[i];
+        let rawLine = origLines[i];
 
-        if (rawLine.trim() === "") {
-            newLines.push("");
+        // Сохраняем пробелы в конце строки
+        const trailingSpacesMatch = rawLine.match(/\s+$/);
+        const trailingSpaces = trailingSpacesMatch ? trailingSpacesMatch[0] : '';
+        const lineWithoutTrailingSpaces = rawLine.replace(/\s+$/, '');
+
+        if (lineWithoutTrailingSpaces === "") {
+            newLines.push(trailingSpaces);
             continue;
         }
 
-        const words = rawLine.split(/\s+/);
+        const words = lineWithoutTrailingSpaces.split(/\s+/);
         let curLine = "";
 
         for (let wIndex = 0; wIndex < words.length; wIndex++) {
@@ -674,9 +679,14 @@ function updateCharCounters() {
         }
 
         if (curLine.length > 0 && newLines.length < maxLines) {
-            newLines.push(curLine);
-            totalUsed += curLine.length;
+            // Добавляем строку + пробелы в конце
+            newLines.push(curLine + trailingSpaces);
+            totalUsed += curLine.length + trailingSpaces.length;
             if (totalUsed >= maxTotal) break;
+        } else if (trailingSpaces && newLines.length < maxLines) {
+            // Если была строка только с пробелами
+            newLines.push(trailingSpaces);
+            totalUsed += trailingSpaces.length;
         }
     }
 
@@ -697,7 +707,6 @@ function updateCharCounters() {
         }
         
         // Корректируем позицию курсора с учетом изменений
-        // Простой алгоритм - стараемся сохранить относительную позицию
         const origLineStarts = getLineStarts(origValue);
         const newLineStarts = getLineStarts(newValue);
         
@@ -755,7 +764,12 @@ function getLineStarts(text) {
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
     descShortEl.addEventListener("beforeinput", function (e) {
-        if (this.dataset.maxReached === "true" && e.inputType !== "deleteContentBackward") {
+        if (this.dataset.maxReached === "true" && 
+            e.inputType !== "deleteContentBackward" &&
+            e.inputType !== "deleteContentForward" &&
+            e.inputType !== "deleteWordBackward" &&
+            e.inputType !== "deleteWordForward" &&
+            e.data !== " ") { // Разрешаем пробелы даже при лимите
             e.preventDefault();
             return;
         }
