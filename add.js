@@ -596,6 +596,10 @@ function updateCharCounters() {
     const charsPerLine = 25;
     const maxTotal = maxLines * charsPerLine; // 125
 
+    // Сохраняем позицию курсора
+    let selStart = descShort.selectionStart;
+    let selEnd = descShort.selectionEnd;
+
     const origValue = descShort.value;
     const origLines = origValue.split(/\r?\n/);
     const newLines = [];
@@ -672,11 +676,11 @@ function updateCharCounters() {
 
     if (newLines.length > maxLines) newLines.length = maxLines;
 
-    // **Важное исправление:** сохраняем курсор, чтобы пробел в конце не терялся
-    const selectionStart = descShort.selectionStart;
-    const selectionEnd = descShort.selectionEnd;
+    // Перезаписываем значение и сохраняем пробелы в конце строк
     descShort.value = newLines.join('\n');
-    descShort.setSelectionRange(selectionStart, selectionEnd);
+
+    // Восстанавливаем курсор после вставки/обновления
+    descShort.setSelectionRange(selStart, selEnd);
 
     const used = newLines.reduce((s, ln) => s + ln.length, 0);
     const remaining = Math.max(0, maxTotal - used);
@@ -693,65 +697,36 @@ function updateCharCounters() {
     descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
 
-
-
-// ====== Предотвращаем ввод, если лимит уже достигнут ======
+// ====== Слушатели ======
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
-    // Убираем блокировку ввода — всё контролируется только в updateCharCounters
-descShortEl.addEventListener("beforeinput", function (e) {
-    // Ничего не блокируем — пробелы и Enter работают
-});
+    descShortEl.addEventListener("beforeinput", function (e) {
+        if (this.dataset.maxReached === "true" && e.inputType !== "deleteContentBackward") {
+            e.preventDefault();
+            return;
+        }
+    });
 
+    descShortEl.addEventListener("input", function () {
+        updateCharCounters();
+    });
 
-    // При input (ввод, вставка, удаление) — перерабатываем и обновляем счётчик
-    descShortEl.addEventListener("input", function (e) {
-    const desc = this;
-    const maxLines = 5;
-    const charsPerLine = 25;
-    const maxTotal = maxLines * charsPerLine;
-
-    // Получаем текущее значение
-    const val = desc.value;
-    const used = val.replace(/\r?\n/g, '').length;
-    
-    // Если ввод пробела и лимит не достигнут — не перестраиваем, просто обновляем счётчик
-    if (e.inputType === "insertText" && e.data === " " && used <= maxTotal) {
-        const shortCounter = document.getElementById("descShortCounter");
-        const remaining = Math.max(0, maxTotal - used);
-        shortCounter.textContent = `${remaining} символов осталось`;
-        shortCounter.style.color = remaining === 0 ? '#e74c3c' : (remaining <= 25 ? '#f39c12' : '#27ae60');
-        desc.dataset.maxReached = (remaining === 0) ? "true" : "false";
-        return;
-    }
-
-    // Иначе — обычная переработка текста
-    updateCharCounters();
-});
-
-
-    // При paste — предотвратить вставку, затем вставить очищённый/ограниченный вариант
     descShortEl.addEventListener("paste", function (e) {
         e.preventDefault();
         const paste = (e.clipboardData || window.clipboardData).getData('text');
-        // Вставим текст в текущую позицию курсора вручную, затем обновим
         const selStart = this.selectionStart;
         const selEnd = this.selectionEnd;
         const before = this.value.slice(0, selStart);
         const after = this.value.slice(selEnd);
-        const newValue = before + paste + after;
-        this.value = newValue;
-        // Перемещаем курсор в конец вставленного блока
+        this.value = before + paste + after;
         const newPos = before.length + paste.length;
-        this.selectionStart = this.selectionEnd = newPos;
+        this.setSelectionRange(newPos, newPos);
         updateCharCounters();
     });
 
-    // Инициалный прогон при загрузке страницы (если поле уже заполнено)
+    // Прогон при загрузке
     updateCharCounters();
 }
-
-
 
 // === ОТПРАВКА ФОРМЫ ===
 
