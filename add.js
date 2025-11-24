@@ -724,15 +724,43 @@ function updateCharCounters() {
         descShort.setSelectionRange(newCursorPos, newCursorPos);
     }
 
-    // Обновляем счетчик
-    const currentTotalChars = descShort.value.replace(/\n/g, '').length;
-    const remaining = Math.max(0, maxTotal - currentTotalChars);
-    shortCounter.textContent = `${remaining} символов осталось`;
+    // === НОВАЯ ЛОГИКА СЧЁТЧИКА ===
+    const cursorPosition = descShort.selectionStart;
+    const allLines = descShort.value.split('\n');
+    
+    // Определяем текущую строку с курсором
+    let currentLineIndex = 0;
+    let positionInCurrentLine = cursorPosition;
+    
+    for (let i = 0; i < allLines.length; i++) {
+        if (positionInCurrentLine <= allLines[i].length) {
+            currentLineIndex = i;
+            break;
+        }
+        positionInCurrentLine -= allLines[i].length + 1; // +1 для \n
+    }
+    
+    // Вычисляем остаток символов по новой логике
+    let remainingChars = maxTotal;
+    
+    // Вычитаем по 25 символов за каждую предыдущую строку
+    for (let i = 0; i < currentLineIndex; i++) {
+        remainingChars -= 25;
+    }
+    
+    // Вычитаем фактические символы в текущей строке
+    remainingChars -= allLines[currentLineIndex].length;
+    
+    // Ограничиваем снизу нулем
+    remainingChars = Math.max(0, remainingChars);
+    
+    // Обновляем счётчик
+    shortCounter.textContent = `${remainingChars} символов осталось`;
 
-    if (remaining === 0) {
+    if (remainingChars === 0) {
         shortCounter.style.color = '#e74c3c';
         descShort.dataset.maxReached = "true";
-    } else if (remaining <= 25) {
+    } else if (remainingChars <= 25) {
         shortCounter.style.color = '#f39c12';
         descShort.dataset.maxReached = "false";
     } else {
@@ -746,43 +774,51 @@ const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
     // Блокируем ввод только на 5й строке при 25 символах
     descShortEl.addEventListener("beforeinput", function (e) {
-    const text = this.value;
-    const lines = text.split('\n');
-    const cursorPos = this.selectionStart;
-    
-    // Определяем текущую строку и позицию в ней
-    let currentLine = 0;
-    let posInLine = cursorPos;
-    for (let i = 0; i < lines.length; i++) {
-        if (posInLine <= lines[i].length) {
-            currentLine = i;
-            break;
+        const text = this.value;
+        const lines = text.split('\n');
+        const cursorPos = this.selectionStart;
+        
+        // Определяем текущую строку и позицию в ней
+        let currentLine = 0;
+        let posInLine = cursorPos;
+        for (let i = 0; i < lines.length; i++) {
+            if (posInLine <= lines[i].length) {
+                currentLine = i;
+                break;
+            }
+            posInLine -= lines[i].length + 1; // +1 для \n
         }
-        posInLine -= lines[i].length + 1; // +1 для \n
-    }
-    
-    // БЛОКИРУЕМ Enter полностью
-    if (e.inputType === 'insertLineBreak') {
-        e.preventDefault();
-        return;
-    }
-    
-    // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
-    if (currentLine === 4 && posInLine >= 25 && e.inputType.startsWith('insert')) {
-        e.preventDefault();
-        return;
-    }
-    
-    // Если общий лимит 125 символов достигнут - блокируем ввод
-    const currentTotalChars = text.replace(/\n/g, '').length;
-    if (currentTotalChars >= 125 && e.inputType.startsWith('insert')) {
-        e.preventDefault();
-        return;
-    }
-});
+        
+        // БЛОКИРУЕМ Enter полностью
+        if (e.inputType === 'insertLineBreak') {
+            e.preventDefault();
+            return;
+        }
+        
+        // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
+        if (currentLine === 4 && posInLine >= 25 && e.inputType.startsWith('insert')) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Если общий лимит 125 символов достигнут - блокируем ввод
+        const currentTotalChars = text.replace(/\n/g, '').length;
+        if (currentTotalChars >= 125 && e.inputType.startsWith('insert')) {
+            e.preventDefault();
+            return;
+        }
+    });
 
     descShortEl.addEventListener("input", function () {
         updateCharCounters();
+    });
+
+    descShortEl.addEventListener("click", function () {
+        updateCharCounters(); // Обновляем при клике (смене позиции курсора)
+    });
+
+    descShortEl.addEventListener("keyup", function () {
+        updateCharCounters(); // Обновляем при перемещении курсора клавишами
     });
 
     descShortEl.addEventListener("paste", function (e) {
