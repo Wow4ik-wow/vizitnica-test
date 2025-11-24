@@ -605,7 +605,7 @@ function updateCharCounters() {
     let newText = text;
     let needsUpdate = false;
 
-    // Функция для обратного переноса
+    // Функция для обратного переноса (ТОЛЬКО для автоматически перенесенных слов)
     function performBackwardWrap(currentLines) {
         const updatedLines = [...currentLines];
         let changed = false;
@@ -615,17 +615,27 @@ function updateCharCounters() {
             const currentLine = updatedLines[i];
             const prevLine = updatedLines[i - 1];
             
-            // Если предыдущая строка НЕ заканчивается точным лимитом (25 символов), 
-            // то можно попробовать обратный перенос
+            // Обратный перенос работает только если:
+            // 1. В предыдущей строке есть место
+            // 2. Предыдущая строка НЕ заканчивается точным лимитом (25 символов)
+            // 3. Текущая строка начинается со слова, которое могло быть автоматически перенесено
             const spaceLeft = charsPerLine - prevLine.length;
             if (spaceLeft > 0 && currentLine.length > 0 && prevLine.length < charsPerLine) {
-                // Проверяем, может ли первое слово текущей строки поместиться в предыдущей
                 const wordsInCurrent = currentLine.split(' ');
                 if (wordsInCurrent.length > 0) {
                     const firstWord = wordsInCurrent[0];
+                    
+                    // Проверяем, может ли слово поместиться
                     const neededSpace = prevLine.length === 0 ? firstWord.length : spaceLeft >= firstWord.length + 1;
                     
-                    if (neededSpace) {
+                    // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: слово могло быть автоматически перенесено только если:
+                    // - предыдущая строка заполнена близко к лимиту (23+ символов)
+                    // ИЛИ
+                    // - слово короткое и явно "оторвано" от предыдущей строки
+                    const prevLineAlmostFull = prevLine.length >= 23;
+                    const wordIsShort = firstWord.length <= 10;
+                    
+                    if (neededSpace && (prevLineAlmostFull || wordIsShort)) {
                         // Переносим слово обратно на предыдущую строку
                         updatedLines[i - 1] = prevLine + (prevLine.length > 0 ? ' ' : '') + firstWord;
                         updatedLines[i] = wordsInCurrent.slice(1).join(' ');
@@ -636,7 +646,6 @@ function updateCharCounters() {
                         }
                         
                         changed = true;
-                        // Начинаем проверку заново после изменения
                         return { lines: updatedLines, changed: true };
                     }
                 }
@@ -671,7 +680,7 @@ function updateCharCounters() {
                     updatedLines[i] = line.substring(0, charsPerLine);
                 }
                 changed = true;
-                break; // После одного изменения начинаем заново
+                break;
             }
         }
 
@@ -685,7 +694,7 @@ function updateCharCounters() {
     while (iterationChanged) {
         iterationChanged = false;
         
-        // Сначала обратный перенос
+        // Сначала обратный перенос (только для автоматических переносов)
         const backwardResult = performBackwardWrap(currentLines);
         if (backwardResult.changed) {
             currentLines = backwardResult.lines;
@@ -760,16 +769,6 @@ if (descShortEl) {
                 break;
             }
             posInLine -= lines[i].length + 1; // +1 для \n
-        }
-        
-        // Всегда разрешаем Enter (перенос строки)
-        if (e.inputType === 'insertLineBreak') {
-            // Но проверяем, не превышен ли лимит строк
-            if (lines.length >= 5) {
-                e.preventDefault();
-                return;
-            }
-            return; // Разрешаем Enter
         }
         
         // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
