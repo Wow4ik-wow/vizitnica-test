@@ -74,7 +74,7 @@ function setupAllEventListeners() {
 
     // Счётчики символов
     document.getElementById("descShort").addEventListener("input", updateCharCounters);
-    document.getElementById("descLong").addEventListener("input", updateCharCounters);
+document.getElementById("descLong").addEventListener("input", updateLongCharCounter);
 
     // Телефоны
     setupPhoneHandlers();
@@ -998,6 +998,25 @@ function showMessage(text, type = "info") {
         box.classList.remove("visible");
         setTimeout(() => box.className = "message-box hidden", 400);
     }, 5000);
+}
+
+// === ОБНОВЛЕНИЕ СЧЁТЧИКА ДЛЯ ПОЛНОГО ОПИСАНИЯ ===
+function updateLongCharCounter() {
+    const descLong = document.getElementById("descLong");
+    const longCounter = document.getElementById("descLongCounter");
+    const maxChars = 1000;
+    const currentChars = descLong.value.length;
+    const remaining = maxChars - currentChars;
+    
+    longCounter.textContent = `${remaining} символов осталось`;
+    
+    if (remaining === 0) {
+        longCounter.style.color = '#e74c3c';
+    } else if (remaining <= 100) {
+        longCounter.style.color = '#f39c12';
+    } else {
+        longCounter.style.color = '#27ae60';
+    }
 }
 
 // Защита от потери данных
