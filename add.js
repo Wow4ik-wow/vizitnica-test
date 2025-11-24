@@ -605,43 +605,118 @@ function updateCharCounters() {
     let newText = text;
     let needsUpdate = false;
 
-    // Обрабатываем каждую строку (кроме последней)
-    for (let i = 0; i < Math.min(lines.length, maxLines - 1); i++) {
-        if (lines[i].length > charsPerLine) {
-            const line = lines[i];
-            // Находим последний пробел до 25 символов
-            const lastSpaceIndex = line.lastIndexOf(' ', charsPerLine);
+    // Функция для обратного переноса
+    function performBackwardWrap(currentLines) {
+        const updatedLines = [...currentLines];
+        let changed = false;
+
+        // Проверяем с последней строки к первой
+        for (let i = updatedLines.length - 1; i > 0; i--) {
+            const currentLine = updatedLines[i];
+            const prevLine = updatedLines[i - 1];
             
-            if (lastSpaceIndex > 0) {
-                // Переносим часть после пробела на следующую строку
-                lines[i] = line.substring(0, lastSpaceIndex);
-                if (i + 1 < lines.length) {
-                    lines[i + 1] = line.substring(lastSpaceIndex + 1) + (lines[i + 1] ? ' ' + lines[i + 1] : '');
-                } else if (lines.length < maxLines) {
-                    lines.push(line.substring(lastSpaceIndex + 1));
+            // Если предыдущая строка имеет место и текущая строка может поместиться
+            const spaceLeft = charsPerLine - prevLine.length;
+            if (spaceLeft > 0 && currentLine.length > 0) {
+                // Проверяем, может ли первое слово текущей строки поместиться в предыдущей
+                const wordsInCurrent = currentLine.split(' ');
+                if (wordsInCurrent.length > 0) {
+                    const firstWord = wordsInCurrent[0];
+                    const neededSpace = prevLine.length === 0 ? firstWord.length : spaceLeft >= firstWord.length + 1;
+                    
+                    if (neededSpace) {
+                        // Переносим слово обратно на предыдущую строку
+                        updatedLines[i - 1] = prevLine + (prevLine.length > 0 ? ' ' : '') + firstWord;
+                        updatedLines[i] = wordsInCurrent.slice(1).join(' ');
+                        
+                        // Если текущая строка стала пустой, удаляем ее
+                        if (updatedLines[i].length === 0) {
+                            updatedLines.splice(i, 1);
+                        }
+                        
+                        changed = true;
+                        // Начинаем проверку заново после изменения
+                        return { lines: updatedLines, changed: true };
+                    }
                 }
-            } else {
-                // Если пробела нет, просто обрезаем
-                lines[i] = line.substring(0, charsPerLine);
             }
+        }
+        
+        return { lines: updatedLines, changed: false };
+    }
+
+    // Функция для прямого переноса
+    function performForwardWrap(currentLines) {
+        const updatedLines = [...currentLines];
+        let changed = false;
+
+        // Обрабатываем каждую строку (кроме последней)
+        for (let i = 0; i < Math.min(updatedLines.length, maxLines - 1); i++) {
+            if (updatedLines[i].length > charsPerLine) {
+                const line = updatedLines[i];
+                // Находим последний пробел до 25 символов
+                const lastSpaceIndex = line.lastIndexOf(' ', charsPerLine);
+                
+                if (lastSpaceIndex > 0) {
+                    // Переносим часть после пробела на следующую строку
+                    updatedLines[i] = line.substring(0, lastSpaceIndex);
+                    if (i + 1 < updatedLines.length) {
+                        updatedLines[i + 1] = line.substring(lastSpaceIndex + 1) + (updatedLines[i + 1] ? ' ' + updatedLines[i + 1] : '');
+                    } else if (updatedLines.length < maxLines) {
+                        updatedLines.push(line.substring(lastSpaceIndex + 1));
+                    }
+                } else {
+                    // Если пробела нет, просто обрезаем
+                    updatedLines[i] = line.substring(0, charsPerLine);
+                }
+                changed = true;
+                break; // После одного изменения начинаем заново
+            }
+        }
+
+        return { lines: updatedLines, changed: changed };
+    }
+
+    let currentLines = lines;
+    let iterationChanged = true;
+
+    // Выполняем итерации пока есть изменения
+    while (iterationChanged) {
+        iterationChanged = false;
+        
+        // Сначала обратный перенос
+        const backwardResult = performBackwardWrap(currentLines);
+        if (backwardResult.changed) {
+            currentLines = backwardResult.lines;
+            iterationChanged = true;
             needsUpdate = true;
+            continue;
+        }
+        
+        // Затем прямой перенос
+        const forwardResult = performForwardWrap(currentLines);
+        if (forwardResult.changed) {
+            currentLines = forwardResult.lines;
+            iterationChanged = true;
+            needsUpdate = true;
+            continue;
         }
     }
 
     // Для последней строки просто обрезаем если превышен лимит
-    if (lines.length === maxLines && lines[maxLines - 1].length > charsPerLine) {
-        lines[maxLines - 1] = lines[maxLines - 1].substring(0, charsPerLine);
+    if (currentLines.length === maxLines && currentLines[maxLines - 1].length > charsPerLine) {
+        currentLines[maxLines - 1] = currentLines[maxLines - 1].substring(0, charsPerLine);
         needsUpdate = true;
     }
 
     // Обрезаем общее количество строк
-    if (lines.length > maxLines) {
-        lines.length = maxLines;
+    if (currentLines.length > maxLines) {
+        currentLines.length = maxLines;
         needsUpdate = true;
     }
 
     if (needsUpdate) {
-        newText = lines.join('\n');
+        newText = currentLines.join('\n');
         descShort.value = newText;
         
         // Восстанавливаем позицию курсора
