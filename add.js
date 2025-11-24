@@ -722,17 +722,11 @@ function updateCharCounters() {
 // ====== Предотвращаем ввод, если лимит уже достигнут ======
 const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
-    // Блокировка стандартного ввода (включая печать и Enter) когда достигнут лимит
-    descShortEl.addEventListener("beforeinput", function (e) {
-        // Если уже достигнут лимит — запрещаем любое изменение, кроме навигации (неправильное событие не даст изменить значение)
-        if (this.dataset.maxReached === "true") {
-            // Разрешим только некоторые навигационные/clipboard события (на всякий случай), но большинство — блокируем
-            e.preventDefault();
-            return;
-        }
+    // Убираем блокировку ввода — всё контролируется только в updateCharCounters
+descShortEl.addEventListener("beforeinput", function (e) {
+    // Ничего не блокируем — пробелы и Enter работают
+});
 
-        // Для вставки — мы позволим, но потом переформатируем в 'input' обработчике
-    });
 
     // При input (ввод, вставка, удаление) — перерабатываем и обновляем счётчик
     descShortEl.addEventListener("input", function () {
