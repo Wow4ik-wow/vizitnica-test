@@ -724,9 +724,30 @@ descShortEl.addEventListener("beforeinput", function (e) {
 
 
     // При input (ввод, вставка, удаление) — перерабатываем и обновляем счётчик
-    descShortEl.addEventListener("input", function () {
-        updateCharCounters();
-    });
+    descShortEl.addEventListener("input", function (e) {
+    const desc = this;
+    const maxLines = 5;
+    const charsPerLine = 25;
+    const maxTotal = maxLines * charsPerLine;
+
+    // Получаем текущее значение
+    const val = desc.value;
+    const used = val.replace(/\r?\n/g, '').length;
+    
+    // Если ввод пробела и лимит не достигнут — не перестраиваем, просто обновляем счётчик
+    if (e.inputType === "insertText" && e.data === " " && used <= maxTotal) {
+        const shortCounter = document.getElementById("descShortCounter");
+        const remaining = Math.max(0, maxTotal - used);
+        shortCounter.textContent = `${remaining} символов осталось`;
+        shortCounter.style.color = remaining === 0 ? '#e74c3c' : (remaining <= 25 ? '#f39c12' : '#27ae60');
+        desc.dataset.maxReached = (remaining === 0) ? "true" : "false";
+        return;
+    }
+
+    // Иначе — обычная переработка текста
+    updateCharCounters();
+});
+
 
     // При paste — предотвратить вставку, затем вставить очищённый/ограниченный вариант
     descShortEl.addEventListener("paste", function (e) {
