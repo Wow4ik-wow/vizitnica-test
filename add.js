@@ -596,10 +596,8 @@ function updateCharCounters() {
     const charsPerLine = 25;
     const maxTotal = maxLines * charsPerLine; // 125
 
-    // Сохраняем позицию курсора
-    let cursorPos = descShort.selectionStart;
-
-    const origLines = descShort.value.split(/\r?\n/);
+    const origValue = descShort.value;
+    const origLines = origValue.split(/\r?\n/);
     const newLines = [];
     let totalUsed = 0;
 
@@ -620,6 +618,7 @@ function updateCharCounters() {
             const word = words[wIndex];
             if (!word) continue;
 
+            // Если слово длиннее charsPerLine, разбиваем на куски
             if (word.length > charsPerLine) {
                 if (curLine.length > 0) {
                     if (newLines.length < maxLines) {
@@ -647,7 +646,9 @@ function updateCharCounters() {
                     newLines.push(curLine);
                     totalUsed += curLine.length;
                     curLine = word;
-                } else break outer;
+                } else {
+                    break outer;
+                }
             }
 
             if (totalUsed + curLine.length >= maxTotal) {
@@ -671,27 +672,28 @@ function updateCharCounters() {
 
     if (newLines.length > maxLines) newLines.length = maxLines;
 
-    // Обновляем значение поля **только если оно реально изменилось**
-    const newValue = newLines.join('\n');
-    if (descShort.value !== newValue) {
-        descShort.value = newValue;
-    }
+    // **Важное исправление:** сохраняем курсор, чтобы пробел в конце не терялся
+    const selectionStart = descShort.selectionStart;
+    const selectionEnd = descShort.selectionEnd;
+    descShort.value = newLines.join('\n');
+    descShort.setSelectionRange(selectionStart, selectionEnd);
 
-    // Восстанавливаем позицию курсора (в конце текста, если он там был)
-    if (cursorPos >= descShort.value.length) {
-        descShort.selectionStart = descShort.selectionEnd = descShort.value.length;
-    } else {
-        descShort.selectionStart = descShort.selectionEnd = cursorPos;
-    }
-
-    // Подсчёт символов
     const used = newLines.reduce((s, ln) => s + ln.length, 0);
     const remaining = Math.max(0, maxTotal - used);
     shortCounter.textContent = `${remaining} символов осталось`;
 
-    shortCounter.style.color = remaining === 0 ? '#e74c3c' : (remaining <= 25 ? '#f39c12' : '#27ae60');
+    if (remaining === 0) {
+        shortCounter.style.color = '#e74c3c';
+    } else if (remaining <= 25) {
+        shortCounter.style.color = '#f39c12';
+    } else {
+        shortCounter.style.color = '#27ae60';
+    }
+
     descShort.dataset.maxReached = (remaining === 0) ? "true" : "false";
 }
+
+
 
 // ====== Предотвращаем ввод, если лимит уже достигнут ======
 const descShortEl = document.getElementById("descShort");
