@@ -528,16 +528,12 @@ function getLinkPlaceholder(type) {
 // Форматирование текста в строки
 function formatTextToLines(text, maxLines = 5, charsPerLine = 25) {
     if (!text) return '';
-
-    text = String(text).replace(/\r/g, ''); // нормализация
-    const words = text.split(/\s+/);
+    
+    const words = text.split(' ');
     const lines = [];
     let currentLine = '';
-
+    
     for (let word of words) {
-        if (!word) continue;
-
-        // Если слово длиннее одной строки — разбиваем его по частям
         if (word.length > charsPerLine) {
             if (currentLine) {
                 lines.push(currentLine);
@@ -546,32 +542,28 @@ function formatTextToLines(text, maxLines = 5, charsPerLine = 25) {
             for (let i = 0; i < word.length; i += charsPerLine) {
                 if (lines.length >= maxLines) break;
                 const part = word.substring(i, i + charsPerLine);
-                lines.push(part);
+                if (part) lines.push(part);
             }
             continue;
         }
-
-        const potential = currentLine ? (currentLine + ' ' + word) : word;
-        if (potential.length <= charsPerLine) {
-            currentLine = potential;
+        
+        const potentialLine = currentLine ? currentLine + ' ' + word : word;
+        if (potentialLine.length <= charsPerLine) {
+            currentLine = potentialLine;
         } else {
-            // текущая линия заполняется, переносим слово на новую
-            lines.push(currentLine);
-            currentLine = word;
+            if (currentLine) {
+                lines.push(currentLine);
+                currentLine = word;
+            }
         }
-
+        
         if (lines.length >= maxLines) break;
     }
-
+    
     if (currentLine && lines.length < maxLines) {
         lines.push(currentLine);
     }
-
-    // Ограничение по числу строк
-    if (lines.length > maxLines) {
-        lines.length = maxLines;
-    }
-
+    
     return lines.join('\n');
 }
 
@@ -596,73 +588,77 @@ function updateProgress() {
     document.getElementById("progressPercent").textContent = `${Math.round(progress)}%`;
 }
 
-// Обновление счётчиков символов
+// Обновление счётчиков символов и блокировка ввода после 5 строк × 25 символов
 function updateCharCounters() {
     const descShort = document.getElementById("descShort");
-    const descLong = document.getElementById("descLong");
-
-    const MAX_LINES = 5;
-    const CHARS_PER_LINE = 25;
-    const MAX_TOTAL = MAX_LINES * CHARS_PER_LINE; // 125
-
-    // Сохраняем позицию курсора относительно непустых символов (без \n)
-    const rawBeforeCursor = descShort.value.slice(0, descShort.selectionStart);
-    const charsBeforeCursor = rawBeforeCursor.replace(/\n/g, '').length;
-
-    // Форматируем текст в строки по правилам
-    const formatted = formatTextToLines(descShort.value.replace(/\n/g, ' '), MAX_LINES, CHARS_PER_LINE);
-
-    // Ограничиваем общий текст по символам (без учёта \n)
-    const plain = formatted.replace(/\n/g, '');
-    let truncatedPlain = plain;
-    if (plain.length > MAX_TOTAL) {
-        truncatedPlain = plain.slice(0, MAX_TOTAL);
-    }
-
-    // Делаем заново форматирование от обрезанного текста, чтобы гарантировать корректные строки
-    const finalFormatted = formatTextToLines(truncatedPlain, MAX_LINES, CHARS_PER_LINE);
-
-    // Устанавливаем значение textarea (заставляем переносы)
-    // Сохраняем и корректируем позицию курсора: ставим в конец введённой части в границах новой строки
-    const prevScroll = descShort.scrollTop;
-    descShort.value = finalFormatted;
-    descShort.scrollTop = prevScroll;
-
-    // Восстановим позицию курсора так, чтобы она соответствовала кол-ву символов до курсора (если возможно)
-    // Вычисляем новую позицию в строках, приближенно: ставим курсор после charsBeforeCursor символов (без \n)
-    let pos = 0;
-    let counted = 0;
-    const val = descShort.value;
-    while (pos < val.length && counted < charsBeforeCursor) {
-        if (val[pos] !== '\n') counted++;
-        pos++;
-    }
-    // Если посчитанная позиция меньше длины — ставим туда; иначе в конец
-    descShort.selectionStart = descShort.selectionEnd = Math.min(pos, val.length);
-
-    // Теперь считаем оставшиеся пустые символы в текущей строке и ниже:
-    // Определим, сколько неиспользованных символов остаётся после символов до курсора (исключая \n)
-    const usedAfterCursor = descShort.value.replace(/\n/g, '').length - charsBeforeCursor;
-    const remaining = Math.max(0, MAX_TOTAL - charsBeforeCursor);
-
-    // Отображение счётчиков
     const shortCounter = document.getElementById("descShortCounter");
-    // Показываем оставшиеся пустые символы (в той строке где курсор и в строках ниже)
-    shortCounter.textContent = `${remaining}`;
+    const maxLines = 5;
+    const charsPerLine = 25;
 
-    // Окраска индикатора (как было)
-    if ((MAX_TOTAL - (descShort.value.replace(/\n/g, '').length)) < 0) {
+    // Разбиваем текст на строки по Enter
+    let lines = descShort.value.split(/\r?\n/);
+
+    // Ограничиваем максимум 5 строк
+    if (lines.length > maxLines) {
+        lines = lines.slice(0, maxLines);
+    }
+
+    const newLines = [];
+    for (let line of lines) {
+        let words = line.split(' ').filter(Boolean);
+        let currentLine = '';
+        for (let word of words) {
+            if (word.length > charsPerLine) {
+                // Слово длиннее строки — переносим целиком, обрезаем по лимиту строк
+                if (newLines.length < maxLines) {
+                    newLines.push(word.substring(0, charsPerLine));
+                }
+                continue;
+            }
+
+            if ((currentLine.length ? currentLine.length + 1 : 0) + word.length <= charsPerLine) {
+                currentLine = currentLine ? currentLine + ' ' + word : word;
+            } else {
+                if (newLines.length < maxLines) newLines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine && newLines.length < maxLines) newLines.push(currentLine);
+    }
+
+    // Записываем обратно в поле (с сохранением Enter)
+    descShort.value = newLines.join('\n');
+
+    // Подсчёт использованных и оставшихся символов
+    let usedChars = newLines.reduce((acc, l) => acc + l.length, 0);
+    let remaining = maxLines * charsPerLine - usedChars;
+    shortCounter.textContent = `${remaining} символов осталось`;
+
+    // Меняем цвет счётчика по остаткам
+    if (remaining <= 25) {
         shortCounter.style.color = '#e74c3c';
-    } else if ((MAX_TOTAL - (descShort.value.replace(/\n/g, '').length)) <= 25) {
+    } else if (remaining <= 50) {
         shortCounter.style.color = '#f39c12';
     } else {
         shortCounter.style.color = '#27ae60';
     }
 
-    // Ограничение в UI: если пользователь пытается ввести больше — он уже обрежется выше
-    // Обновляем счётчик полного описания как раньше
-    document.getElementById("descLongCounter").textContent = `${descLong.value.length}/700`;
+    // Блокировка ввода, если достигнут лимит 125 символов
+    if (remaining <= 0) {
+        descShort.value = newLines.join('\n'); // фиксируем текст
+        descShort.dataset.maxReached = "true";
+    } else {
+        descShort.dataset.maxReached = "false";
+    }
 }
+
+// Дополнительно — предотвратить набор при достижении лимита
+document.getElementById("descShort").addEventListener("beforeinput", function(e) {
+    if (this.dataset.maxReached === "true") {
+        e.preventDefault();
+    }
+});
+
 
 // === ОТПРАВКА ФОРМЫ ===
 
