@@ -746,34 +746,40 @@ const descShortEl = document.getElementById("descShort");
 if (descShortEl) {
     // Блокируем ввод только на 5й строке при 25 символах
     descShortEl.addEventListener("beforeinput", function (e) {
-        const text = this.value;
-        const lines = text.split('\n');
-        const cursorPos = this.selectionStart;
-        
-        // Определяем текущую строку и позицию в ней
-        let currentLine = 0;
-        let posInLine = cursorPos;
-        for (let i = 0; i < lines.length; i++) {
-            if (posInLine <= lines[i].length) {
-                currentLine = i;
-                break;
-            }
-            posInLine -= lines[i].length + 1; // +1 для \n
+    const text = this.value;
+    const lines = text.split('\n');
+    const cursorPos = this.selectionStart;
+    
+    // Определяем текущую строку и позицию в ней
+    let currentLine = 0;
+    let posInLine = cursorPos;
+    for (let i = 0; i < lines.length; i++) {
+        if (posInLine <= lines[i].length) {
+            currentLine = i;
+            break;
         }
-        
-        // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
-        if (currentLine === 4 && posInLine >= 25 && e.inputType.startsWith('insert')) {
-            e.preventDefault();
-            return;
-        }
-        
-        // Если общий лимит 125 символов достигнут - блокируем ввод
-        const currentTotalChars = text.replace(/\n/g, '').length;
-        if (currentTotalChars >= 125 && e.inputType.startsWith('insert')) {
-            e.preventDefault();
-            return;
-        }
-    });
+        posInLine -= lines[i].length + 1; // +1 для \n
+    }
+    
+    // БЛОКИРУЕМ Enter полностью
+    if (e.inputType === 'insertLineBreak') {
+        e.preventDefault();
+        return;
+    }
+    
+    // Если это 5-я строка и достигнут лимит в 25 символов - блокируем ввод
+    if (currentLine === 4 && posInLine >= 25 && e.inputType.startsWith('insert')) {
+        e.preventDefault();
+        return;
+    }
+    
+    // Если общий лимит 125 символов достигнут - блокируем ввод
+    const currentTotalChars = text.replace(/\n/g, '').length;
+    if (currentTotalChars >= 125 && e.inputType.startsWith('insert')) {
+        e.preventDefault();
+        return;
+    }
+});
 
     descShortEl.addEventListener("input", function () {
         updateCharCounters();
