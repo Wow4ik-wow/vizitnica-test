@@ -10,11 +10,17 @@ const selectedValues = {
     selectedKindsContainer: []
 };
 
+// === БАЗА ТЕЛЕФОНОВ ДЛЯ ПРОВЕРКИ ДУБЛЕЙ ===
+let phoneDatabase = null;
+let lastDataUpdate = null;
+const DATA_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+
 // === ОСНОВНЫЕ ФУНКЦИИ ===
 
 // Инициализация при загрузке
 document.addEventListener("DOMContentLoaded", async () => {
     await checkAuth();
+    await loadPhoneDatabase(); // Загружаем базу телефонов для проверки дублей
     setupAllEventListeners();
     loadInitialData();
 });
@@ -240,6 +246,124 @@ async function loadKindsByProfile(profile) {
         document.getElementById("selectedKindsContainer").innerHTML = "";
     } catch (error) {
         showMessage("Ошибка загрузки видов деятельности", "error");
+    }
+}
+
+// === ФУНКЦИИ ДЛЯ ПРОВЕРКИ ТЕЛЕФОНОВ ===
+
+// Загрузка базы телефонов из data.json
+async function loadPhoneDatabase() {
+    try {
+        console.log("Загружаем базу телефонов...");
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error(`Ошибка загрузки: ${response.status}`);
+        
+        const allCards = await response.json();
+        phoneDatabase = buildPhoneMap(allCards);
+        lastDataUpdate = Date.now();
+        console.log("База телефонов загружена успешно");
+    } catch (error) {
+        console.warn("Не удалось загрузить базу телефонов:", error);
+        phoneDatabase = null;
+    }
+}
+
+// Построение карты телефонов для быстрой проверки
+function buildPhoneMap(cards) {
+    const phoneMap = {};
+    
+    cards.forEach(card => {
+        const profile = card['Профиль деятельности'];
+        const author = card['Автор'] || 'Неизвестно';
+        const phones = (card['Телефоны'] || '').split(',').map(phone => phone.trim()).filter(phone => phone);
+        
+        phones.forEach(phone => {
+            // Нормализуем номер телефона
+            const normalizedPhone = phone.replace(/\D/g, '');
+            if (normalizedPhone.length >= 10) {
+                if (!phoneMap[normalizedPhone]) {
+                    phoneMap[normalizedPhone] = [];
+                }
+                phoneMap[normalizedPhone].push({
+                    profile,
+                    author,
+                    cardInfo: card
+                });
+            }
+        });
+    });
+    
+    return phoneMap;
+}
+
+// Проверка телефона на конфликты
+function checkPhoneConflict(phone, currentProfile) {
+    if (!phoneDatabase || !currentProfile) return null;
+    
+    const normalizedPhone = phone.replace(/\D/g, '');
+    const conflicts = phoneDatabase[normalizedPhone];
+    
+    if (!conflicts) return null;
+    
+    // Ищем конфликты в том же профиле
+    const profileConflicts = conflicts.filter(conflict => 
+        conflict.profile === currentProfile
+    );
+    
+    if (profileConflicts.length === 0) return null;
+    
+    return {
+        phone: normalizedPhone,
+        conflicts: profileConflicts
+    };
+}
+
+// Показ уведомления о конфликте с чужим номером
+function showPhoneConflictNotification(conflictData) {
+    const conflict = conflictData.conflicts[0];
+    const card = conflict.cardInfo;
+    
+    const companyName = card['Компания'] || card['Имя'] || 'Не указано';
+    const description = card['Описание (до 75 симв)'] || 'Нет описания';
+    const shortDescription = description.length > 30 ? description.substring(0, 30) + '...' : description;
+    
+    const message = `
+        Этот номер уже используется другим пользователем!
+        
+        Визитка: ${companyName}
+        Описание: ${shortDescription}
+        ID: ${card['ID'] || 'Не указан'}
+        
+        Хотите оспорить эту визитку?
+    `;
+    
+    if (confirm(message)) {
+        return 'dispute';
+    } else {
+        return 'cancel';
+    }
+}
+
+// Показ уведомления о своем повторе
+function showOwnPhoneConflictNotification(conflictData) {
+    const conflict = conflictData.conflicts[0];
+    const card = conflict.cardInfo;
+    
+    const companyName = card['Компания'] || card['Имя'] || 'Не указано';
+    
+    const message = `
+        Вы уже делали визитку с этим номером!
+        
+        Визитка: ${companyName}
+        ID: ${card['ID'] || 'Не указан'}
+        
+        Хотите отредактировать её?
+    `;
+    
+    if (confirm(message)) {
+        return 'edit';
+    } else {
+        return 'cancel';
     }
 }
 
@@ -487,6 +611,40 @@ function addPhoneNumber() {
     if (existingPhones.length >= 10) {
         showMessage("Можно добавить не более 10 номеров", "warning");
         return;
+    }
+
+    // НОВАЯ ПРОВЕРКА: Проверяем конфликты телефонов
+    const currentProfile = document.getElementById("profileSelect").value;
+    if (phoneDatabase && currentProfile) {
+        const conflictData = checkPhoneConflict(val, currentProfile);
+        
+        if (conflictData) {
+            const conflict = conflictData.conflicts[0];
+            
+            // Случай А: Свой повтор
+            if (conflict.author === currentUser.id) {
+                const userChoice = showOwnPhoneConflictNotification(conflictData);
+                if (userChoice === 'cancel') {
+                    input.value = "";
+                    return; // Не добавляем номер
+                }
+                // Если 'edit' - пока просто добавляем номер (редактирование сделаем позже)
+            }
+            // Случай Б: Повтор админа
+            else if (conflict.author === 'АДМИН') {
+                // Просто добавляем номер, ничего не показываем пользователю
+                // Пометку для админа добавим при отправке формы
+            }
+            // Случай В: Чужой номер
+            else {
+                const userChoice = showPhoneConflictNotification(conflictData);
+                if (userChoice === 'cancel') {
+                    input.value = "";
+                    return; // Не добавляем номер
+                }
+                // Если 'dispute' - добавляем номер с пометкой для оспаривания
+            }
+        }
     }
 
     const div = document.createElement("div");
@@ -936,6 +1094,35 @@ function prepareFormData() {
         }
     });
 
+    // НОВЫЙ КОД: Определяем пометки для админа
+    let adminNotes = "";
+    const currentProfile = document.getElementById("profileSelect").value;
+    const phones = Array.from(document.querySelectorAll(".phone-item"))
+        .map(el => el.textContent.replace(" ×", ""));
+    
+    // Проверяем каждый телефон на конфликты
+    if (phoneDatabase && currentProfile) {
+        const conflictNotes = [];
+        
+        phones.forEach(phone => {
+            const conflictData = checkPhoneConflict(phone, currentProfile);
+            if (conflictData) {
+                const conflict = conflictData.conflicts[0];
+                
+                if (conflict.author === 'АДМИН') {
+                    conflictNotes.push(`Повтор админа: ${phone}`);
+                } 
+                else if (conflict.author !== currentUser.id) {
+                    conflictNotes.push(`Оспаривание: ${phone} (конфликт с ${conflict.author})`);
+                }
+            }
+        });
+        
+        if (conflictNotes.length > 0) {
+            adminNotes = conflictNotes.join('; ');
+        }
+    }
+
     return {
         "Дата добавления": date,
         "Область": region,
@@ -948,13 +1135,13 @@ function prepareFormData() {
         "Описание (до 75 симв)": formatTextToLines(document.getElementById("descShort").value.trim()),
         "Описание (до 700 симв)": document.getElementById("descLong").value.trim(),
         "Адрес": document.getElementById("addressInput").value.trim(),
-        "Телефоны": Array.from(document.querySelectorAll(".phone-item"))
-            .map(el => el.textContent.replace(" ×", ""))
-            .join(", "),
+        "Телефоны": phones.join(", "),
         "Ссылки": JSON.stringify(links),
         "Геолокация": document.getElementById("geoLocation").value.trim(),
         "Статус": "черновик",
-        "Добавил": currentUser ? currentUser.name : "Неизвестный пользователь"
+        "Добавил": currentUser ? currentUser.name : "Неизвестный пользователь",
+        "Пометки админу": adminNotes, // НОВОЕ ПОЛЕ
+        "Автор": currentUser ? currentUser.id : "Неизвестно" // НОВОЕ ПОЛЕ
     };
 }
 
