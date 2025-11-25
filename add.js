@@ -61,6 +61,15 @@ function setupAllEventListeners() {
         loadTownsByRegion(regionSelect.value);
     });
 
+    // Ограничения длины полей с уведомлениями
+    setupFieldLengthLimit("regionCustom", 50, "Область-великан!");
+    setupFieldLengthLimit("townCustom", 50, "Город-гигант!");
+    setupFieldLengthLimit("cityDistrict", 150, "Район-исполин!");
+    setupFieldLengthLimit("kindCustom", 100, "Слишком много деятелей в деятельности!");
+    setupFieldLengthLimit("nameInput", 50, "Ничего себе у вас имя длинное!");
+    setupFieldLengthLimit("companyInput", 100, "Ваша компания слишком разрослась!");
+    setupFieldLengthLimit("addressInput", 200, "Это вам не роман писать!");
+
     // Города и виды деятельности
     document.getElementById("townSelect").addEventListener("change", handleTownSelect);
     document.getElementById("kindSelect").addEventListener("change", handleKindSelect);
@@ -1030,3 +1039,23 @@ window.addEventListener("beforeunload", (e) => {
         e.returnValue = "У вас есть несохранённые изменения. Вы уверены, что хотите уйти?";
     }
 });
+
+// Функция ограничения длины полей с уведомлениями
+function setupFieldLengthLimit(fieldId, maxLength, message) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    field.addEventListener("input", function() {
+        if (this.value.length >= maxLength) {
+            this.value = this.value.substring(0, maxLength);
+            showMessage(message, "warning");
+        }
+    });
+    
+    field.addEventListener("beforeinput", function(e) {
+        if (this.value.length >= maxLength && e.inputType.startsWith('insert')) {
+            e.preventDefault();
+            showMessage(message, "warning");
+        }
+    });
+}
