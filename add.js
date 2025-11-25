@@ -64,11 +64,11 @@ function setupAllEventListeners() {
     // Ограничения длины полей с уведомлениями
     setupFieldLengthLimit("regionCustom", 50, "Область-великан!");
     setupFieldLengthLimit("townCustom", 50, "Город-гигант!");
-    setupFieldLengthLimit("cityDistrict", 150, "Район-исполин!");
-    setupFieldLengthLimit("kindCustom", 100, "Слишком много деятелей в деятельности!");
+    setupFieldLengthLimit("cityDistrict", 50, "Район-исполин!");
+    setupFieldLengthLimit("kindCustom", 75, "Слишком много деятелей в деятельности!");
     setupFieldLengthLimit("nameInput", 50, "Ничего себе у вас имя длинное!");
-    setupFieldLengthLimit("companyInput", 100, "Ваша компания слишком разрослась!");
-    setupFieldLengthLimit("addressInput", 200, "Это вам не роман писать!");
+    setupFieldLengthLimit("companyInput", 75, "Ваша компания слишком разрослась!");
+    setupFieldLengthLimit("addressInput", 100, "Это вам не роман писать!");
 
     // Города и виды деятельности
     document.getElementById("townSelect").addEventListener("change", handleTownSelect);
