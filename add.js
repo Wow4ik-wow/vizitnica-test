@@ -1119,8 +1119,10 @@ function prepareFormData() {
         });
         
         if (conflictNotes.length > 0) {
-            adminNotes = conflictNotes.join('; ');
-        }
+    adminNotes = conflictNotes.join('; ');
+} else {
+    adminNotes = ""; // убедимся что пусто
+}
     }
 
     return {
@@ -1132,16 +1134,16 @@ function prepareFormData() {
         "Вид деятельности": kinds.join(", "),
         "Имя": document.getElementById("nameInput").value.trim(),
         "Компания": document.getElementById("companyInput").value.trim(),
-        "Описание (до 75 симв)": formatTextToLines(document.getElementById("descShort").value.trim()),
-        "Описание (до 700 симв)": document.getElementById("descLong").value.trim(),
+        "Описание (до 125 симв)": formatTextToLines(document.getElementById("descShort").value.trim()).replace(/\n\s*\n/g, '\n'),
+        "Описание (до 1000 симв)": document.getElementById("descLong").value.trim(),
         "Адрес": document.getElementById("addressInput").value.trim(),
         "Телефоны": phones.join(", "),
-        "Ссылки": JSON.stringify(links),
+        "Ссылки": Object.keys(links).length > 0 ? JSON.stringify(links) : "",
         "Геолокация": document.getElementById("geoLocation").value.trim(),
         "Статус": "черновик",
         "Добавил": currentUser ? currentUser.name : "Неизвестный пользователь",
         "Пометки админу": adminNotes, // НОВОЕ ПОЛЕ
-        "Автор": currentUser ? currentUser.id : "Неизвестно" // НОВОЕ ПОЛЕ
+        "Автор": currentUser && currentUser.id ? currentUser.id : "Неизвестно" // НОВОЕ ПОЛЕ
     };
 }
 
