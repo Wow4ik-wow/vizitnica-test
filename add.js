@@ -1,7 +1,7 @@
 // === КОНФИГУРАЦИЯ ===
 const spreadsheetId = "1vKErM8FIGNM5if0zpsaCWutsQgscqrPo2bUWJACTcf0";
 const sheetsURL = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&tq=`;
-const formUrl = "https://script.google.com/macros/s/AKfycbw6FAWTC1ux2M3H6H8tuoZvmVEpYEfWcpihd0C0Huh-U_ErgajS6WfKOIugafn1yFTzVg/exec";
+const formUrl = "https://script.google.com/macros/s/AKfycbxwzZChCBrrgV-I9NJItR2KITwyA9Xi23aQt9CZblsvXKEnkFE5xJBSnWXcceOzYxnjyg/execc";
 
 // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
 let currentUser = null;
