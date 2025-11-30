@@ -412,7 +412,7 @@ function showPhoneConflictNotification(conflictData) {
     const card = conflict.cardInfo;
 
     const companyName = card["Компания"] || card["Имя"] || "Не указано";
-    const description = card["Описание (до 75 симв)"] || "Нет описания";
+    const description = card["Описание (до 125 симв)"] || "Нет описания";
     const shortDescription =
       description.length > 30
         ? description.substring(0, 30) + "..."
@@ -427,7 +427,7 @@ function showPhoneConflictNotification(conflictData) {
         card["Населённый пункт"] || "Не указан"
       }${card["Адрес"] ? ", " + card["Адрес"] : ""}<br>
         📞 ${card["Телефоны"] || "Не указаны"}<br>
-        📝 ${card["Описание (до 75 симв)"] || "Нет описания"}<br>
+        📝 ${card["Описание (до 125 симв)"] || "Нет описания"}<br>
         <small>ID: ${card["ID"] || "Не указан"}</small>
     </div>
     <p>Этот номер уже используется другим пользователем. Хотите оспорить эту визитку?</p>
@@ -518,7 +518,7 @@ function showAdminPhoneConflictNotification(conflictData) {
     conflictData.conflicts.forEach((conflict, index) => {
       const card = conflict.cardInfo;
       const companyName = card["Компания"] || card["Имя"] || "Не указано";
-      const description = card["Описание (до 75 симв)"] || "Нет описания";
+      const description = card["Описание (до 125 симв)"] || "Нет описания";
       const phones = card["Телефоны"] || "Не указаны";
       const address = card["Адрес"] || "Не указан";
       const area = card["Область"] || "Не указана";
