@@ -573,8 +573,28 @@ select.form-input {
     max-height: 80vh;
     overflow-y: auto;
     width: 90%;
+    -webkit-overflow-scrolling: touch; /* Плавная прокрутка на iOS */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     animation: modalAppear 0.3s ease;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .modal-container {
+        max-height: 70vh;
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .conflict-card {
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    .modal-content {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
 }
 
 @keyframes modalAppear {
