@@ -405,7 +405,9 @@ function checkPhoneConflict(phone, currentProfile) {
 
 // Показ уведомления о конфликте с чужим номером
 function showPhoneConflictNotification(conflictData) {
+    console.log("showPhoneConflictNotification ВЫЗВАНА");
     return new Promise((resolve) => {
+        console.log("Promise создан");
         const conflict = conflictData.conflicts[0];
         const card = conflict.cardInfo;
         
@@ -442,6 +444,7 @@ function showPhoneConflictNotification(conflictData) {
 
 // Универсальная функция создания модального окна
 function createModal(title, content, buttons, callback) {
+    console.log("createModal ВЫЗВАНА");
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     
