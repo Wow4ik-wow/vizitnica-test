@@ -690,45 +690,81 @@ function setupPhoneHandlers() {
 
 // Настройка ссылок
 function setupLinksHandlers() {
-  document.querySelectorAll(".link-checkbox").forEach((checkbox) => {
-    checkbox.addEventListener("change", () => {
-      const type = checkbox.dataset.type;
-      const container = document.getElementById("linksInputsContainer");
-      const existing = container.querySelector(`[data-type="${type}"]`);
+    document.querySelectorAll(".link-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", () => {
+            const type = checkbox.dataset.type;
+            const container = document.getElementById("linksInputsContainer");
+            const existing = container.querySelector(`[data-type="${type}"]`);
 
-      if (checkbox.checked && !existing) {
-        const inputGroup = document.createElement("div");
-        inputGroup.className = "link-input-group";
-        inputGroup.dataset.type = type;
+            if (checkbox.checked && !existing) {
+                const inputGroup = document.createElement("div");
+                inputGroup.className = "link-input-group";
+                inputGroup.dataset.type = type;
 
-        const label = document.createElement("label");
-        label.textContent = getLinkTypeLabel(type) + ":";
-        label.className = "link-input-label";
+                const label = document.createElement("label");
+                label.textContent = getLinkTypeLabel(type) + ":";
+                label.className = "link-input-label";
 
-        const input = document.createElement("input");
-        input.type = "text";
-        input.placeholder = getLinkPlaceholder(type);
-        input.className = "form-input";
-        input.dataset.type = type;
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = getLinkPlaceholder(type);
+                input.className = "form-input";
+                input.dataset.type = type;
+                
+                // ДОБАВЛЯЕМ ВАЛИДАЦИЮ ПРИ ВВОДЕ
+                input.addEventListener("input", function() {
+                    validateLink(this, type);
+                });
 
-        const removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.textContent = "×";
-        removeBtn.className = "link-remove-btn";
-        removeBtn.addEventListener("click", () => {
-          checkbox.checked = false;
-          inputGroup.remove();
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.textContent = "×";
+                removeBtn.className = "link-remove-btn";
+                removeBtn.addEventListener("click", () => {
+                    checkbox.checked = false;
+                    inputGroup.remove();
+                });
+
+                inputGroup.appendChild(label);
+                inputGroup.appendChild(input);
+                inputGroup.appendChild(removeBtn);
+                container.appendChild(inputGroup);
+            } else if (existing) {
+                existing.remove();
+            }
         });
-
-        inputGroup.appendChild(label);
-        inputGroup.appendChild(input);
-        inputGroup.appendChild(removeBtn);
-        container.appendChild(inputGroup);
-      } else if (existing) {
-        existing.remove();
-      }
     });
-  });
+}
+
+// ВАЛИДАЦИЯ ССЫЛОК
+function validateLink(input, type) {
+    const value = input.value.trim();
+    
+    if (!value) {
+        input.style.borderColor = "";
+        return;
+    }
+
+    let isValid = true;
+    
+    switch (type) {
+        case 'email':
+            isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            break;
+        case 'instagram':
+            isValid = /^(@[\w.]{1,30}|https?:\/\/(www\.)?instagram\.com\/[\w.]{1,30})/.test(value);
+            break;
+        case 'telegram':
+            isValid = /^(@[\w]{1,32}|https?:\/\/(t\.me|telegram\.me)\/[\w]{1,32})/.test(value);
+            break;
+        case 'site':
+            isValid = /^https?:\/\/.+/.test(value);
+            break;
+        default:
+            isValid = true; // Для остальных типов минимальная проверка
+    }
+    
+    input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
 }
 
 // === УТИЛИТЫ ===
