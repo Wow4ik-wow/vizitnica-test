@@ -1211,7 +1211,9 @@ function prepareFormData() {
         "Статус": "черновик",
         "Добавил": currentUser ? currentUser.name : "Неизвестный пользователь",
         "Пометки админу": adminNotes, // НОВОЕ ПОЛЕ
-        "Автор": currentUser && (currentUser.id || currentUser.uid) ? (currentUser.id || currentUser.uid) : "Неизвестно"
+        "Автор": currentUser ? 
+    `${currentUser.name} (${currentUser.id || currentUser.uid || "без_ID"})` : 
+    "Неизвестно"
     };
 }
 
