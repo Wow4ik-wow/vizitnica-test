@@ -426,10 +426,13 @@ function showPhoneConflictNotification(conflictData) {
     `;
 
   if (confirm(message)) {
-    // ЗАПОМИНАЕМ оспоренный телефон
-    disputedPhones.push(conflictData.phone);
-    return "dispute";
-  } else {
+    // ЗАПОМИНАЕМ оспоренный телефон + ID конфликтной карточки
+    disputedPhones.push({
+        phone: conflictData.phone,
+        cardId: card['ID'] || 'без_ID'
+    });
+    return 'dispute';
+} else {
     return "cancel";
   }
 }
@@ -1272,10 +1275,10 @@ console.log("phones в форме:", phones);
 
 // Проверяем оспоренные телефоны (ПРОСТАЯ ПРОВЕРКА)
 if (disputedPhones.length > 0) {
-    adminNotes = `Оспаривание: ${disputedPhones.join(', ')}`;
-    console.log("Будет записано в adminNotes:", adminNotes);
-} else {
-    console.log("disputedPhones пустой!");
+    const disputeNotes = disputedPhones.map(d => 
+        `Оспаривание: ${d.phone} (объявление ${d.cardId})`
+    );
+    adminNotes = disputeNotes.join('; ');
 }
 
   // Дополнительно проверяем конфликты для админа
