@@ -416,9 +416,9 @@ function showPhoneConflictNotification(conflictData) {
     const card = conflict.cardInfo;
 
     const companyName = card["Компания"] || card["Имя"] || "Не указано";
-    const description = card['Описание (до 1000 симв)'] || 'Нет описания';
+    const description = card["Описание (до 1000 симв)"] || 'Нет описания';
 console.log("Описание карточки:", description); // ОТЛАДКА
-console.log("Есть ли поле в card:", 'Описание (до 1000 симв)' in card); // ОТЛАДКА
+console.log("Есть ли поле в card:", "Описание (до 1000 симв)" in card); // ОТЛАДКА
     const shortDescription =
       description.length > 30
         ? description.substring(0, 30) + "..."
