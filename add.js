@@ -412,7 +412,7 @@ function showPhoneConflictNotification(conflictData) {
     const card = conflict.cardInfo;
 
     const companyName = card["Компания"] || card["Имя"] || "Не указано";
-    const description = card["Описание (до 125 симв)"] || "Нет описания";
+    const description = card["Описание (до 1000 симв)"] || "Нет описания";
     const shortDescription =
       description.length > 30
         ? description.substring(0, 30) + "..."
@@ -427,7 +427,7 @@ function showPhoneConflictNotification(conflictData) {
         card["Населённый пункт"] || "Не указан"
       }${card["Адрес"] ? ", " + card["Адрес"] : ""}<br>
         📞 ${card["Телефоны"] || "Не указаны"}<br>
-        📝 ${card["Описание (до 125 симв)"] || "Нет описания"}<br>
+        📝 ${card["Описание (до 1000 симв)"] || "Нет описания"}<br>
         <small>ID: ${card["ID"] || "Не указан"}</small>
     </div>
     <p>Этот номер уже используется другим пользователем. Хотите оспорить эту визитку?</p>
@@ -1433,7 +1433,7 @@ function prepareFormData() {
     "Вид деятельности": kinds.join(", "),
     Имя: document.getElementById("nameInput").value.trim(),
     Компания: document.getElementById("companyInput").value.trim(),
-    "Описание (до 125 симв)": formatTextToLines(
+    "Описание (до 1000 симв)": formatTextToLines(
       document.getElementById("descShort").value.trim()
     ).replace(/\n\s*\n/g, "\n"),
     "Описание (до 1000 симв)": document.getElementById("descLong").value.trim(),
