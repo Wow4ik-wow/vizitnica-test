@@ -1105,6 +1105,11 @@ function validateForm() {
 
 // Подготовка данных для отправки
 function prepareFormData() {
+    // ОТЛАДКА - ДОБАВЬ В НАЧАЛО
+    console.log("=== ДЕБАГ prepareFormData ===");
+    console.log("currentUser:", currentUser);
+    console.log("Все поля currentUser:", Object.keys(currentUser || {}));
+    
     const now = new Date();
     const date = now.toLocaleDateString("ru-RU") + " " + now.toLocaleTimeString("ru-RU");
 
