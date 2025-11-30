@@ -502,30 +502,47 @@ function checkPhoneAllProfiles(phone) {
 
 // Показ уведомления для админа о всех дублях
 function showAdminPhoneConflictNotification(conflictData) {
-    let message = "Этот номер уже используется в других визитках:\n\n";
-    
-    conflictData.conflicts.forEach((conflict, index) => {
-        const card = conflict.cardInfo;
-        const companyName = card['Компания'] || card['Имя'] || 'Не указано';
-        message += `${index + 1}. ${companyName} (Профиль: ${conflict.profile})\n`;
+    return new Promise((resolve) => {
+        let conflictsHTML = '';
+        
+        conflictData.conflicts.forEach((conflict, index) => {
+            const card = conflict.cardInfo;
+            const companyName = card['Компания'] || card['Имя'] || 'Не указано';
+            conflictsHTML += `
+                <div class="conflict-card">
+                    <strong>${index + 1}. ${companyName}</strong><br>
+                    Профиль: ${conflict.profile}<br>
+                    <small>ID: ${card['ID'] || 'Не указан'}</small>
+                </div>
+            `;
+        });
+        
+        const modal = createModal(
+            '⚠️ Дубли номера (Админ)',
+            `
+                <p>Этот номер уже используется в других визитках:</p>
+                ${conflictsHTML}
+                <p>Всё равно добавить этот номер?</p>
+            `,
+            [
+                { text: 'Добавить', type: 'success', action: 'continue' },
+                { text: 'Отмена', type: 'secondary', action: 'cancel' }
+            ],
+            (action) => {
+                if (action === 'continue') {
+                    const ignoredCards = conflictData.conflicts.map(conflict => 
+                        conflict.cardInfo['ID'] || 'без_ID'
+                    ).join(', ');
+                    
+                    disputedPhones.push({
+                        phone: conflictData.phone,
+                        cardId: `админ_проигнорировал_дубли: ${ignoredCards}`
+                    });
+                }
+                resolve(action);
+            }
+        );
     });
-    
-    message += "\nВсё равно добавить этот номер?";
-    
-    if (confirm(message)) {
-    // ЗАПОМИНАЕМ какие дубли проигнорировал админ
-    const ignoredCards = conflictData.conflicts.map(conflict => 
-        conflict.cardInfo['ID'] || 'без_ID'
-    ).join(', ');
-    
-    disputedPhones.push({
-        phone: conflictData.phone,
-        cardId: `админ_проигнорировал_дубли: ${ignoredCards}`
-    });
-    return 'continue';
-} else {
-    return 'cancel';
-}
 }
 
 // === ОБРАБОТКА ФОРМЫ ===
@@ -810,7 +827,7 @@ if (phoneDatabase && currentUser.role === 'admin') {
     
     if (allConflicts && allConflicts.conflicts && allConflicts.conflicts.length > 0) {
     console.log("Найдены дубли, показываем уведомление");
-    const userChoice = showAdminPhoneConflictNotification(allConflicts);
+    const userChoice = await showAdminPhoneConflictNotification(allConflicts);
     if (userChoice === 'cancel') {
         input.value = "";
         return;
