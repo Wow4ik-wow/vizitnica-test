@@ -413,8 +413,6 @@ function showPhoneConflictNotification(conflictData) {
 
     const companyName = card["Компания"] || card["Имя"] || "Не указано";
     const description = card["Описание (до 1000 симв)"] || "Нет описания";
-console.log("Описание карточки:", description); // ОТЛАДКА
-console.log("Есть ли поле в card:", "Описание (до 1000 симв)" in card); // ОТЛАДКА
     const shortDescription =
       description.length > 30
         ? description.substring(0, 30) + "..."
@@ -519,9 +517,16 @@ function showAdminPhoneConflictNotification(conflictData) {
 
     conflictData.conflicts.forEach((conflict, index) => {
     const card = conflict.cardInfo;
-    console.log("Все поля карточки:", Object.keys(card)); // ОТЛАДКА
+    console.log("Все поля карточки:", Object.keys(card));
+    
+    // ДЕТАЛЬНАЯ ОТЛАДКА ОПИСАНИЯ
+    console.log("card['Описание (до 1000 симв)']:", card['Описание (до 1000 симв)']);
+    console.log("Тип значения:", typeof card['Описание (до 1000 симв)']);
+    console.log("Длина значения:", card['Описание (до 1000 симв)'] ? card['Описание (до 1000 симв)'].length : 0);
+    
     const companyName = card['Компания'] || card['Имя'] || 'Не указано';
-    const description = card['Описание (до 75 симв)'] || 'Нет описания';
+    const description = card['Описание (до 1000 симв)'] || 'Нет описания';
+    console.log("Итоговое описание:", description);
       const phones = card["Телефоны"] || "Не указаны";
       const address = card["Адрес"] || "Не указан";
       const area = card["Область"] || "Не указана";
