@@ -747,13 +747,19 @@ if (!currentProfile) {
 
 // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе
 if (phoneDatabase && currentUser.role === 'admin') {
+    console.log("=== ПРОВЕРКА АДМИНА ЗАПУЩЕНА ===");
     const allConflicts = checkPhoneAllProfiles(val);
+    console.log("allConflicts:", allConflicts);
+    
     if (allConflicts && allConflicts.length > 0) {
+        console.log("Найдены дубли, показываем уведомление");
         const userChoice = showAdminPhoneConflictNotification(allConflicts);
         if (userChoice === 'cancel') {
             input.value = "";
             return;
         }
+    } else {
+        console.log("Дубли не найдены");
     }
 }
 
