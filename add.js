@@ -437,27 +437,38 @@ function showPhoneConflictNotification(conflictData) {
   }
 }
 
-// Показ уведомления о своем повторе
-function showOwnPhoneConflictNotification(conflictData) {
-  const conflict = conflictData.conflicts[0];
-  const card = conflict.cardInfo;
+// Проверка телефона во всех профилях (только для админа)
+function checkPhoneAllProfiles(phone) {
+    if (!phoneDatabase) return null;
+    
+    const normalizedPhone = phone.replace(/\D/g, '');
+    const conflicts = phoneDatabase[normalizedPhone];
+    
+    if (!conflicts) return null;
+    
+    return {
+        phone: normalizedPhone,
+        conflicts: conflicts
+    };
+}
 
-  const companyName = card["Компания"] || card["Имя"] || "Не указано";
-
-  const message = `
-        Вы уже делали визитку с этим номером!
-        
-        Визитка: ${companyName}
-        ID: ${card["ID"] || "Не указан"}
-        
-        Хотите отредактировать её?
-    `;
-
-  if (confirm(message)) {
-    return "edit";
-  } else {
-    return "cancel";
-  }
+// Показ уведомления для админа о всех дублях
+function showAdminPhoneConflictNotification(conflictData) {
+    let message = "Этот номер уже используется в других визитках:\n\n";
+    
+    conflictData.conflicts.forEach((conflict, index) => {
+        const card = conflict.cardInfo;
+        const companyName = card['Компания'] || card['Имя'] || 'Не указано';
+        message += `${index + 1}. ${companyName} (Профиль: ${conflict.profile})\n`;
+    });
+    
+    message += "\nВсё равно добавить этот номер?";
+    
+    if (confirm(message)) {
+        return 'continue';
+    } else {
+        return 'cancel';
+    }
 }
 
 // === ОБРАБОТКА ФОРМЫ ===
@@ -729,13 +740,27 @@ function addPhoneNumber() {
   }
 
   // НОВАЯ ПРОВЕРКА: Проверяем конфликты телефонов
-  const currentProfile = document.getElementById("profileSelect").value;
-  if (phoneDatabase && currentProfile) {
-    // Показываем предупреждение если профиль не выбран
-    if (!currentProfile) {
-      showMessage("Сначала выберите профиль деятельности!", "warning");
-      return;
+const currentProfile = document.getElementById("profileSelect").value;
+
+// Проверяем выбран ли профиль
+if (!currentProfile) {
+    showMessage("Сначала выберите профиль деятельности!", "warning");
+    return;
+}
+
+// ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе
+if (phoneDatabase && currentUser.role === 'admin') {
+    const allConflicts = checkPhoneAllProfiles(val);
+    if (allConflicts && allConflicts.length > 0) {
+        const userChoice = showAdminPhoneConflictNotification(allConflicts);
+        if (userChoice === 'cancel') {
+            input.value = "";
+            return;
+        }
     }
+}
+
+if (phoneDatabase && currentProfile) {
     const conflictData = checkPhoneConflict(val, currentProfile);
 
     if (conflictData) {
