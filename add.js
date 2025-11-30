@@ -1,3 +1,16 @@
+// ОТЛАДКА - ДОБАВЬ ЭТОТ КОД В САМОЕ НАЧАЛО add.js
+console.log("=== ДЕБАГ ФОРМЫ ===");
+console.log("currentUser:", currentUser);
+console.log("localStorage user:", localStorage.getItem("user"));
+
+if (currentUser) {
+    console.log("currentUser.id:", currentUser.id);
+    console.log("currentUser.name:", currentUser.name);
+    console.log("currentUser.role:", currentUser.role);
+} else {
+    console.log("currentUser is NULL!");
+}
+
 // === КОНФИГУРАЦИЯ ===
 const spreadsheetId = "1vKErM8FIGNM5if0zpsaCWutsQgscqrPo2bUWJACTcf0";
 const sheetsURL = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&tq=`;
