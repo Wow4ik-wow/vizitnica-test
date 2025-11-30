@@ -465,10 +465,19 @@ function showAdminPhoneConflictNotification(conflictData) {
     message += "\nВсё равно добавить этот номер?";
     
     if (confirm(message)) {
-        return 'continue';
-    } else {
-        return 'cancel';
-    }
+    // ЗАПОМИНАЕМ какие дубли проигнорировал админ
+    const ignoredCards = conflictData.conflicts.map(conflict => 
+        conflict.cardInfo['ID'] || 'без_ID'
+    ).join(', ');
+    
+    disputedPhones.push({
+        phone: conflictData.phone,
+        cardId: `админ_проигнорировал_дубли: ${ignoredCards}`
+    });
+    return 'continue';
+} else {
+    return 'cancel';
+}
 }
 
 // === ОБРАБОТКА ФОРМЫ ===
