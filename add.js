@@ -516,9 +516,10 @@ function showAdminPhoneConflictNotification(conflictData) {
     let conflictsHTML = "";
 
     conflictData.conflicts.forEach((conflict, index) => {
-      const card = conflict.cardInfo;
-      const companyName = card["Компания"] || card["Имя"] || "Не указано";
-      const description = card["Описание (до 125 симв)"] || "Нет описания";
+    const card = conflict.cardInfo;
+    console.log("Все поля карточки:", Object.keys(card)); // ОТЛАДКА
+    const companyName = card['Компания'] || card['Имя'] || 'Не указано';
+    const description = card['Описание (до 75 симв)'] || 'Нет описания';
       const phones = card["Телефоны"] || "Не указаны";
       const address = card["Адрес"] || "Не указан";
       const area = card["Область"] || "Не указана";
