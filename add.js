@@ -1440,7 +1440,7 @@ function prepareFormData() {
     "Вид деятельности": kinds.join(", "),
     Имя: document.getElementById("nameInput").value.trim(),
     Компания: document.getElementById("companyInput").value.trim(),
-    "Описание (до 1000 симв)": formatTextToLines(
+    "Описание (до 125 симв)": formatTextToLines(
       document.getElementById("descShort").value.trim()
     ).replace(/\n\s*\n/g, "\n"),
     "Описание (до 1000 симв)": document.getElementById("descLong").value.trim(),
