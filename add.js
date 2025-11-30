@@ -44,6 +44,16 @@ async function checkAuth() {
     if (storedUser) {
         try {
             currentUser = JSON.parse(storedUser);
+            
+            // ДОБАВЛЯЕМ: Получаем ID пользователя с сервера
+            if (currentUser && currentUser.email && !currentUser.id) {
+                const userId = await getUserIdFromServer(currentUser.email);
+                if (userId) {
+                    currentUser.id = userId;
+                    currentUser.uid = userId;
+                    localStorage.setItem("user", JSON.stringify(currentUser));
+                }
+            }
         } catch (e) {
             localStorage.removeItem("user");
         }
@@ -58,6 +68,20 @@ async function checkAuth() {
     if (typeof Telegram !== "undefined" && Telegram.WebApp) {
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
+    }
+}
+
+// ДОБАВИТЬ ЭТУ ФУНКЦИЮ В add.js
+async function getUserIdFromServer(email) {
+    try {
+        const response = await fetch(
+            `https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec?getUserByEmail=${encodeURIComponent(email)}`
+        );
+        const data = await response.json();
+        return data.success ? data.uid : null;
+    } catch (e) {
+        console.error("Ошибка при получении ID пользователя:", e);
+        return null;
     }
 }
 
