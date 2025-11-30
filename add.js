@@ -751,16 +751,16 @@ if (phoneDatabase && currentUser.role === 'admin') {
     const allConflicts = checkPhoneAllProfiles(val);
     console.log("allConflicts:", allConflicts);
     
-    if (allConflicts && allConflicts.length > 0) {
-        console.log("Найдены дубли, показываем уведомление");
-        const userChoice = showAdminPhoneConflictNotification(allConflicts);
-        if (userChoice === 'cancel') {
-            input.value = "";
-            return;
-        }
-    } else {
-        console.log("Дубли не найдены");
+    if (allConflicts && allConflicts.conflicts && allConflicts.conflicts.length > 0) {
+    console.log("Найдены дубли, показываем уведомление");
+    const userChoice = showAdminPhoneConflictNotification(allConflicts);
+    if (userChoice === 'cancel') {
+        input.value = "";
+        return;
     }
+} else {
+    console.log("Дубли не найдены");
+}
 }
 
 if (phoneDatabase && currentProfile) {
