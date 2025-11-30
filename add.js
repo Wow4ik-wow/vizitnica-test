@@ -638,8 +638,13 @@ function addPhoneNumber() {
     }
 
     // НОВАЯ ПРОВЕРКА: Проверяем конфликты телефонов
-    const currentProfile = document.getElementById("profileSelect").value;
-    if (phoneDatabase && currentProfile) {
+const currentProfile = document.getElementById("profileSelect").value;
+if (phoneDatabase && currentProfile) {
+    // Показываем предупреждение если профиль не выбран
+    if (!currentProfile) {
+        showMessage("Сначала выберите профиль деятельности!", "warning");
+        return;
+    }
         const conflictData = checkPhoneConflict(val, currentProfile);
         
         if (conflictData) {
@@ -1167,7 +1172,7 @@ function prepareFormData() {
         "Статус": "черновик",
         "Добавил": currentUser ? currentUser.name : "Неизвестный пользователь",
         "Пометки админу": adminNotes, // НОВОЕ ПОЛЕ
-        "Автор": currentUser && currentUser.id ? currentUser.id : "Неизвестно" // НОВОЕ ПОЛЕ
+        "Автор": currentUser && (currentUser.id || currentUser.uid) ? (currentUser.id || currentUser.uid) : "Неизвестно"
     };
 }
 
