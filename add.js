@@ -405,144 +405,163 @@ function checkPhoneConflict(phone, currentProfile) {
 
 // Показ уведомления о конфликте с чужим номером
 function showPhoneConflictNotification(conflictData) {
-    console.log("showPhoneConflictNotification ВЫЗВАНА");
-    return new Promise((resolve) => {
-        console.log("Promise создан");
-        const conflict = conflictData.conflicts[0];
-        const card = conflict.cardInfo;
-        
-        const companyName = card['Компания'] || card['Имя'] || 'Не указано';
-        const description = card['Описание (до 75 симв)'] || 'Нет описания';
-        const shortDescription = description.length > 30 ? description.substring(0, 30) + '...' : description;
-        
-        const modal = createModal(
-            '⚠️ Конфликт номера',
-            `
-                <div class="conflict-card">
-                    <strong>${companyName}</strong><br>
-                    ${shortDescription}<br>
-                    <small>ID: ${card['ID'] || 'Не указан'}</small>
-                </div>
-                <p>Этот номер уже используется другим пользователем. Хотите оспорить эту визитку?</p>
-            `,
-            [
-                { text: 'Оспорить', type: 'primary', action: 'dispute' },
-                { text: 'Отмена', type: 'secondary', action: 'cancel' }
-            ],
-            (action) => {
-                if (action === 'dispute') {
-                    disputedPhones.push({
-                        phone: conflictData.phone,
-                        cardId: card['ID'] || 'без_ID'
-                    });
-                }
-                resolve(action);
-            }
-        );
-    });
+  console.log("showPhoneConflictNotification ВЫЗВАНА");
+  return new Promise((resolve) => {
+    console.log("Promise создан");
+    const conflict = conflictData.conflicts[0];
+    const card = conflict.cardInfo;
+
+    const companyName = card["Компания"] || card["Имя"] || "Не указано";
+    const description = card["Описание (до 75 симв)"] || "Нет описания";
+    const shortDescription =
+      description.length > 30
+        ? description.substring(0, 30) + "..."
+        : description;
+
+    const modal = createModal(
+      "⚠️ Конфликт номера",
+      `
+    <div class="conflict-card">
+        <strong>${companyName}</strong><br>
+        📍 ${card["Область"] || "Не указана"}, ${
+        card["Населённый пункт"] || "Не указан"
+      }${card["Адрес"] ? ", " + card["Адрес"] : ""}<br>
+        📞 ${card["Телефоны"] || "Не указаны"}<br>
+        📝 ${card["Описание (до 75 симв)"] || "Нет описания"}<br>
+        <small>ID: ${card["ID"] || "Не указан"}</small>
+    </div>
+    <p>Этот номер уже используется другим пользователем. Хотите оспорить эту визитку?</p>
+`,
+      [
+        { text: "Оспорить", type: "primary", action: "dispute" },
+        { text: "Отмена", type: "secondary", action: "cancel" },
+      ],
+      (action) => {
+        if (action === "dispute") {
+          disputedPhones.push({
+            phone: conflictData.phone,
+            cardId: card["ID"] || "без_ID",
+          });
+        }
+        resolve(action);
+      }
+    );
+  });
 }
 
 // Универсальная функция создания модального окна
 function createModal(title, content, buttons, callback) {
-    console.log("createModal ВЫЗВАНА");
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    
-    const modal = document.createElement('div');
-    modal.className = 'modal-container';
-    
-    modal.innerHTML = `
+  console.log("createModal ВЫЗВАНА");
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+
+  const modal = document.createElement("div");
+  modal.className = "modal-container";
+
+  modal.innerHTML = `
         <div class="modal-header">
             <div class="modal-icon">⚠️</div>
             <div class="modal-title">${title}</div>
         </div>
         <div class="modal-content">${content}</div>
         <div class="modal-buttons">
-            ${buttons.map(btn => 
-                `<button class="modal-btn ${btn.type}" data-action="${btn.action}">${btn.text}</button>`
-            ).join('')}
+            ${buttons
+              .map(
+                (btn) =>
+                  `<button class="modal-btn ${btn.type}" data-action="${btn.action}">${btn.text}</button>`
+              )
+              .join("")}
         </div>
     `;
-    
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-    
-    // Обработчики кнопок
-    modal.querySelectorAll('.modal-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const action = btn.dataset.action;
-            document.body.removeChild(overlay);
-            callback(action);
-        });
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // Обработчики кнопок
+  modal.querySelectorAll(".modal-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const action = btn.dataset.action;
+      document.body.removeChild(overlay);
+      callback(action);
     });
-    
-    // Закрытие по клику на подложку
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            document.body.removeChild(overlay);
-            callback('cancel');
-        }
-    });
+  });
+
+  // Закрытие по клику на подложку
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      document.body.removeChild(overlay);
+      callback("cancel");
+    }
+  });
 }
 
 // Проверка телефона во всех профилях (только для админа)
 function checkPhoneAllProfiles(phone) {
-    if (!phoneDatabase) return null;
-    
-    const normalizedPhone = phone.replace(/\D/g, '');
-    const conflicts = phoneDatabase[normalizedPhone];
-    
-    if (!conflicts) return null;
-    
-    return {
-        phone: normalizedPhone,
-        conflicts: conflicts
-    };
+  if (!phoneDatabase) return null;
+
+  const normalizedPhone = phone.replace(/\D/g, "");
+  const conflicts = phoneDatabase[normalizedPhone];
+
+  if (!conflicts) return null;
+
+  return {
+    phone: normalizedPhone,
+    conflicts: conflicts,
+  };
 }
 
 // Показ уведомления для админа о всех дублях
 function showAdminPhoneConflictNotification(conflictData) {
-    return new Promise((resolve) => {
-        let conflictsHTML = '';
-        
-        conflictData.conflicts.forEach((conflict, index) => {
-            const card = conflict.cardInfo;
-            const companyName = card['Компания'] || card['Имя'] || 'Не указано';
-            conflictsHTML += `
-                <div class="conflict-card">
-                    <strong>${index + 1}. ${companyName}</strong><br>
-                    Профиль: ${conflict.profile}<br>
-                    <small>ID: ${card['ID'] || 'Не указан'}</small>
-                </div>
-            `;
-        });
-        
-        const modal = createModal(
-            '⚠️ Дубли номера (Админ)',
-            `
+  return new Promise((resolve) => {
+    let conflictsHTML = "";
+
+    conflictData.conflicts.forEach((conflict, index) => {
+      const card = conflict.cardInfo;
+      const companyName = card["Компания"] || card["Имя"] || "Не указано";
+      const description = card["Описание (до 75 симв)"] || "Нет описания";
+      const phones = card["Телефоны"] || "Не указаны";
+      const address = card["Адрес"] || "Не указан";
+      const area = card["Область"] || "Не указана";
+      const city = card["Населённый пункт"] || "Не указан";
+
+      conflictsHTML += `
+        <div class="conflict-card">
+            <strong>${index + 1}. ${companyName}</strong><br>
+            📍 ${area}, ${city}${address ? ", " + address : ""}<br>
+            📞 ${phones}<br>
+            📝 ${description}<br>
+            🏷️ Профиль: ${conflict.profile}<br>
+            <small>ID: ${card["ID"] || "Не указан"}</small>
+        </div>
+    `;
+    });
+
+    const modal = createModal(
+      "⚠️ Дубли номера (Админ)",
+      `
                 <p>Этот номер уже используется в других визитках:</p>
                 ${conflictsHTML}
                 <p>Всё равно добавить этот номер?</p>
             `,
-            [
-                { text: 'Добавить', type: 'success', action: 'continue' },
-                { text: 'Отмена', type: 'secondary', action: 'cancel' }
-            ],
-            (action) => {
-                if (action === 'continue') {
-                    const ignoredCards = conflictData.conflicts.map(conflict => 
-                        conflict.cardInfo['ID'] || 'без_ID'
-                    ).join(', ');
-                    
-                    disputedPhones.push({
-                        phone: conflictData.phone,
-                        cardId: `админ_проигнорировал_дубли: ${ignoredCards}`
-                    });
-                }
-                resolve(action);
-            }
-        );
-    });
+      [
+        { text: "Добавить", type: "success", action: "continue" },
+        { text: "Отмена", type: "secondary", action: "cancel" },
+      ],
+      (action) => {
+        if (action === "continue") {
+          const ignoredCards = conflictData.conflicts
+            .map((conflict) => conflict.cardInfo["ID"] || "без_ID")
+            .join(", ");
+
+          disputedPhones.push({
+            phone: conflictData.phone,
+            cardId: `админ_проигнорировал_дубли: ${ignoredCards}`,
+          });
+        }
+        resolve(action);
+      }
+    );
+  });
 }
 
 // === ОБРАБОТКА ФОРМЫ ===
@@ -778,14 +797,14 @@ function updateSelectedTownsUI() {
 
 // Добавление телефона
 async function addPhoneNumber() {
-    // ОТЛАДКА АДМИНА
-    console.log("=== ПРОВЕРКА АДМИНА ===");
-    console.log("currentUser.role:", currentUser?.role);
-    console.log("isAdmin:", currentUser?.role === 'admin');
-    
-    const input = document.getElementById("phoneInput");
-    const container = document.getElementById("phonesContainer");
-    const val = input.value.trim();
+  // ОТЛАДКА АДМИНА
+  console.log("=== ПРОВЕРКА АДМИНА ===");
+  console.log("currentUser.role:", currentUser?.role);
+  console.log("isAdmin:", currentUser?.role === "admin");
+
+  const input = document.getElementById("phoneInput");
+  const container = document.getElementById("phonesContainer");
+  const val = input.value.trim();
 
   console.log("Введённый телефон:", val);
   // КОНЕЦ ОТЛАДКИ
@@ -811,61 +830,59 @@ async function addPhoneNumber() {
   }
 
   // НОВАЯ ПРОВЕРКА: Проверяем конфликты телефонов
-const currentProfile = document.getElementById("profileSelect").value;
+  const currentProfile = document.getElementById("profileSelect").value;
 
-// Проверяем выбран ли профиль
-if (!currentProfile) {
-    showMessage("Сначала выберите профиль деятельности!", "warning");
-    return;
-}
-
-// ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе
-if (phoneDatabase && currentUser.role === 'admin') {
+  // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе
+  if (phoneDatabase && currentUser.role === "admin") {
     console.log("=== ПРОВЕРКА АДМИНА ЗАПУЩЕНА ===");
     const allConflicts = checkPhoneAllProfiles(val);
     console.log("allConflicts:", allConflicts);
-    
-    if (allConflicts && allConflicts.conflicts && allConflicts.conflicts.length > 0) {
-    console.log("Найдены дубли, показываем уведомление");
-    const userChoice = await showAdminPhoneConflictNotification(allConflicts);
-    if (userChoice === 'cancel') {
+
+    if (
+      allConflicts &&
+      allConflicts.conflicts &&
+      allConflicts.conflicts.length > 0
+    ) {
+      console.log("Найдены дубли, показываем уведомление");
+      const userChoice = await showAdminPhoneConflictNotification(allConflicts);
+      if (userChoice === "cancel") {
         input.value = "";
         return;
+      }
+    } else {
+      console.log("Дубли не найдены");
     }
-} else {
-    console.log("Дубли не найдены");
-}
-}
+  }
 
-if (phoneDatabase && currentProfile) {
+  if (phoneDatabase && currentProfile) {
     const conflictData = checkPhoneConflict(val, currentProfile);
 
     if (conflictData) {
       const conflict = conflictData.conflicts[0];
 
       // Случай А: Свой повтор
-if (conflict.author === currentUser.id) {
-    const userChoice = showOwnPhoneConflictNotification(conflictData); // УБИРАЕМ await
-    if (userChoice === "cancel") {
-        input.value = "";
-        return; // Не добавляем номер
-    }
-    // Если 'edit' - пока просто добавляем номер (редактирование сделаем позже)
-}
+      if (conflict.author === currentUser.id) {
+        const userChoice = showOwnPhoneConflictNotification(conflictData); // УБИРАЕМ await
+        if (userChoice === "cancel") {
+          input.value = "";
+          return; // Не добавляем номер
+        }
+        // Если 'edit' - пока просто добавляем номер (редактирование сделаем позже)
+      }
       // Случай Б: Повтор админа
       else if (conflict.author === "АДМИН") {
         // Просто добавляем номер, ничего не показываем пользователю
         // Пометку для админа добавим при отправке формы
       }
       // Случай В: Чужой номер
-else {
-    const userChoice = await showPhoneConflictNotification(conflictData);
-    if (userChoice === "cancel") {
-        input.value = "";
-        return; // Не добавляем номер
-    }
-    // Если 'dispute' - добавляем номер с пометкой для оспаривания
-}
+      else {
+        const userChoice = await showPhoneConflictNotification(conflictData);
+        if (userChoice === "cancel") {
+          input.value = "";
+          return; // Не добавляем номер
+        }
+        // Если 'dispute' - добавляем номер с пометкой для оспаривания
+      }
     }
   }
 
@@ -1365,23 +1382,24 @@ function prepareFormData() {
   });
 
   // НОВЫЙ КОД: Определяем пометки для админа
-let adminNotes = "";
-const currentProfile = document.getElementById("profileSelect").value;
-const phones = Array.from(document.querySelectorAll(".phone-item"))
-    .map(el => el.textContent.replace(" ×", ""));
+  let adminNotes = "";
+  const currentProfile = document.getElementById("profileSelect").value;
+  const phones = Array.from(document.querySelectorAll(".phone-item")).map(
+    (el) => el.textContent.replace(" ×", "")
+  );
 
-// ОТЛАДКА
-console.log("=== ДЕБАГ пометок админу ===");
-console.log("disputedPhones:", disputedPhones);
-console.log("phones в форме:", phones);
+  // ОТЛАДКА
+  console.log("=== ДЕБАГ пометок админу ===");
+  console.log("disputedPhones:", disputedPhones);
+  console.log("phones в форме:", phones);
 
-// Проверяем оспоренные телефоны (ПРОСТАЯ ПРОВЕРКА)
-if (disputedPhones.length > 0) {
-    const disputeNotes = disputedPhones.map(d => 
-        `Оспаривание: ${d.phone} (объявление ${d.cardId})`
+  // Проверяем оспоренные телефоны (ПРОСТАЯ ПРОВЕРКА)
+  if (disputedPhones.length > 0) {
+    const disputeNotes = disputedPhones.map(
+      (d) => `Оспаривание: ${d.phone} (объявление ${d.cardId})`
     );
-    adminNotes = disputeNotes.join('; ');
-}
+    adminNotes = disputeNotes.join("; ");
+  }
 
   // Дополнительно проверяем конфликты для админа
   if (phoneDatabase && currentProfile && currentUser.role === "admin") {
