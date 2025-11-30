@@ -369,11 +369,15 @@ function buildPhoneMap(cards) {
         if (!phoneMap[normalizedPhone]) {
           phoneMap[normalizedPhone] = [];
         }
-        phoneMap[normalizedPhone].push({
-          profile,
-          author,
-          cardInfo: card,
-        });
+        // ОТЛАДКА - что сохраняется в cardInfo
+console.log("Сохранение карточки для телефона", normalizedPhone);
+console.log("Поля карточки:", Object.keys(card));
+
+phoneMap[normalizedPhone].push({
+    profile,
+    author,
+    cardInfo: card
+});
       }
     });
   });
