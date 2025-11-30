@@ -405,36 +405,81 @@ function checkPhoneConflict(phone, currentProfile) {
 
 // Показ уведомления о конфликте с чужим номером
 function showPhoneConflictNotification(conflictData) {
-  const conflict = conflictData.conflicts[0];
-  const card = conflict.cardInfo;
-
-  const companyName = card["Компания"] || card["Имя"] || "Не указано";
-  const description = card["Описание (до 75 симв)"] || "Нет описания";
-  const shortDescription =
-    description.length > 30
-      ? description.substring(0, 30) + "..."
-      : description;
-
-  const message = `
-        Этот номер уже используется другим пользователем!
+    return new Promise((resolve) => {
+        const conflict = conflictData.conflicts[0];
+        const card = conflict.cardInfo;
         
-        Визитка: ${companyName}
-        Описание: ${shortDescription}
-        ID: ${card["ID"] || "Не указан"}
+        const companyName = card['Компания'] || card['Имя'] || 'Не указано';
+        const description = card['Описание (до 75 симв)'] || 'Нет описания';
+        const shortDescription = description.length > 30 ? description.substring(0, 30) + '...' : description;
         
-        Хотите оспорить эту визитку?
-    `;
-
-  if (confirm(message)) {
-    // ЗАПОМИНАЕМ оспоренный телефон + ID конфликтной карточки
-    disputedPhones.push({
-        phone: conflictData.phone,
-        cardId: card['ID'] || 'без_ID'
+        const modal = createModal(
+            '⚠️ Конфликт номера',
+            `
+                <div class="conflict-card">
+                    <strong>${companyName}</strong><br>
+                    ${shortDescription}<br>
+                    <small>ID: ${card['ID'] || 'Не указан'}</small>
+                </div>
+                <p>Этот номер уже используется другим пользователем. Хотите оспорить эту визитку?</p>
+            `,
+            [
+                { text: 'Оспорить', type: 'primary', action: 'dispute' },
+                { text: 'Отмена', type: 'secondary', action: 'cancel' }
+            ],
+            (action) => {
+                if (action === 'dispute') {
+                    disputedPhones.push({
+                        phone: conflictData.phone,
+                        cardId: card['ID'] || 'без_ID'
+                    });
+                }
+                resolve(action);
+            }
+        );
     });
-    return 'dispute';
-} else {
-    return "cancel";
-  }
+}
+
+// Универсальная функция создания модального окна
+function createModal(title, content, buttons, callback) {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-container';
+    
+    modal.innerHTML = `
+        <div class="modal-header">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-title">${title}</div>
+        </div>
+        <div class="modal-content">${content}</div>
+        <div class="modal-buttons">
+            ${buttons.map(btn => 
+                `<button class="modal-btn ${btn.type}" data-action="${btn.action}">${btn.text}</button>`
+            ).join('')}
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Обработчики кнопок
+    modal.querySelectorAll('.modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            document.body.removeChild(overlay);
+            callback(action);
+        });
+    });
+    
+    // Закрытие по клику на подложку
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+            callback('cancel');
+        }
+    });
 }
 
 // Проверка телефона во всех профилях (только для админа)
@@ -712,7 +757,7 @@ function updateSelectedTownsUI() {
 }
 
 // Добавление телефона
-function addPhoneNumber() {
+async function addPhoneNumber() {
     // ОТЛАДКА АДМИНА
     console.log("=== ПРОВЕРКА АДМИНА ===");
     console.log("currentUser.role:", currentUser?.role);
@@ -779,28 +824,28 @@ if (phoneDatabase && currentProfile) {
       const conflict = conflictData.conflicts[0];
 
       // Случай А: Свой повтор
-      if (conflict.author === currentUser.id) {
-        const userChoice = showOwnPhoneConflictNotification(conflictData);
-        if (userChoice === "cancel") {
-          input.value = "";
-          return; // Не добавляем номер
-        }
-        // Если 'edit' - пока просто добавляем номер (редактирование сделаем позже)
-      }
+if (conflict.author === currentUser.id) {
+    const userChoice = showOwnPhoneConflictNotification(conflictData); // УБИРАЕМ await
+    if (userChoice === "cancel") {
+        input.value = "";
+        return; // Не добавляем номер
+    }
+    // Если 'edit' - пока просто добавляем номер (редактирование сделаем позже)
+}
       // Случай Б: Повтор админа
       else if (conflict.author === "АДМИН") {
         // Просто добавляем номер, ничего не показываем пользователю
         // Пометку для админа добавим при отправке формы
       }
       // Случай В: Чужой номер
-      else {
-        const userChoice = showPhoneConflictNotification(conflictData);
-        if (userChoice === "cancel") {
-          input.value = "";
-          return; // Не добавляем номер
-        }
-        // Если 'dispute' - добавляем номер с пометкой для оспаривания
-      }
+else {
+    const userChoice = await showPhoneConflictNotification(conflictData);
+    if (userChoice === "cancel") {
+        input.value = "";
+        return; // Не добавляем номер
+    }
+    // Если 'dispute' - добавляем номер с пометкой для оспаривания
+}
     }
   }
 
