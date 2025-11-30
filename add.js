@@ -5,6 +5,16 @@ const formUrl = "https://script.google.com/macros/s/AKfycbw6FAWTC1ux2M3H6H8tuoZv
 
 // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
 let currentUser = null;
+
+// СРАЗУ загружаем пользователя из localStorage
+try {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+        currentUser = JSON.parse(storedUser);
+    }
+} catch (e) {
+    console.warn("Ошибка загрузки пользователя:", e);
+}
 const selectedValues = {
     selectedTownsContainer: [],
     selectedKindsContainer: []
