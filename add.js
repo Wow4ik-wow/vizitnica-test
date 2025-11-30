@@ -1260,16 +1260,23 @@ function prepareFormData() {
   });
 
   // НОВЫЙ КОД: Определяем пометки для админа
-  let adminNotes = "";
-  const currentProfile = document.getElementById("profileSelect").value;
-  const phones = Array.from(document.querySelectorAll(".phone-item")).map(
-    (el) => el.textContent.replace(" ×", "")
-  );
+let adminNotes = "";
+const currentProfile = document.getElementById("profileSelect").value;
+const phones = Array.from(document.querySelectorAll(".phone-item"))
+    .map(el => el.textContent.replace(" ×", ""));
 
-  // Проверяем оспоренные телефоны (ПРОСТАЯ ПРОВЕРКА)
-  if (disputedPhones.length > 0) {
-    adminNotes = `Оспаривание: ${disputedPhones.join(", ")}`;
-  }
+// ОТЛАДКА
+console.log("=== ДЕБАГ пометок админу ===");
+console.log("disputedPhones:", disputedPhones);
+console.log("phones в форме:", phones);
+
+// Проверяем оспоренные телефоны (ПРОСТАЯ ПРОВЕРКА)
+if (disputedPhones.length > 0) {
+    adminNotes = `Оспаривание: ${disputedPhones.join(', ')}`;
+    console.log("Будет записано в adminNotes:", adminNotes);
+} else {
+    console.log("disputedPhones пустой!");
+}
 
   // Дополнительно проверяем конфликты для админа
   if (phoneDatabase && currentProfile && currentUser.role === "admin") {
