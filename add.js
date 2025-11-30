@@ -832,8 +832,8 @@ async function addPhoneNumber() {
   // НОВАЯ ПРОВЕРКА: Проверяем конфликты телефонов
   const currentProfile = document.getElementById("profileSelect").value;
 
-  // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе
-  if (phoneDatabase && currentUser.role === "admin") {
+  // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе (РАБОТАЕТ БЕЗ ПРОФИЛЯ)
+if (phoneDatabase && currentUser.role === 'admin') {
     console.log("=== ПРОВЕРКА АДМИНА ЗАПУЩЕНА ===");
     const allConflicts = checkPhoneAllProfiles(val);
     console.log("allConflicts:", allConflicts);
