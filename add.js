@@ -704,17 +704,14 @@ function updateSelectedTownsUI() {
 
 // Добавление телефона
 function addPhoneNumber() {
-  // ОТЛАДКА - ДОБАВЬ В НАЧАЛО ФУНКЦИИ
-  console.log("=== ДЕБАГ addPhoneNumber ===");
-  console.log("currentUser:", currentUser);
-  console.log("currentUser.id:", currentUser?.id);
-  console.log("phoneDatabase:", phoneDatabase);
-  const debugProfile = document.getElementById("profileSelect").value;
-  console.log("currentProfile:", debugProfile);
-
-  const input = document.getElementById("phoneInput");
-  const container = document.getElementById("phonesContainer");
-  const val = input.value.trim();
+    // ОТЛАДКА АДМИНА
+    console.log("=== ПРОВЕРКА АДМИНА ===");
+    console.log("currentUser.role:", currentUser?.role);
+    console.log("isAdmin:", currentUser?.role === 'admin');
+    
+    const input = document.getElementById("phoneInput");
+    const container = document.getElementById("phonesContainer");
+    const val = input.value.trim();
 
   console.log("Введённый телефон:", val);
   // КОНЕЦ ОТЛАДКИ
