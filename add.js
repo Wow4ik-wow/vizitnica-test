@@ -1446,7 +1446,7 @@ function prepareFormData() {
     "Описание (до 1000 симв)": document.getElementById("descLong").value.trim(),
     Адрес: document.getElementById("addressInput").value.trim(),
     Телефоны: phones.join(", "),
-    Ссылки: Object.keys(links).length > 0 ? JSON.stringify(links) : "",
+    Ссылки: Object.keys(links).length > 0 ? formatLinksToOldStyle(links) : "",
     Геолокация: document.getElementById("geoLocation").value.trim(),
     Статус: "черновик",
     Добавил: currentUser ? currentUser.name : "Неизвестный пользователь",
@@ -1561,4 +1561,29 @@ function setupFieldLengthLimit(fieldId, maxLength, message) {
       showMessage(message, "warning");
     }
   });
+}
+
+// Форматирование ссылок в старый стиль для совместимости с сайтом
+function formatLinksToOldStyle(links) {
+    const linkTypes = {
+        site: "🌐",
+        email: "📧", 
+        instagram: "🌐",
+        telegram: "🔗",
+        viber: "🌐",
+        facebook: "🌐",
+        whatsapp: "🌐",
+        other: "🔗"
+    };
+    
+    const formattedLinks = [];
+    
+    for (const [type, url] of Object.entries(links)) {
+        if (url) {
+            const emoji = linkTypes[type] || "🔗";
+            formattedLinks.push(`${emoji}[${type}](${url})`);
+        }
+    }
+    
+    return formattedLinks.join("     ");
 }
