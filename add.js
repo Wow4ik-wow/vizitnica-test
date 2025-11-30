@@ -369,15 +369,11 @@ function buildPhoneMap(cards) {
         if (!phoneMap[normalizedPhone]) {
           phoneMap[normalizedPhone] = [];
         }
-        // ОТЛАДКА - что сохраняется в cardInfo
-console.log("Сохранение карточки для телефона", normalizedPhone);
-console.log("Поля карточки:", Object.keys(card));
-
-phoneMap[normalizedPhone].push({
-    profile,
-    author,
-    cardInfo: card
-});
+        phoneMap[normalizedPhone].push({
+          profile,
+          author,
+          cardInfo: card,
+        });
       }
     });
   });
@@ -416,7 +412,7 @@ function showPhoneConflictNotification(conflictData) {
     const card = conflict.cardInfo;
 
     const companyName = card["Компания"] || card["Имя"] || "Не указано";
-    const description = card["Описание (до 1000 симв)"] || 'Нет описания';
+    const description = card["Описание (до 1000 симв)"] || "Нет описания";
 console.log("Описание карточки:", description); // ОТЛАДКА
 console.log("Есть ли поле в card:", "Описание (до 1000 симв)" in card); // ОТЛАДКА
     const shortDescription =
