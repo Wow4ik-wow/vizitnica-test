@@ -569,7 +569,9 @@ select.form-input {
     background: white;
     border-radius: 15px;
     padding: 25px;
-    max-width: 500px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
     width: 90%;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     animation: modalAppear 0.3s ease;
