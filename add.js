@@ -1437,21 +1437,32 @@ function validateForm() {
   if (phones.length === 0) errors.push("Добавьте хотя бы один телефон");
 
   // Валидация ссылок
-  document.querySelectorAll("#linksInputsContainer input").forEach((input) => {
-    const type = input.dataset.type;
-    const value = input.value.trim();
+  document.querySelectorAll("#linksInputsContainer input").forEach(input => {
+        const type = input.dataset.type;
+        const value = input.value.trim();
+        
+        if (value && !validateLink(input, type)) {
+            errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
+        }
+    });
 
-    if (value && !validateLink(input, type)) {
-      errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
+    // Геолокация
+    const geoLocation = document.getElementById("geoLocation").value.trim();
+    if (geoLocation) {
+        const isLink = /^https?:\/\//.test(geoLocation);
+        const isCoords = /^[-+]?\d+\.\d+,\s*[-+]?\d+\.\d+$/.test(geoLocation);
+        
+        if (!isLink && !isCoords) {
+            errors.push("Геолокация должна быть ссылкой (https://...) или координатами (50.4504,30.5245)");
+        }
     }
-  });
 
-  if (errors.length > 0) {
-    showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
-    return false;
-  }
+    if (errors.length > 0) {
+        showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 // Подготовка данных для отправки
