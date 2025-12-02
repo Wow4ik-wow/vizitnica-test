@@ -516,17 +516,25 @@ function showAdminPhoneConflictNotification(conflictData) {
     let conflictsHTML = "";
 
     conflictData.conflicts.forEach((conflict, index) => {
-    const card = conflict.cardInfo;
-    console.log("Все поля карточки:", Object.keys(card));
-    
-    // ДЕТАЛЬНАЯ ОТЛАДКА ОПИСАНИЯ
-    console.log("card['Описание (до 1000 симв)']:", card['Описание (до 1000 симв)']);
-    console.log("Тип значения:", typeof card['Описание (до 1000 симв)']);
-    console.log("Длина значения:", card['Описание (до 1000 симв)'] ? card['Описание (до 1000 симв)'].length : 0);
-    
-    const companyName = card['Компания'] || card['Имя'] || 'Не указано';
-    const description = card['Описание (до 1000 симв)'] || 'Нет описания';
-    console.log("Итоговое описание:", description);
+      const card = conflict.cardInfo;
+      console.log("Все поля карточки:", Object.keys(card));
+
+      // ДЕТАЛЬНАЯ ОТЛАДКА ОПИСАНИЯ
+      console.log(
+        "card['Описание (до 1000 симв)']:",
+        card["Описание (до 1000 симв)"]
+      );
+      console.log("Тип значения:", typeof card["Описание (до 1000 симв)"]);
+      console.log(
+        "Длина значения:",
+        card["Описание (до 1000 симв)"]
+          ? card["Описание (до 1000 симв)"].length
+          : 0
+      );
+
+      const companyName = card["Компания"] || card["Имя"] || "Не указано";
+      const description = card["Описание (до 1000 симв)"] || "Нет описания";
+      console.log("Итоговое описание:", description);
       const phones = card["Телефоны"] || "Не указаны";
       const address = card["Адрес"] || "Не указан";
       const area = card["Область"] || "Не указана";
@@ -690,106 +698,120 @@ function setupPhoneHandlers() {
 
 // Настройка ссылок
 function setupLinksHandlers() {
-    document.querySelectorAll(".link-checkbox").forEach(checkbox => {
-        checkbox.addEventListener("change", () => {
-            const type = checkbox.dataset.type;
-            const container = document.getElementById("linksInputsContainer");
-            const existing = container.querySelector(`[data-type="${type}"]`);
+  document.querySelectorAll(".link-checkbox").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      const type = checkbox.dataset.type;
+      const container = document.getElementById("linksInputsContainer");
+      const existing = container.querySelector(`[data-type="${type}"]`);
 
-            if (checkbox.checked && !existing) {
-                const inputGroup = document.createElement("div");
-                inputGroup.className = "link-input-group";
-                inputGroup.dataset.type = type;
+      if (checkbox.checked && !existing) {
+        const inputGroup = document.createElement("div");
+        inputGroup.className = "link-input-group";
+        inputGroup.dataset.type = type;
 
-                const label = document.createElement("label");
-                label.textContent = getLinkTypeLabel(type) + ":";
-                label.className = "link-input-label";
+        const label = document.createElement("label");
+        label.textContent = getLinkTypeLabel(type) + ":";
+        label.className = "link-input-label";
 
-                const input = document.createElement("input");
-                input.type = "text";
-                input.placeholder = getLinkPlaceholder(type);
-                input.className = "form-input";
-                input.dataset.type = type;
-                
-                // ДОБАВЛЯЕМ ВАЛИДАЦИЮ ПРИ ВВОДЕ
-                input.addEventListener("input", function() {
-                    validateLink(this, type);
-                });
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = getLinkPlaceholder(type);
+        input.className = "form-input";
+        input.dataset.type = type;
 
-                const removeBtn = document.createElement("button");
-                removeBtn.type = "button";
-                removeBtn.textContent = "×";
-                removeBtn.className = "link-remove-btn";
-                removeBtn.addEventListener("click", () => {
-                    checkbox.checked = false;
-                    inputGroup.remove();
-                });
-
-                inputGroup.appendChild(label);
-                inputGroup.appendChild(input);
-                inputGroup.appendChild(removeBtn);
-                container.appendChild(inputGroup);
-            } else if (existing) {
-                existing.remove();
-            }
+        // ДОБАВЛЯЕМ ВАЛИДАЦИЮ ПРИ ВВОДЕ
+        input.addEventListener("input", function () {
+          validateLink(this, type);
         });
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.textContent = "×";
+        removeBtn.className = "link-remove-btn";
+        removeBtn.addEventListener("click", () => {
+          checkbox.checked = false;
+          inputGroup.remove();
+        });
+
+        inputGroup.appendChild(label);
+        inputGroup.appendChild(input);
+        inputGroup.appendChild(removeBtn);
+        container.appendChild(inputGroup);
+      } else if (existing) {
+        existing.remove();
+      }
     });
+  });
 }
 
 // ВАЛИДАЦИЯ ССЫЛОК
 function validateLink(input, type) {
-    const value = input.value.trim();
-    
-    if (!value) {
-        input.style.borderColor = "";
-        input.title = "";
-        return true;
-    }
+  const value = input.value.trim();
 
-    let isValid = true;
-    let errorMessage = "";
-    
-    switch (type) {
-        case 'email':
-            isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-            errorMessage = isValid ? "" : "Неверный формат email. Пример: example@gmail.com";
-            break;
-        case 'instagram':
-            isValid = /^(@[\w.]{1,30}|https?:\/\/(www\.)?instagram\.com\/[\w.]{1,30})/.test(value);
-            errorMessage = isValid ? "" : "Должно быть @никнейм или ссылка на Instagram";
-            break;
-        case 'telegram':
-            isValid = /^(@[\w]{1,32}|https?:\/\/(t\.me|telegram\.me)\/[\w]{1,32})/.test(value);
-            errorMessage = isValid ? "" : "Должно быть @никнейм или ссылка на Telegram";
-            break;
-                case 'site':
-            isValid = /^https?:\/\/.+/.test(value);
-            errorMessage = isValid ? "" : "Ссылка должна начинаться с http:// или https://";
-            break;
-        case 'viber':
-            isValid = /^(viber:\/\/|https?:\/\/(invite\.)?viber\.com\/)/.test(value);
-            errorMessage = isValid ? "" : "Должна быть viber:// ссылка или ссылка на Viber";
-            break;
-        case 'facebook':
-            isValid = /^https?:\/\/(www\.)?(facebook\.com|fb\.com)\/.+/.test(value);
-            errorMessage = isValid ? "" : "Должна быть ссылка на Facebook";
-            break;
-        case 'whatsapp':
-            isValid = /^https?:\/\/(wa\.me|api\.whatsapp\.com)\/.+/.test(value);
-            errorMessage = isValid ? "" : "Должна быть ссылка на WhatsApp (wa.me/...)";
-            break;
-        case 'other':
-            isValid = /^https?:\/\/.+/.test(value);
-            errorMessage = isValid ? "" : "Ссылка должна начинаться с http:// или https://";
-            break;
-        default:
-            isValid = true;
-    }
-    
-    input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
-    input.title = errorMessage;
-    
-    return isValid;
+  if (!value) {
+    input.style.borderColor = "";
+    input.title = "";
+    return true;
+  }
+
+  let isValid = true;
+  let errorMessage = "";
+
+  switch (type) {
+    case "email":
+      isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      errorMessage = isValid
+        ? ""
+        : "Неверный формат email. Пример: example@gmail.com";
+      break;
+    case "instagram":
+      isValid = /^https?:\/\/(www\.)?instagram\.com\/[\w.]{1,30}/.test(value); // ТОЛЬКО ССЫЛКИ
+      errorMessage = isValid
+        ? ""
+        : "Должна быть ссылка на Instagram (https://instagram.com/...)";
+      break;
+    case "telegram":
+      isValid = /^https?:\/\/(t\.me|telegram\.me)\/[\w]{1,32}/.test(value); // ТОЛЬКО ССЫЛКИ
+      errorMessage = isValid
+        ? ""
+        : "Должна быть ссылка на Telegram (https://t.me/...)";
+      break;
+    case "site":
+      isValid = /^https?:\/\/.+/.test(value);
+      errorMessage = isValid
+        ? ""
+        : "Ссылка должна начинаться с http:// или https://";
+      break;
+    case "viber":
+      isValid = /^https?:\/\/(invite\.)?viber\.com\//.test(value); // ТОЛЬКО HTTPS
+      errorMessage = isValid
+        ? ""
+        : "Должна быть ссылка на Viber (https://viber.com/...)";
+      break;
+    case "facebook":
+      isValid = /^https?:\/\/(www\.)?(facebook\.com|fb\.com)\/.+/.test(value);
+      errorMessage = isValid ? "" : "Должна быть ссылка на Facebook";
+      break;
+    case "whatsapp":
+      isValid = /^https?:\/\/(wa\.me|api\.whatsapp\.com)\/.+/.test(value);
+      errorMessage = isValid
+        ? ""
+        : "Должна быть ссылка на WhatsApp (wa.me/...)";
+      break;
+    case "other":
+      isValid = /^https?:\/\/.+/.test(value);
+      errorMessage = isValid
+        ? ""
+        : "Ссылка должна начинаться с http:// или https://";
+      break;
+    default:
+      isValid = true;
+  }
+
+  input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
+  input.title = errorMessage;
+
+  return isValid;
 }
 
 // === УТИЛИТЫ ===
@@ -902,7 +924,7 @@ async function addPhoneNumber() {
   const currentProfile = document.getElementById("profileSelect").value;
 
   // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе (РАБОТАЕТ БЕЗ ПРОФИЛЯ)
-if (phoneDatabase && currentUser.role === 'admin') {
+  if (phoneDatabase && currentUser.role === "admin") {
     console.log("=== ПРОВЕРКА АДМИНА ЗАПУЩЕНА ===");
     const allConflicts = checkPhoneAllProfiles(val);
     console.log("allConflicts:", allConflicts);
@@ -1412,24 +1434,24 @@ function validateForm() {
     errors.push("Краткое описание не должно превышать 125 символов");
 
   const phones = document.querySelectorAll(".phone-item");
-    if (phones.length === 0) errors.push("Добавьте хотя бы один телефон");
+  if (phones.length === 0) errors.push("Добавьте хотя бы один телефон");
 
-    // Валидация ссылок
-    document.querySelectorAll("#linksInputsContainer input").forEach(input => {
-        const type = input.dataset.type;
-        const value = input.value.trim();
-        
-        if (value && !validateLink(input, type)) {
-            errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
-        }
-    });
+  // Валидация ссылок
+  document.querySelectorAll("#linksInputsContainer input").forEach((input) => {
+    const type = input.dataset.type;
+    const value = input.value.trim();
 
-    if (errors.length > 0) {
-        showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
-        return false;
+    if (value && !validateLink(input, type)) {
+      errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
     }
+  });
 
-    return true;
+  if (errors.length > 0) {
+    showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
+    return false;
+  }
+
+  return true;
 }
 
 // Подготовка данных для отправки
@@ -1636,25 +1658,46 @@ function setupFieldLengthLimit(fieldId, maxLength, message) {
 
 // Форматирование ссылок в старый стиль для совместимости с сайтом
 function formatLinksToOldStyle(links) {
-    const linkTypes = {
-        site: "🌐",
-        email: "📧", 
-        instagram: "🌐",
-        telegram: "🔗",
-        viber: "🌐",
-        facebook: "🌐",
-        whatsapp: "🌐",
-        other: "🔗"
-    };
-    
-    const formattedLinks = [];
-    
-    for (const [type, url] of Object.entries(links)) {
-        if (url) {
-            const emoji = linkTypes[type] || "🔗";
-            formattedLinks.push(`${emoji}[${type}](${url})`);
+  const linkTypes = {
+    site: "🌐",
+    email: "📧",
+    instagram: "🌐",
+    telegram: "🔗",
+    viber: "🌐",
+    facebook: "🌐",
+    whatsapp: "🌐",
+    other: "🔗",
+  };
+
+  const formattedLinks = [];
+
+  for (const [type, url] of Object.entries(links)) {
+    if (url) {
+      const emoji = linkTypes[type] || "🔗";
+
+      // ОСОБЫЙ ФОРМАТ ДЛЯ EMAIL (не кликабельный)
+      if (type === "email") {
+        formattedLinks.push(`${emoji}email: ${url}`);
+      }
+      // ОСТАЛЬНЫЕ - обычные ссылки
+      else {
+        // Убираем viber:// и @ для инсты/телеги
+        let displayUrl = url;
+        if (url.startsWith("viber://")) {
+          displayUrl = url.replace("viber://", "https://viber.com/");
+        } else if (
+          url.startsWith("@") &&
+          (type === "instagram" || type === "telegram")
+        ) {
+          displayUrl = `https://${
+            type === "instagram" ? "instagram.com" : "t.me"
+          }/${url.substring(1)}`;
         }
+
+        formattedLinks.push(`${emoji}[${type}](${displayUrl})`);
+      }
     }
-    
-    return formattedLinks.join("     ");
+  }
+
+  return formattedLinks.join("     ");
 }
