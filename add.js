@@ -762,7 +762,23 @@ function validateLink(input, type) {
             isValid = /^(@[\w]{1,32}|https?:\/\/(t\.me|telegram\.me)\/[\w]{1,32})/.test(value);
             errorMessage = isValid ? "" : "Должно быть @никнейм или ссылка на Telegram";
             break;
-        case 'site':
+                case 'site':
+            isValid = /^https?:\/\/.+/.test(value);
+            errorMessage = isValid ? "" : "Ссылка должна начинаться с http:// или https://";
+            break;
+        case 'viber':
+            isValid = /^(viber:\/\/|https?:\/\/(invite\.)?viber\.com\/)/.test(value);
+            errorMessage = isValid ? "" : "Должна быть viber:// ссылка или ссылка на Viber";
+            break;
+        case 'facebook':
+            isValid = /^https?:\/\/(www\.)?(facebook\.com|fb\.com)\/.+/.test(value);
+            errorMessage = isValid ? "" : "Должна быть ссылка на Facebook";
+            break;
+        case 'whatsapp':
+            isValid = /^https?:\/\/(wa\.me|api\.whatsapp\.com)\/.+/.test(value);
+            errorMessage = isValid ? "" : "Должна быть ссылка на WhatsApp (wa.me/...)";
+            break;
+        case 'other':
             isValid = /^https?:\/\/.+/.test(value);
             errorMessage = isValid ? "" : "Ссылка должна начинаться с http:// или https://";
             break;
