@@ -1009,17 +1009,17 @@ function getLinkTypeLabel(type) {
 
 // Получение плейсхолдера для ссылки
 function getLinkPlaceholder(type) {
-  const placeholders = {
-    site: "https://example.com",
-    email: "email@example.com",
-    instagram: "@username или https://instagram.com/username",
-    telegram: "@username или https://t.me/username",
-    viber: "viber://add?number=380XXXXXXXXX",
-    facebook: "https://facebook.com/username",
-    whatsapp: "https://wa.me/380XXXXXXXXX",
-    other: "Введите ссылку",
-  };
-  return placeholders[type] || "Введите значение";
+    const placeholders = {
+        site: "https://example.com",
+        email: "email@example.com",
+        instagram: "https://instagram.com/username",
+        telegram: "https://t.me/username",
+        viber: "https://viber.com/...",
+        facebook: "https://facebook.com/username",
+        whatsapp: "https://wa.me/380XXXXXXXXX",
+        other: "https://example.com"
+    };
+    return placeholders[type] || "https://example.com";
 }
 
 // Форматирование текста в строки
