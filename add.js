@@ -1732,6 +1732,13 @@ function validateGeoLocation(input) {
         return true;
     }
     
+    // ПРОВЕРКА: Не должно быть пробелов внутри значения!
+    if (/\s/.test(value)) {
+        input.style.borderColor = "#e74c3c";
+        input.title = "Геолокация не должна содержать пробелов";
+        return false;
+    }
+    
     const isLink = /^https?:\/\//.test(value);
     const isCoords = /^[-+]?\d+\.\d+,\s*[-+]?\d+\.\d+$/.test(value);
     const isValid = isLink || isCoords;
