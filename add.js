@@ -1502,27 +1502,41 @@ function prepareFormData() {
     }
   });
 
-  // НОВЫЙ КОД: Определяем пометки для админа
+  // Определяем пометки для админа
   let adminNotes = "";
   const currentProfile = document.getElementById("profileSelect").value;
   const phones = Array.from(document.querySelectorAll(".phone-item")).map(
     (el) => el.textContent.replace(" ×", "")
   );
 
-  // ОТЛАДКА
-  console.log("=== ДЕБАГ пометок админу ===");
-  console.log("disputedPhones:", disputedPhones);
-  console.log("phones в форме:", phones);
+    // Массив для всех пометок
+  const allAdminNotes = [];
 
-  // Проверяем оспоренные телефоны (ПРОСТАЯ ПРОВЕРКА)
+  // 1. Проверяем оспоренные телефоны
   if (disputedPhones.length > 0) {
     const disputeNotes = disputedPhones.map(
       (d) => `Оспаривание: ${d.phone} (объявление ${d.cardId})`
     );
-    adminNotes = disputeNotes.join("; ");
+    allAdminNotes.push(...disputeNotes);
   }
 
-  // Дополнительно проверяем конфликты для админа
+  // 2. Проверяем новые кастомные значения
+  const regionCustom = document.getElementById("regionCustom").value.trim();
+  if (regionCustom) {
+    allAdminNotes.push(`Новая область: ${regionCustom}`);
+  }
+
+  const townCustom = document.getElementById("townCustom").value.trim();
+  if (townCustom) {
+    allAdminNotes.push(`Новый населённый пункт: ${townCustom}`);
+  }
+
+  const kindCustom = document.getElementById("kindCustom").value.trim();
+  if (kindCustom) {
+    allAdminNotes.push(`Новый вид деятельности: ${kindCustom}`);
+  }
+
+  // 3. Проверяем конфликты для админа
   if (phoneDatabase && currentProfile && currentUser.role === "admin") {
     const conflictNotes = [];
 
@@ -1538,10 +1552,13 @@ function prepareFormData() {
     });
 
     if (conflictNotes.length > 0) {
-      adminNotes = adminNotes
-        ? adminNotes + "; " + conflictNotes.join("; ")
-        : conflictNotes.join("; ");
+      allAdminNotes.push(...conflictNotes);
     }
+  }
+
+  // Объединяем все пометки
+  if (allAdminNotes.length > 0) {
+    adminNotes = allAdminNotes.join("; ");
   }
 
   return {
