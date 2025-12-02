@@ -168,6 +168,11 @@ function setupAllEventListeners() {
   // Ссылки
   setupLinksHandlers();
 
+  // Геолокация
+document.getElementById("geoLocation").addEventListener("input", function() {
+    validateGeoLocation(this);
+});
+
   // Форма
   document
     .getElementById("serviceForm")
@@ -1447,14 +1452,11 @@ function validateForm() {
     });
 
     // Геолокация
-    const geoLocation = document.getElementById("geoLocation").value.trim();
-    if (geoLocation) {
-        const isLink = /^https?:\/\//.test(geoLocation);
-        const isCoords = /^[-+]?\d+\.\d+,\s*[-+]?\d+\.\d+$/.test(geoLocation);
-        
-        if (!isLink && !isCoords) {
-            errors.push("Геолокация должна быть ссылкой (https://...) или координатами (50.4504,30.5245)");
-        }
+        // НОВАЯ ПРОВЕРКА: Геолокация
+    const geoInput = document.getElementById("geoLocation");
+    const geoLocation = geoInput.value.trim();
+    if (geoLocation && !validateGeoLocation(geoInput)) {
+        errors.push("Геолокация должна быть ссылкой (https://...) или координатами (50.4504,30.5245)");
     }
 
     if (errors.length > 0) {
@@ -1711,4 +1713,24 @@ function formatLinksToOldStyle(links) {
   }
 
   return formattedLinks.join("     ");
+}
+
+// Валидация геолокации
+function validateGeoLocation(input) {
+    const value = input.value.trim();
+    
+    if (!value) {
+        input.style.borderColor = "";
+        input.title = "";
+        return true;
+    }
+    
+    const isLink = /^https?:\/\//.test(value);
+    const isCoords = /^[-+]?\d+\.\d+,\s*[-+]?\d+\.\d+$/.test(value);
+    const isValid = isLink || isCoords;
+    
+    input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
+    input.title = isValid ? "" : "Должна быть ссылка (https://...) или координаты (50.4504,30.5245)";
+    
+    return isValid;
 }
