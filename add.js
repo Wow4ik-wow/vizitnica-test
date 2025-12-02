@@ -742,29 +742,38 @@ function validateLink(input, type) {
     
     if (!value) {
         input.style.borderColor = "";
-        return;
+        input.title = "";
+        return true;
     }
 
     let isValid = true;
+    let errorMessage = "";
     
     switch (type) {
         case 'email':
             isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            errorMessage = isValid ? "" : "Неверный формат email. Пример: example@gmail.com";
             break;
         case 'instagram':
             isValid = /^(@[\w.]{1,30}|https?:\/\/(www\.)?instagram\.com\/[\w.]{1,30})/.test(value);
+            errorMessage = isValid ? "" : "Должно быть @никнейм или ссылка на Instagram";
             break;
         case 'telegram':
             isValid = /^(@[\w]{1,32}|https?:\/\/(t\.me|telegram\.me)\/[\w]{1,32})/.test(value);
+            errorMessage = isValid ? "" : "Должно быть @никнейм или ссылка на Telegram";
             break;
         case 'site':
             isValid = /^https?:\/\/.+/.test(value);
+            errorMessage = isValid ? "" : "Ссылка должна начинаться с http:// или https://";
             break;
         default:
-            isValid = true; // Для остальных типов минимальная проверка
+            isValid = true;
     }
     
     input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
+    input.title = errorMessage;
+    
+    return isValid;
 }
 
 // === УТИЛИТЫ ===
@@ -1387,14 +1396,24 @@ function validateForm() {
     errors.push("Краткое описание не должно превышать 125 символов");
 
   const phones = document.querySelectorAll(".phone-item");
-  if (phones.length === 0) errors.push("Добавьте хотя бы один телефон");
+    if (phones.length === 0) errors.push("Добавьте хотя бы один телефон");
 
-  if (errors.length > 0) {
-    showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
-    return false;
-  }
+    // Валидация ссылок
+    document.querySelectorAll("#linksInputsContainer input").forEach(input => {
+        const type = input.dataset.type;
+        const value = input.value.trim();
+        
+        if (value && !validateLink(input, type)) {
+            errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
+        }
+    });
 
-  return true;
+    if (errors.length > 0) {
+        showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
+        return false;
+    }
+
+    return true;
 }
 
 // Подготовка данных для отправки
