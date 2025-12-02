@@ -751,16 +751,23 @@ function setupLinksHandlers() {
 
 // ВАЛИДАЦИЯ ССЫЛОК
 function validateLink(input, type) {
-  const value = input.value.trim();
+    const value = input.value.trim();
+    
+    if (!value) {
+        input.style.borderColor = "";
+        input.title = "";
+        return true;
+    }
 
-  if (!value) {
-    input.style.borderColor = "";
-    input.title = "";
-    return true;
-  }
+    // ОБЩАЯ ПРОВЕРКА: В ссылках не должно быть пробелов!
+    if (/\s/.test(value)) {
+        input.style.borderColor = "#e74c3c";
+        input.title = "Ссылка не должна содержать пробелов";
+        return false;
+    }
 
-  let isValid = true;
-  let errorMessage = "";
+    let isValid = true;
+    let errorMessage = "";
 
   switch (type) {
     case "email":
