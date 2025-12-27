@@ -330,6 +330,7 @@ select.form-input {
   gap: 20px;
   justify-content: center;
   margin-top: 30px;
+  margin-bottom: 100px;
   padding-top: 25px;
   border-top: 2px solid #e9ecef;
 }
