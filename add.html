@@ -10,10 +10,6 @@
     <link rel="stylesheet" href="add.css" />
   </head>
   <body>
-    <!-- Декоративные муравьи -->
-    <div class="decoration left"></div>
-    <div class="decoration right"></div>
-
     <!-- Упрощенный header -->
     <div class="add-header">
       <div class="header-content">
@@ -28,15 +24,15 @@
     <!-- Основная форма -->
     <div class="form-container">
       <form id="serviceForm" novalidate>
-        <!-- Прогресс заполнения -->
-        <div class="form-progress">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="progress-text">
-            Заполнено: <span id="progressPercent">0%</span>
-          </div>
-        </div>
+        <!-- Прогресс заполнения (плавающий внизу) -->
+<div class="form-progress">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-text">
+    Прогресс заполнения: <span id="progressPercent">0%</span>
+  </div>
+</div>
 
         <!-- 2. Область -->
         <div class="form-group">
@@ -335,7 +331,7 @@
     <div id="notification" class="notification"></div>
     <div id="messageBox" class="message-box hidden"></div>
 
-        <!-- Скрипты -->
+    <!-- Скрипты -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="add.js"></script>
