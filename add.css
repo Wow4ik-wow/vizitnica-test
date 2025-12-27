@@ -51,7 +51,6 @@ body {
 .add-header {
   background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
   color: #2c3e50;
-  padding: 30px 20px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-bottom: 4px solid #3b82f6;
@@ -59,6 +58,10 @@ body {
   z-index: 20;
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 30px 0;
+  margin: 0;
+  width: 100%;
 }
 
 .header-content {
@@ -141,7 +144,7 @@ body {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #45a049);
+  background: linear-gradient(90deg, #4caf50, #45a049);
   border-radius: 6px;
   transition: width 0.5s ease;
   width: 0%;
@@ -198,9 +201,9 @@ body {
 }
 
 .textarea {
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 /* Селекты */
@@ -249,7 +252,8 @@ select.form-input {
   min-height: 20px;
 }
 
-.selected-item, .phone-item {
+.selected-item,
+.phone-item {
   display: inline-flex;
   align-items: center;
   background: linear-gradient(135deg, #3498db, #2980b9);
@@ -260,17 +264,18 @@ select.form-input {
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.selected-item:hover, .phone-item:hover {
+.selected-item:hover,
+.phone-item:hover {
   background: linear-gradient(135deg, #2980b9, #1f639c);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .selected-item::after {
-  content: ' ×';
+  content: " ×";
   margin-left: 8px;
   font-weight: bold;
   font-size: 16px;
@@ -456,7 +461,7 @@ select.form-input {
 }
 
 .message-box.success {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
 }
 
@@ -471,7 +476,7 @@ select.form-input {
 }
 
 .message-box.info {
-  background: linear-gradient(135deg, #2196F3, #1976D2);
+  background: linear-gradient(135deg, #2196f3, #1976d2);
   color: white;
 }
 
@@ -485,62 +490,66 @@ select.form-input {
     padding: 0 15px;
     margin: 20px auto;
   }
-  
+
   #serviceForm {
     padding: 20px 15px;
   }
-  
+
   .add-header {
-    padding: 20px 10px;
+    padding: 20px 0;
     justify-content: center;
   }
-  
+
   .header-content {
     padding: 0 10px;
   }
-  
+
+  .header-content {
+    padding: 0 10px;
+  }
+
   .page-title {
     font-size: 2em;
   }
-  
+
   .page-subtitle {
     font-size: 1em;
   }
-  
+
   .back-btn {
     position: relative;
     margin-bottom: 15px;
     left: 0;
     top: 0;
   }
-  
+
   .phone-input-row {
     flex-direction: column;
   }
-  
+
   .form-buttons {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .btn {
     min-width: 100%;
   }
-  
+
   .links-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .link-input-group {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
-  
+
   .link-input-label {
     min-width: auto;
   }
-  
+
   .form-group {
     padding: 15px;
   }
@@ -550,7 +559,7 @@ select.form-input {
   .links-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .page-title {
     font-size: 1.7em;
   }
@@ -569,40 +578,40 @@ select.form-input {
 
 /* Плавающий прогресс-бар внизу экрана */
 .form-progress {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 500px;
-    z-index: 1000;
-    background-color: white;
-    padding: 10px 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    border: 2px solid #3498db;
-    margin-bottom: 0;
-    margin-top: 20px;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  z-index: 1000;
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid #3498db;
+  margin-bottom: 0;
+  margin-top: 20px;
 }
 
 /* Стили для прогресс-бара внутри плавающего контейнера */
 .form-progress .progress-bar {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .form-progress .progress-text {
-    font-size: 14px;
-    font-weight: bold;
-    color: #2c3e50;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2c3e50;
 }
 
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
-    .form-progress {
-        width: 95%;
-        bottom: 10px;
-        padding: 8px 15px;
-    }
+  .form-progress {
+    width: 95%;
+    bottom: 10px;
+    padding: 8px 15px;
+  }
 }
 
 /* Анимации */
@@ -641,144 +650,144 @@ select.form-input {
 }
 
 .char-counter {
-    text-align: right;
-    font-size: 13px;
-    color: #27ae60;
-    margin-top: 5px;
-    font-weight: bold;
-    transition: color 0.3s ease;
+  text-align: right;
+  font-size: 13px;
+  color: #27ae60;
+  margin-top: 5px;
+  font-weight: bold;
+  transition: color 0.3s ease;
 }
 
 /* === КРАСИВЫЕ МОДАЛЬНЫЕ ОКНА === */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
 }
 
 .modal-container {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    width: 90%;
-    -webkit-overflow-scrolling: touch; /* Плавная прокрутка на iOS */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    animation: modalAppear 0.3s ease;
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 90%;
+  -webkit-overflow-scrolling: touch; /* Плавная прокрутка на iOS */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: modalAppear 0.3s ease;
 }
 
 /* Для мобильных устройств */
 @media (max-width: 768px) {
-    .modal-container {
-        max-height: 70vh;
-        margin: 20px;
-        width: calc(100% - 40px);
-    }
-    
-    .conflict-card {
-        font-size: 14px;
-        padding: 10px;
-    }
-    
-    .modal-content {
-        max-height: 50vh;
-        overflow-y: auto;
-    }
+  .modal-container {
+    max-height: 70vh;
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+
+  .conflict-card {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .modal-content {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
 }
 
 @keyframes modalAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .modal-icon {
-    font-size: 24px;
-    margin-right: 12px;
+  font-size: 24px;
+  margin-right: 12px;
 }
 
 .modal-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #2c3e50;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
 }
 
 .modal-content {
-    margin-bottom: 25px;
-    line-height: 1.5;
-    color: #34495e;
+  margin-bottom: 25px;
+  line-height: 1.5;
+  color: #34495e;
 }
 
 .conflict-card {
-    background: #f8f9fa;
-    border-left: 4px solid #3498db;
-    padding: 12px 15px;
-    margin: 10px 0;
-    border-radius: 4px;
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
 }
 
 .conflict-card strong {
-    color: #2c3e50;
+  color: #2c3e50;
 }
 
 .modal-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 .modal-btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .modal-btn.primary {
-    background: #e74c3c;
-    color: white;
+  background: #e74c3c;
+  color: white;
 }
 
 .modal-btn.primary:hover {
-    background: #c0392b;
+  background: #c0392b;
 }
 
 .modal-btn.secondary {
-    background: #95a5a6;
-    color: white;
+  background: #95a5a6;
+  color: white;
 }
 
 .modal-btn.secondary:hover {
-    background: #7f8c8d;
+  background: #7f8c8d;
 }
 
 .modal-btn.success {
-    background: #27ae60;
-    color: white;
+  background: #27ae60;
+  color: white;
 }
 
 .modal-btn.success:hover {
-    background: #219a52;
+  background: #219a52;
 }
