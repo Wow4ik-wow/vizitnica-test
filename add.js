@@ -31,6 +31,193 @@ let disputedPhones = [];
 
 // ОТЛАДКА - ДОБАВЬ ЭТОТ КОД ПОСЛЕ ОБЪЯВЛЕНИЯ currentUser
 console.log("=== ДЕБАГ ФОРМЫ ===");
+// ИНИЦИАЛИЗАЦИЯ МУРАВЬЁВ
+function initAnts() {
+  // Проверяем, не мобильное ли устройство (на мобильных не показываем)
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile) {
+    console.log("Мобильное устройство - муравьи скрыты");
+    return;
+  }
+  
+  console.log("Запуск инициализации муравьёв...");
+  
+  // Загружаем данные муравьёв
+  fetch("https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json")
+    .then(response => {
+      if (!response.ok) throw new Error("Ошибка сети");
+      return response.json();
+    })
+    .then(data => {
+      console.log("Данные муравьёв загружены:", data.ants ? data.ants.length : 0);
+      
+      if (data.ants && data.ants.length >= 2) {
+        const leftAnt = document.querySelector(".decoration.left");
+        const rightAnt = document.querySelector(".decoration.right");
+        
+        if (!leftAnt || !rightAnt) {
+          console.error("Элементы муравьёв не найдены в DOM");
+          return;
+        }
+        
+        // Выбираем двух случайных муравьев
+        const randomAnts = [...data.ants]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 2);
+
+        // Функция для преобразования ссылки Google Drive
+        const extractDirectImageLink = (link) => {
+          if (!link) return "";
+          const fileMatch = link.match(/\/file\/d\/([^\/]+)/);
+          if (fileMatch) {
+            return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
+          }
+          const ucMatch = link.match(/uc\?id=([^&]+)/);
+          if (ucMatch) {
+            return `https://drive.google.com/thumbnail?id=${ucMatch[1]}&sz=w1000`;
+          }
+          return link;
+        };
+
+        if (randomAnts[0] && randomAnts[0]["Костюм мураша"]) {
+          const imgUrl = extractDirectImageLink(randomAnts[0]["Костюм мураша"]);
+          console.log("Левый муравей:", imgUrl);
+          leftAnt.style.backgroundImage = `url('${imgUrl}')`;
+        }
+
+        if (randomAnts[1] && randomAnts[1]["Костюм мураша"]) {
+          const imgUrl = extractDirectImageLink(randomAnts[1]["Костюм мураша"]);
+          console.log("Правый муравей:", imgUrl);
+          rightAnt.style.backgroundImage = `url('${imgUrl}')`;
+        }
+        
+        // Запускаем анимацию после загрузки изображений
+        setTimeout(() => {
+          console.log("Запуск анимации муравьёв");
+          initAntsAnimation();
+        }, 1000);
+      } else {
+        console.warn("Не найдены данные о муравьях в JSON");
+      }
+    })
+    .catch(error => {
+      console.error("Ошибка загрузки изображений муравьёв:", error);
+    });
+}
+
+// Функция анимации муравьёв
+function initAntsAnimation() {
+  const leftAnt = document.querySelector(".decoration.left");
+  const rightAnt = document.querySelector(".decoration.right");
+
+  if (!leftAnt || !rightAnt) {
+    console.error("Элементы муравьёв не найдены для анимации");
+    return;
+  }
+
+  console.log("Запуск анимации муравьёв");
+
+  // Размеры зон для движения
+  const getMovementZone = (isLeft) => {
+    const cardRect = document
+      .querySelector(".form-container")
+      .getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+
+    if (isLeft) {
+      return {
+        minX: 20,
+        maxX: cardRect.left - 150,
+        minY: 20,
+        maxY: window.innerHeight - 170,
+      };
+    } else {
+      return {
+        minX: cardRect.right + 20,
+        maxX: screenWidth - 170,
+        minY: 20,
+        maxY: window.innerHeight - 170,
+      };
+    }
+  };
+
+  // Генерация случайной точки в зоне
+  const getRandomPoint = (zone) => ({
+    x: Math.random() * (zone.maxX - zone.minX) + zone.minX,
+    y: Math.random() * (zone.maxY - zone.minY) + zone.minY,
+  });
+
+  // Плавное движение к точке
+  const moveAnt = (ant, targetX, targetY, duration = 4000) => {
+    const startX = parseInt(ant.style.left || ant.offsetLeft);
+    const startY = parseInt(ant.style.top || ant.offsetTop);
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const ease =
+        progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      const currentX = startX + (targetX - startX) * ease;
+      const currentY = startY + (targetY - startY) * ease;
+
+      ant.style.left = currentX + "px";
+      ant.style.top = currentY + "px";
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        const zone = ant.classList.contains("left")
+          ? getMovementZone(true)
+          : getMovementZone(false);
+        const newTarget = getRandomPoint(zone);
+        moveAnt(
+          ant,
+          newTarget.x,
+          newTarget.y,
+          3000 + Math.random() * 3000
+        );
+      }
+    }
+
+    requestAnimationFrame(animate);
+  };
+
+  // Запуск анимации
+  const leftZone = getMovementZone(true);
+  const rightZone = getMovementZone(false);
+
+  // Устанавливаем начальные позиции
+  leftAnt.style.position = "fixed";
+  leftAnt.style.left = (leftZone.minX + 100) + "px";
+  leftAnt.style.top = (leftZone.minY + 100) + "px";
+  
+  rightAnt.style.position = "fixed";
+  rightAnt.style.left = (rightZone.minX + 100) + "px";
+  rightAnt.style.top = (rightZone.minY + 100) + "px";
+
+  moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
+  moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
+
+  // Перерасчет при изменении размера окна
+  window.addEventListener("resize", () => {
+    const leftZone = getMovementZone(true);
+    const rightZone = getMovementZone(false);
+
+    moveAnt(leftAnt, leftAnt.offsetLeft, leftAnt.offsetTop, 1000);
+    moveAnt(rightAnt, rightAnt.offsetLeft, rightAnt.offsetTop, 1000);
+  });
+}
+
+// Запускаем инициализацию муравьёв после загрузки DOM
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM загружен, инициализируем муравьёв...");
+  initAnts();
+});
 console.log("currentUser:", currentUser);
 console.log("localStorage user:", localStorage.getItem("user"));
 
@@ -1753,162 +1940,5 @@ function validateGeoLocation(input) {
     input.title = isValid ? "" : "Должна быть ссылка (https://...) или координаты (50.4504,30.5245)";
     
     return isValid;
-
-// === АНИМАЦИЯ МУРАВЬЁВ ===
-function initAntsAnimation() {
-  const leftAnt = document.querySelector(".decoration.left");
-  const rightAnt = document.querySelector(".decoration.right");
-
-  if (!leftAnt || !rightAnt) return;
-
-  // Размеры зон для движения
-  const getMovementZone = (isLeft) => {
-    const cardRect = document
-      .querySelector(".form-container")
-      .getBoundingClientRect();
-    const screenWidth = window.innerWidth;
-
-    if (isLeft) {
-      return {
-        minX: 20,
-        maxX: cardRect.left - 150,
-        minY: 20,
-        maxY: window.innerHeight - 170,
-      };
-    } else {
-      return {
-        minX: cardRect.right + 20,
-        maxX: screenWidth - 170,
-        minY: 20,
-        maxY: window.innerHeight - 170,
-      };
-    }
-  };
-
-  // Генерация случайной точки в зоне
-  const getRandomPoint = (zone) => ({
-    x: Math.random() * (zone.maxX - zone.minX) + zone.minX,
-    y: Math.random() * (zone.maxY - zone.minY) + zone.minY,
-  });
-
-  // Плавное движение к точке
-  const moveAnt = (ant, targetX, targetY, duration = 4000) => {
-    const startX = parseInt(ant.style.left || ant.offsetLeft);
-    const startY = parseInt(ant.style.top || ant.offsetTop);
-    const startTime = performance.now();
-
-    function animate(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      const ease =
-        progress < 0.5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-      const currentX = startX + (targetX - startX) * ease;
-      const currentY = startY + (targetY - startY) * ease;
-
-      ant.style.left = currentX + "px";
-      ant.style.top = currentY + "px";
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        const zone = ant.classList.contains("left")
-          ? getMovementZone(true)
-          : getMovementZone(false);
-        const newTarget = getRandomPoint(zone);
-        moveAnt(
-          ant,
-          newTarget.x,
-          newTarget.y,
-          3000 + Math.random() * 3000
-        );
-      }
-    }
-
-    requestAnimationFrame(animate);
-  };
-
-  // Запуск анимации
-  const leftZone = getMovementZone(true);
-  const rightZone = getMovementZone(false);
-
-  moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
-  moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
-
-  // Перерасчет при изменении размера окна
-  window.addEventListener("resize", () => {
-    const leftZone = getMovementZone(true);
-    const rightZone = getMovementZone(false);
-
-    moveAnt(leftAnt, leftAnt.offsetLeft, leftAnt.offsetTop, 1000);
-    moveAnt(rightAnt, rightAnt.offsetLeft, rightAnt.offsetTop, 1000);
-  });
-}
-
-// Загрузка изображений для муравьёв
-async function loadAntsImages() {
-  try {
-    const response = await fetch("https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json");
-    const data = await response.json();
-    
-    if (data.ants && data.ants.length >= 2) {
-      const leftAnt = document.querySelector(".decoration.left");
-      const rightAnt = document.querySelector(".decoration.right");
-      
-      // Выбираем двух случайных муравьев
-      const randomAnts = [...data.ants]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 2);
-
-      if (randomAnts[0] && randomAnts[0]["Костюм мураша"]) {
-        leftAnt.style.backgroundImage = `url('${extractDirectImageLink(
-          randomAnts[0]["Костюм мураша"]
-        )}')`;
-      }
-
-      if (randomAnts[1] && randomAnts[1]["Костюм мураша"]) {
-        rightAnt.style.backgroundImage = `url('${extractDirectImageLink(
-          randomAnts[1]["Костюм мураша"]
-        )}')`;
-      }
-      
-      // Запускаем анимацию после загрузки изображений
-      setTimeout(initAntsAnimation, 1000);
-    }
-  } catch (error) {
-    console.warn("Не удалось загрузить изображения муравьёв:", error);
-  }
-}
-
-// Преобразование ссылки Google Drive в прямую
-function extractDirectImageLink(link) {
-  if (!link) return "";
-
-  // Для Google Drive (формат /file/d/)
-  const fileMatch = link.match(/\/file\/d\/([^\/]+)/);
-  if (fileMatch) {
-    return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
-  }
-
-  // Для Google Drive (формат uc?id=)
-  const ucMatch = link.match(/uc\?id=([^&]+)/);
-  if (ucMatch) {
-    return `https://drive.google.com/thumbnail?id=${ucMatch[1]}&sz=w1000`;
-  }
-
-  return link;
-}
-
-// Запускаем загрузку муравьёв после инициализации
-document.addEventListener("DOMContentLoaded", () => {
-  // Проверяем, не мобильное ли устройство (на мобильных не показываем)
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  if (!isMobile) {
-    loadAntsImages();
-  }
-});
 
 }
