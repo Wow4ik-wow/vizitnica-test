@@ -34,32 +34,40 @@ console.log("=== ДЕБАГ ФОРМЫ ===");
 // ИНИЦИАЛИЗАЦИЯ МУРАВЬЁВ
 function initAnts() {
   // Проверяем, не мобильное ли устройство (на мобильных не показываем)
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
   if (isMobile) {
     console.log("Мобильное устройство - муравьи скрыты");
     return;
   }
-  
+
   console.log("Запуск инициализации муравьёв...");
-  
+
   // Загружаем данные муравьёв
-  fetch("https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json")
-    .then(response => {
+  fetch(
+    "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json"
+  )
+    .then((response) => {
       if (!response.ok) throw new Error("Ошибка сети");
       return response.json();
     })
-    .then(data => {
-      console.log("Данные муравьёв загружены:", data.ants ? data.ants.length : 0);
-      
+    .then((data) => {
+      console.log(
+        "Данные муравьёв загружены:",
+        data.ants ? data.ants.length : 0
+      );
+
       if (data.ants && data.ants.length >= 2) {
         const leftAnt = document.querySelector(".decoration.left");
         const rightAnt = document.querySelector(".decoration.right");
-        
+
         if (!leftAnt || !rightAnt) {
           console.error("Элементы муравьёв не найдены в DOM");
           return;
         }
-        
+
         // Выбираем двух случайных муравьев
         const randomAnts = [...data.ants]
           .sort(() => 0.5 - Math.random())
@@ -90,7 +98,7 @@ function initAnts() {
           console.log("Правый муравей:", imgUrl);
           rightAnt.style.backgroundImage = `url('${imgUrl}')`;
         }
-        
+
         // Запускаем анимацию после загрузки изображений
         setTimeout(() => {
           console.log("Запуск анимации муравьёв");
@@ -100,7 +108,7 @@ function initAnts() {
         console.warn("Не найдены данные о муравьях в JSON");
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Ошибка загрузки изображений муравьёв:", error);
     });
 }
@@ -175,12 +183,7 @@ function initAntsAnimation() {
           ? getMovementZone(true)
           : getMovementZone(false);
         const newTarget = getRandomPoint(zone);
-        moveAnt(
-          ant,
-          newTarget.x,
-          newTarget.y,
-          3000 + Math.random() * 3000
-        );
+        moveAnt(ant, newTarget.x, newTarget.y, 3000 + Math.random() * 3000);
       }
     }
 
@@ -193,12 +196,12 @@ function initAntsAnimation() {
 
   // Устанавливаем начальные позиции
   leftAnt.style.position = "fixed";
-  leftAnt.style.left = (leftZone.minX + 100) + "px";
-  leftAnt.style.top = (leftZone.minY + 100) + "px";
-  
+  leftAnt.style.left = leftZone.minX + 100 + "px";
+  leftAnt.style.top = leftZone.minY + 100 + "px";
+
   rightAnt.style.position = "fixed";
-  rightAnt.style.left = (rightZone.minX + 100) + "px";
-  rightAnt.style.top = (rightZone.minY + 100) + "px";
+  rightAnt.style.left = rightZone.minX + 100 + "px";
+  rightAnt.style.top = rightZone.minY + 100 + "px";
 
   moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
   moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
@@ -356,9 +359,9 @@ function setupAllEventListeners() {
   setupLinksHandlers();
 
   // Геолокация
-document.getElementById("geoLocation").addEventListener("input", function() {
+  document.getElementById("geoLocation").addEventListener("input", function () {
     validateGeoLocation(this);
-});
+  });
 
   // Форма
   document
@@ -936,23 +939,23 @@ function setupLinksHandlers() {
 
 // ВАЛИДАЦИЯ ССЫЛОК
 function validateLink(input, type) {
-    const value = input.value.trim();
-    
-    if (!value) {
-        input.style.borderColor = "";
-        input.title = "";
-        return true;
-    }
+  const value = input.value.trim();
 
-    // ОБЩАЯ ПРОВЕРКА: В ссылках не должно быть пробелов!
-    if (/\s/.test(value)) {
-        input.style.borderColor = "#e74c3c";
-        input.title = "Ссылка не должна содержать пробелов";
-        return false;
-    }
+  if (!value) {
+    input.style.borderColor = "";
+    input.title = "";
+    return true;
+  }
 
-    let isValid = true;
-    let errorMessage = "";
+  // ОБЩАЯ ПРОВЕРКА: В ссылках не должно быть пробелов!
+  if (/\s/.test(value)) {
+    input.style.borderColor = "#e74c3c";
+    input.title = "Ссылка не должна содержать пробелов";
+    return false;
+  }
+
+  let isValid = true;
+  let errorMessage = "";
 
   switch (type) {
     case "email":
@@ -1206,17 +1209,17 @@ function getLinkTypeLabel(type) {
 
 // Получение плейсхолдера для ссылки
 function getLinkPlaceholder(type) {
-    const placeholders = {
-        site: "https://example.com",
-        email: "email@example.com",
-        instagram: "https://instagram.com/username",
-        telegram: "https://t.me/username",
-        viber: "https://viber.com/...",
-        facebook: "https://facebook.com/username",
-        whatsapp: "https://wa.me/380XXXXXXXXX",
-        other: "https://example.com"
-    };
-    return placeholders[type] || "https://example.com";
+  const placeholders = {
+    site: "https://example.com",
+    email: "email@example.com",
+    instagram: "https://instagram.com/username",
+    telegram: "https://t.me/username",
+    viber: "https://viber.com/...",
+    facebook: "https://facebook.com/username",
+    whatsapp: "https://wa.me/380XXXXXXXXX",
+    other: "https://example.com",
+  };
+  return placeholders[type] || "https://example.com";
 }
 
 // Форматирование текста в строки
@@ -1595,7 +1598,9 @@ async function handleSubmit(e) {
 function validateForm() {
   const errors = [];
 
-  const region = document.getElementById("regionSelect").value || document.getElementById("regionCustom").value;
+  const region =
+    document.getElementById("regionSelect").value ||
+    document.getElementById("regionCustom").value;
   if (!region) errors.push("Укажите область");
 
   const selectedTowns = selectedValues.selectedTownsContainer
@@ -1628,29 +1633,31 @@ function validateForm() {
   if (phones.length === 0) errors.push("Добавьте хотя бы один телефон");
 
   // Валидация ссылок
-  document.querySelectorAll("#linksInputsContainer input").forEach(input => {
-        const type = input.dataset.type;
-        const value = input.value.trim();
-        
-        if (value && !validateLink(input, type)) {
-            errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
-        }
-    });
+  document.querySelectorAll("#linksInputsContainer input").forEach((input) => {
+    const type = input.dataset.type;
+    const value = input.value.trim();
 
-    // Геолокация
-        // НОВАЯ ПРОВЕРКА: Геолокация
-    const geoInput = document.getElementById("geoLocation");
-    const geoLocation = geoInput.value.trim();
-    if (geoLocation && !validateGeoLocation(geoInput)) {
-        errors.push("Геолокация должна быть ссылкой (https://...) или координатами (50.4504,30.5245)");
+    if (value && !validateLink(input, type)) {
+      errors.push(`Неверный формат ${getLinkTypeLabel(type)}: ${value}`);
     }
+  });
 
-    if (errors.length > 0) {
-        showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
-        return false;
-    }
+  // Геолокация
+  // НОВАЯ ПРОВЕРКА: Геолокация
+  const geoInput = document.getElementById("geoLocation");
+  const geoLocation = geoInput.value.trim();
+  if (geoLocation && !validateGeoLocation(geoInput)) {
+    errors.push(
+      "Геолокация должна быть ссылкой (https://...) или координатами (50.4504,30.5245)"
+    );
+  }
 
-    return true;
+  if (errors.length > 0) {
+    showMessage("Исправьте ошибки:<br>" + errors.join("<br>"), "error");
+    return false;
+  }
+
+  return true;
 }
 
 // Подготовка данных для отправки
@@ -1688,7 +1695,7 @@ function prepareFormData() {
     (el) => el.textContent.replace(" ×", "")
   );
 
-    // Массив для всех пометок
+  // Массив для всех пометок
   const allAdminNotes = [];
 
   // 1. Проверяем оспоренные телефоны
@@ -1917,28 +1924,29 @@ function formatLinksToOldStyle(links) {
 
 // Валидация геолокации
 function validateGeoLocation(input) {
-    const value = input.value.trim();
-    
-    if (!value) {
-        input.style.borderColor = "";
-        input.title = "";
-        return true;
-    }
-    
-    // ПРОВЕРКА: Не должно быть пробелов внутри значения!
-    if (/\s/.test(value)) {
-        input.style.borderColor = "#e74c3c";
-        input.title = "Геолокация не должна содержать пробелов";
-        return false;
-    }
-    
-    const isLink = /^https?:\/\//.test(value);
-    const isCoords = /^[-+]?\d+\.\d+,\s*[-+]?\d+\.\d+$/.test(value);
-    const isValid = isLink || isCoords;
-    
-    input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
-    input.title = isValid ? "" : "Должна быть ссылка (https://...) или координаты (50.4504,30.5245)";
-    
-    return isValid;
+  const value = input.value.trim();
 
+  if (!value) {
+    input.style.borderColor = "";
+    input.title = "";
+    return true;
+  }
+
+  // ПРОВЕРКА: Не должно быть пробелов внутри значения!
+  if (/\s/.test(value)) {
+    input.style.borderColor = "#e74c3c";
+    input.title = "Геолокация не должна содержать пробелов";
+    return false;
+  }
+
+  const isLink = /^https?:\/\//.test(value);
+  const isCoords = /^[-+]?\d+\.\d+,\s*[-+]?\d+\.\d+$/.test(value);
+  const isValid = isLink || isCoords;
+
+  input.style.borderColor = isValid ? "#27ae60" : "#e74c3c";
+  input.title = isValid
+    ? ""
+    : "Должна быть ссылка (https://...) или координаты (50.4504,30.5245)";
+
+  return isValid;
 }

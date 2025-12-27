@@ -9,327 +9,352 @@
     <!-- Только свои стили, без index.css -->
     <link rel="stylesheet" href="add.css" />
   </head>
-    <body>
+  <body>
     <!-- Декоративные муравьи -->
     <div class="decoration left"></div>
     <div class="decoration right"></div>
 
-    <!-- Упрощенный header -->
-    <div class="add-header">
-      <div class="header-content">
-        <h1 class="page-title">Добавление услуги</h1>
-        <div class="page-subtitle">
-          Заполните форму для добавления новой услуги
+    <!-- Основной контейнер страницы -->
+    <div class="page-wrapper">
+      <!-- Упрощенный header -->
+      <div class="add-header">
+        <div class="header-content">
+          <h1 class="page-title">Добавление услуги</h1>
+          <div class="page-subtitle">
+            Заполните форму для добавления новой услуги
+          </div>
+          <button id="backToMain" class="btn back-btn">← На главную</button>
         </div>
-        <button id="backToMain" class="btn back-btn">← На главную</button>
       </div>
-    </div>
 
-    <!-- Основная форма -->
-    <div class="form-container">
-      <form id="serviceForm" novalidate>
-        <!-- Прогресс заполнения (плавающий внизу) -->
-<div class="form-progress">
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill"></div>
-  </div>
-  <div class="progress-text">
-    Прогресс заполнения: <span id="progressPercent">0%</span>
-  </div>
-</div>
-
-        <!-- 2. Область -->
-        <div class="form-group">
-          <label for="regionSelect" class="form-label">
-            Область <span class="required">*</span>
-          </label>
-          <select
-            id="regionSelect"
-            name="regionSelect"
-            required
-            class="form-input"
-          >
-            <option value="">-- Выберите область --</option>
-          </select>
-          <input
-            type="text"
-            id="regionCustom"
-            placeholder="Или введите свою область"
-            class="form-input"
-            maxlength="50"
-          />
-        </div>
-
-        <!-- 3. Населённый пункт -->
-        <div class="form-group">
-          <label for="townSelect" class="form-label">
-            Населённые пункты <span class="required">*</span>
-            <span class="limit-info">(до 10)</span>
-          </label>
-          <select
-            id="townSelect"
-            name="townSelect"
-            required
-            class="form-input"
-            disabled
-          >
-            <option value="">-- Выберите из списка --</option>
-          </select>
-
-          <div
-            id="selectedTownsContainer"
-            class="selected-items-container"
-          ></div>
-
-          <input
-            type="text"
-            id="townCustom"
-            placeholder="Если его нет в списке - введите его сюда"
-            class="form-input"
-            maxlength="50"
-          />
-          <div class="form-hint">
-            Начните вводить название или выберите из списка
+      <!-- Основная форма -->
+      <div class="form-container">
+        <form id="serviceForm" novalidate>
+          <!-- Прогресс заполнения (плавающий внизу) -->
+          <div class="form-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+              Прогресс заполнения: <span id="progressPercent">0%</span>
+            </div>
           </div>
-        </div>
 
-        <!-- 4. Район города -->
-        <div class="form-group">
-          <label for="cityDistrict" class="form-label">Район города</label>
-          <input
-            type="text"
-            id="cityDistrict"
-            placeholder="Можете указать при желании"
-            class="form-input"
-            maxlength="50"
-          />
-        </div>
-
-        <!-- 5. Профиль деятельности -->
-        <div class="form-group">
-          <label for="profileSelect" class="form-label">
-            Профиль деятельности <span class="required">*</span>
-          </label>
-          <select
-            id="profileSelect"
-            name="profileSelect"
-            required
-            class="form-input"
-          >
-            <option value="">-- Выберите профиль --</option>
-          </select>
-        </div>
-
-        <!-- 6. Вид деятельности -->
-        <div class="form-group">
-          <label class="form-label">
-            Вид деятельности <span class="required">*</span>
-            <span class="limit-info">(до 10)</span>
-          </label>
-          <select id="kindSelect" class="form-input" disabled>
-            <option value="">-- Выберите вид --</option>
-          </select>
-
-          <div
-            id="selectedKindsContainer"
-            class="selected-items-container"
-          ></div>
-
-          <input
-            type="text"
-            id="kindCustom"
-            placeholder="Или введите свой вид деятельности"
-            class="form-input"
-            maxlength="75"
-          />
-        </div>
-
-        <!-- 7. Имя -->
-        <div class="form-group">
-          <label for="nameInput" class="form-label">
-            Имя <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="nameInput"
-            placeholder="Имя специалиста или контактного лица"
-            class="form-input"
-            maxlength="50"
-          />
-        </div>
-
-        <!-- 8. Компания -->
-        <div class="form-group">
-          <label for="companyInput" class="form-label">
-            Компания <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="companyInput"
-            placeholder="Название компании или организации"
-            class="form-input"
-            maxlength="75"
-          />
-          <div class="form-hint">
-            Заполните хотя бы одно из полей: Имя или Компания
-          </div>
-        </div>
-
-        <!-- 9. Краткое описание -->
-        <div class="form-group">
-          <label for="descShort" class="form-label">
-            Краткое описание <span class="required">*</span>
-          </label>
-          <div class="input-wrapper-dt">
-            <textarea id="descShort" placeholder="5 строк по 25 символов&#10;Если нужен текст с новой строки - добейтесь смещения пробелами" 
-          required class="form-input textarea" rows="5" 
-          style="word-wrap: break-word; white-space: pre-wrap; overflow-wrap: break-word;"></textarea>
-          </div>
-          <div class="char-counter">
-            <span id="descShortCounter">0</span>
-          </div>
-        </div>
-
-        <!-- 10. Полное описание -->
-        <div class="form-group">
-          <label for="descLong" class="form-label">
-            Описание (до 1000 символов) <span class="required">*</span>
-          </label>
-          <textarea
-            id="descLong"
-            maxlength="1000"
-            placeholder="Полное описание услуги"
-            required
-            class="form-input textarea"
-          ></textarea>
-          <div class="char-counter">
-  <span id="descLongCounter">1000</span>
-</div>
-        </div>
-
-        <!-- 11. Адрес -->
-        <div class="form-group">
-          <label for="addressInput" class="form-label">Адрес</label>
-          <input
-            type="text"
-            id="addressInput"
-            maxlength="200"
-            class="form-input"
-            maxlength="100"
-          />
-        </div>
-
-        <!-- 12. Телефоны -->
-        <div class="form-group">
-          <label class="form-label">
-            Телефоны <span class="required">*</span>
-            <span class="limit-info">(до 10)</span>
-          </label>
-          <div id="phonesContainer" class="selected-items-container"></div>
-          <div class="phone-input-row">
+          <!-- 2. Область -->
+          <div class="form-group">
+            <label for="regionSelect" class="form-label">
+              Область <span class="required">*</span>
+            </label>
+            <select
+              id="regionSelect"
+              name="regionSelect"
+              required
+              class="form-input"
+            >
+              <option value="">-- Выберите область --</option>
+            </select>
             <input
               type="text"
-              id="phoneInput"
-              placeholder="380xxxxxxxxx"
+              id="regionCustom"
+              placeholder="Или введите свою область"
               class="form-input"
-              maxlength="12"
+              maxlength="50"
             />
-            <button type="button" id="addPhoneBtn" class="btn small">
-              Добавить телефон
+          </div>
+
+          <!-- 3. Населённый пункт -->
+          <div class="form-group">
+            <label for="townSelect" class="form-label">
+              Населённые пункты <span class="required">*</span>
+              <span class="limit-info">(до 10)</span>
+            </label>
+            <select
+              id="townSelect"
+              name="townSelect"
+              required
+              class="form-input"
+              disabled
+            >
+              <option value="">-- Выберите из списка --</option>
+            </select>
+
+            <div
+              id="selectedTownsContainer"
+              class="selected-items-container"
+            ></div>
+
+            <input
+              type="text"
+              id="townCustom"
+              placeholder="Если его нет в списке - введите его сюда"
+              class="form-input"
+              maxlength="50"
+            />
+            <div class="form-hint">
+              Начните вводить название или выберите из списка
+            </div>
+          </div>
+
+          <!-- 4. Район города -->
+          <div class="form-group">
+            <label for="cityDistrict" class="form-label">Район города</label>
+            <input
+              type="text"
+              id="cityDistrict"
+              placeholder="Можете указать при желании"
+              class="form-input"
+              maxlength="50"
+            />
+          </div>
+
+          <!-- 5. Профиль деятельности -->
+          <div class="form-group">
+            <label for="profileSelect" class="form-label">
+              Профиль деятельности <span class="required">*</span>
+            </label>
+            <select
+              id="profileSelect"
+              name="profileSelect"
+              required
+              class="form-input"
+            >
+              <option value="">-- Выберите профиль --</option>
+            </select>
+          </div>
+
+          <!-- 6. Вид деятельности -->
+          <div class="form-group">
+            <label class="form-label">
+              Вид деятельности <span class="required">*</span>
+              <span class="limit-info">(до 10)</span>
+            </label>
+            <select id="kindSelect" class="form-input" disabled>
+              <option value="">-- Выберите вид --</option>
+            </select>
+
+            <div
+              id="selectedKindsContainer"
+              class="selected-items-container"
+            ></div>
+
+            <input
+              type="text"
+              id="kindCustom"
+              placeholder="Или введите свой вид деятельности"
+              class="form-input"
+              maxlength="75"
+            />
+          </div>
+
+          <!-- 7. Имя -->
+          <div class="form-group">
+            <label for="nameInput" class="form-label">
+              Имя <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="nameInput"
+              placeholder="Имя специалиста или контактного лица"
+              class="form-input"
+              maxlength="50"
+            />
+          </div>
+
+          <!-- 8. Компания -->
+          <div class="form-group">
+            <label for="companyInput" class="form-label">
+              Компания <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="companyInput"
+              placeholder="Название компании или организации"
+              class="form-input"
+              maxlength="75"
+            />
+            <div class="form-hint">
+              Заполните хотя бы одно из полей: Имя или Компания
+            </div>
+          </div>
+
+          <!-- 9. Краткое описание -->
+          <div class="form-group">
+            <label for="descShort" class="form-label">
+              Краткое описание <span class="required">*</span>
+            </label>
+            <div class="input-wrapper-dt">
+              <textarea
+                id="descShort"
+                placeholder="5 строк по 25 символов&#10;Если нужен текст с новой строки - добейтесь смещения пробелами"
+                required
+                class="form-input textarea"
+                rows="5"
+                style="
+                  word-wrap: break-word;
+                  white-space: pre-wrap;
+                  overflow-wrap: break-word;
+                "
+              ></textarea>
+            </div>
+            <div class="char-counter">
+              <span id="descShortCounter">0</span>
+            </div>
+          </div>
+
+          <!-- 10. Полное описание -->
+          <div class="form-group">
+            <label for="descLong" class="form-label">
+              Описание (до 1000 символов) <span class="required">*</span>
+            </label>
+            <textarea
+              id="descLong"
+              maxlength="1000"
+              placeholder="Полное описание услуги"
+              required
+              class="form-input textarea"
+            ></textarea>
+            <div class="char-counter">
+              <span id="descLongCounter">1000</span>
+            </div>
+          </div>
+
+          <!-- 11. Адрес -->
+          <div class="form-group">
+            <label for="addressInput" class="form-label">Адрес</label>
+            <input
+              type="text"
+              id="addressInput"
+              maxlength="200"
+              class="form-input"
+              maxlength="100"
+            />
+          </div>
+
+          <!-- 12. Телефоны -->
+          <div class="form-group">
+            <label class="form-label">
+              Телефоны <span class="required">*</span>
+              <span class="limit-info">(до 10)</span>
+            </label>
+            <div id="phonesContainer" class="selected-items-container"></div>
+            <div class="phone-input-row">
+              <input
+                type="text"
+                id="phoneInput"
+                placeholder="380xxxxxxxxx"
+                class="form-input"
+                maxlength="12"
+              />
+              <button type="button" id="addPhoneBtn" class="btn small">
+                Добавить телефон
+              </button>
+            </div>
+            <div class="form-hint">Формат: 380671112233</div>
+          </div>
+
+          <!-- 13. Ссылки -->
+          <div class="form-group">
+            <label class="form-label">Ссылки и контакты</label>
+            <div class="links-grid">
+              <label class="link-checkbox-label">
+                <input type="checkbox" class="link-checkbox" data-type="site" />
+                <span class="link-checkbox-text">Сайт</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="email"
+                />
+                <span class="link-checkbox-text">Email</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="instagram"
+                />
+                <span class="link-checkbox-text">Instagram</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="telegram"
+                />
+                <span class="link-checkbox-text">Telegram</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="viber"
+                />
+                <span class="link-checkbox-text">Viber</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="facebook"
+                />
+                <span class="link-checkbox-text">Facebook</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="whatsapp"
+                />
+                <span class="link-checkbox-text">WhatsApp</span>
+              </label>
+              <label class="link-checkbox-label">
+                <input
+                  type="checkbox"
+                  class="link-checkbox"
+                  data-type="other"
+                />
+                <span class="link-checkbox-text">Другое</span>
+              </label>
+            </div>
+            <div id="linksInputsContainer" class="links-inputs-container"></div>
+          </div>
+
+          <!-- 14. Геолокация -->
+          <div class="form-group">
+            <label for="geoLocation" class="form-label">Геолокация</label>
+            <input
+              type="text"
+              id="geoLocation"
+              placeholder="Ссылка на карты Google или другие"
+              class="form-input"
+            />
+          </div>
+
+          <!-- Скрытые поля -->
+          <input type="hidden" id="orderNumber" />
+          <input type="hidden" id="idNumber" />
+          <input type="hidden" id="image" />
+          <input type="hidden" id="imageName" />
+          <input type="hidden" id="publicationStatus" value="черновик" />
+          <input type="hidden" id="cardImageName" />
+          <input type="hidden" id="telegramImageName" />
+          <input type="hidden" id="oldImage" />
+          <input type="hidden" id="imageLink" />
+          <input type="hidden" id="wordResult" />
+          <input type="hidden" id="nameCompanyKind" />
+
+          <!-- Кнопки отправки -->
+          <div class="form-buttons">
+            <button type="submit" class="btn primary">Добавить услугу</button>
+            <button type="reset" id="resetBtn" class="btn secondary">
+              Сбросить форму
             </button>
           </div>
-          <div class="form-hint">Формат: 380671112233</div>
-        </div>
-
-        <!-- 13. Ссылки -->
-        <div class="form-group">
-          <label class="form-label">Ссылки и контакты</label>
-          <div class="links-grid">
-            <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="site" />
-              <span class="link-checkbox-text">Сайт</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="email" />
-              <span class="link-checkbox-text">Email</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input
-                type="checkbox"
-                class="link-checkbox"
-                data-type="instagram"
-              />
-              <span class="link-checkbox-text">Instagram</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input
-                type="checkbox"
-                class="link-checkbox"
-                data-type="telegram"
-              />
-              <span class="link-checkbox-text">Telegram</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="viber" />
-              <span class="link-checkbox-text">Viber</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input
-                type="checkbox"
-                class="link-checkbox"
-                data-type="facebook"
-              />
-              <span class="link-checkbox-text">Facebook</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input
-                type="checkbox"
-                class="link-checkbox"
-                data-type="whatsapp"
-              />
-              <span class="link-checkbox-text">WhatsApp</span>
-            </label>
-            <label class="link-checkbox-label">
-              <input type="checkbox" class="link-checkbox" data-type="other" />
-              <span class="link-checkbox-text">Другое</span>
-            </label>
-          </div>
-          <div id="linksInputsContainer" class="links-inputs-container"></div>
-        </div>
-
-        <!-- 14. Геолокация -->
-        <div class="form-group">
-          <label for="geoLocation" class="form-label">Геолокация</label>
-          <input
-            type="text"
-            id="geoLocation"
-            placeholder="Ссылка на карты Google или другие"
-            class="form-input"
-          />
-        </div>
-
-        <!-- Скрытые поля -->
-        <input type="hidden" id="orderNumber" />
-        <input type="hidden" id="idNumber" />
-        <input type="hidden" id="image" />
-        <input type="hidden" id="imageName" />
-        <input type="hidden" id="publicationStatus" value="черновик" />
-        <input type="hidden" id="cardImageName" />
-        <input type="hidden" id="telegramImageName" />
-        <input type="hidden" id="oldImage" />
-        <input type="hidden" id="imageLink" />
-        <input type="hidden" id="wordResult" />
-        <input type="hidden" id="nameCompanyKind" />
-
-        <!-- Кнопки отправки -->
-        <div class="form-buttons">
-          <button type="submit" class="btn primary">Добавить услугу</button>
-          <button type="reset" id="resetBtn" class="btn secondary">
-            Сбросить форму
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
+    <!-- Закрываем .page-wrapper -->
 
     <!-- Уведомления -->
     <div id="notification" class="notification"></div>
