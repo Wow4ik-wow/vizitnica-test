@@ -329,8 +329,6 @@ async function loadKindsByProfile(profile) {
     });
 
     select.disabled = false;
-    selectedValues.selectedKindsContainer = [];
-    document.getElementById("selectedKindsContainer").innerHTML = "";
   } catch (error) {
     showMessage("Ошибка загрузки видов деятельности", "error");
   }
@@ -1093,7 +1091,6 @@ function updateProgress() {
     document.getElementById("townCustom").value
   )
     filledFields++;
-  if (document.getElementById("profileSelect").value) filledFields++;
   if (
     selectedValues.selectedKindsContainer.length > 0 ||
     document.getElementById("kindCustom").value
@@ -1411,9 +1408,7 @@ async function handleSubmit(e) {
 function validateForm() {
   const errors = [];
 
-  const region =
-    document.getElementById("regionSelect").value ||
-    document.getElementById("regionCustom").value;
+  const region = document.getElementById("regionSelect").value || document.getElementById("regionCustom").value;
   if (!region) errors.push("Укажите область");
 
   const selectedTowns = selectedValues.selectedTownsContainer
@@ -1423,9 +1418,6 @@ function validateForm() {
     errors.push("Укажите хотя бы один населённый пункт");
   else if (selectedTowns.length > 10)
     errors.push("Нельзя указать более 10 населённых пунктов");
-
-  const profile = document.getElementById("profileSelect").value;
-  if (!profile) errors.push("Выберите профиль деятельности");
 
   const kinds = selectedValues.selectedKindsContainer
     .concat(document.getElementById("kindCustom").value.trim())
@@ -1566,7 +1558,6 @@ function prepareFormData() {
     Область: region,
     "Населённый пункт": selectedTowns.join(", "),
     "Район города": document.getElementById("cityDistrict").value.trim(),
-    "Профиль деятельности": document.getElementById("profileSelect").value,
     "Вид деятельности": kinds.join(", "),
     Имя: document.getElementById("nameInput").value.trim(),
     Компания: document.getElementById("companyInput").value.trim(),
