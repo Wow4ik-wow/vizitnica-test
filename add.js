@@ -79,10 +79,13 @@ async function checkAuth() {
     return;
   }
 
-  if (typeof Telegram !== "undefined" && Telegram.WebApp) {
+    if (typeof Telegram !== "undefined" && Telegram.WebApp) {
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
   }
+  
+  // Загружаем и устанавливаем муравьев из JSON
+  await setupAntsFromJson();
 }
 
 // ДОБАВИТЬ ЭТУ ФУНКЦИЮ В add.js
@@ -1753,4 +1756,65 @@ function validateGeoLocation(input) {
     input.title = isValid ? "" : "Должна быть ссылка (https://...) или координаты (50.4504,30.5245)";
     
     return isValid;
+
+// Загрузка и установка муравьев из reclama.json
+async function setupAntsFromJson() {
+  try {
+    // Загружаем JSON с муравьями
+    const response = await fetch('https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/reclama.json');
+    if (!response.ok) {
+      console.warn('Не удалось загрузить JSON с муравьями');
+      return;
+    }
+    
+    const jsonData = await response.json();
+    
+    // Проверяем наличие массива ants
+    if (jsonData.ants && Array.isArray(jsonData.ants) && jsonData.ants.length >= 2) {
+      const leftDecor = document.querySelector(".decoration.left");
+      const rightDecor = document.querySelector(".decoration.right");
+      
+      if (leftDecor && rightDecor) {
+        // Выбираем двух случайных муравьев
+        const randomAnts = [...jsonData.ants]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 2);
+        
+        // Функция для извлечения прямой ссылки на изображение
+        const extractDirectImageLink = (link) => {
+          if (!link) return "";
+          
+          // Для Google Drive (формат /file/d/)
+          const fileMatch = link.match(/\/file\/d\/([^\/]+)/);
+          if (fileMatch) {
+            return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
+          }
+          
+          // Для Google Drive (формат uc?id=)
+          const ucMatch = link.match(/uc\?id=([^&]+)/);
+          if (ucMatch) {
+            return `https://drive.google.com/thumbnail?id=${ucMatch[1]}&sz=w1000`;
+          }
+          
+          return link;
+        };
+        
+        if (randomAnts[0] && randomAnts[0]["Костюм мураша"]) {
+          leftDecor.style.backgroundImage = `url('${extractDirectImageLink(
+            randomAnts[0]["Костюм мураша"]
+          )}')`;
+        }
+        
+        if (randomAnts[1] && randomAnts[1]["Костюм мураша"]) {
+          rightDecor.style.backgroundImage = `url('${extractDirectImageLink(
+            randomAnts[1]["Костюм мураша"]
+          )}')`;
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Ошибка при загрузке муравьев:', error);
+  }
+}
+
 }
