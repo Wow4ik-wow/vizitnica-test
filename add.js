@@ -1078,7 +1078,7 @@ function formatTextToLines(text, maxLines = 5, charsPerLine = 25) {
 
 // Обновление прогресс-бара
 function updateProgress() {
-  const totalFields = 8;
+  const totalFields = 7;
   let filledFields = 0;
 
   if (
