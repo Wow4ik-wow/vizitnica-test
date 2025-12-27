@@ -29,6 +29,9 @@ const DATA_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 часа в миллис�
 // === ОСПОРЕННЫЕ ТЕЛЕФОНЫ ===
 let disputedPhones = [];
 
+// === ФЛАГ УСПЕШНОЙ ОТПРАВКИ ===
+let formSubmittedSuccessfully = false;
+
 // ОТЛАДКА - ДОБАВЬ ЭТОТ КОД ПОСЛЕ ОБЪЯВЛЕНИЯ currentUser
 console.log("=== ДЕБАГ ФОРМЫ ===");
 // ИНИЦИАЛИЗАЦИЯ МУРАВЬЁВ
@@ -1783,6 +1786,23 @@ async function submitToSheet(data) {
 
     if (response.ok) {
       showMessage("Услуга успешно добавлена!", "success");
+      // Устанавливаем флаг успешной отправки
+      formSubmittedSuccessfully = true;
+      // Сбрасываем форму
+      document.getElementById("serviceForm").reset();
+      // Очищаем выбранные значения
+      selectedValues.selectedTownsContainer = [];
+      selectedValues.selectedKindsContainer = [];
+      document.getElementById("selectedTownsContainer").innerHTML = "";
+      document.getElementById("selectedKindsContainer").innerHTML = "";
+      document.getElementById("phonesContainer").innerHTML = "";
+      document.getElementById("linksInputsContainer").innerHTML = "";
+      document
+        .querySelectorAll(".link-checkbox")
+        .forEach((cb) => (cb.checked = false));
+      // Обновляем прогресс-бар
+      updateProgress();
+
       setTimeout(() => (window.location.href = "index.html"), 2000);
     } else {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -1844,6 +1864,11 @@ function updateLongCharCounter() {
 
 // Защита от потери данных
 window.addEventListener("beforeunload", (e) => {
+  // Если форма успешно отправлена - не показываем предупреждение
+  if (formSubmittedSuccessfully) {
+    return;
+  }
+
   const isFormDirty =
     document.getElementById("regionSelect").value ||
     document.getElementById("regionCustom").value ||
