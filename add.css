@@ -57,12 +57,16 @@ body {
   border-bottom: 4px solid #3b82f6;
   position: relative;
   z-index: 20;
+  display: flex;
+  justify-content: center;
 }
 
 .header-content {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   position: relative;
+  padding: 0 20px;
 }
 
 .page-title {
@@ -487,7 +491,12 @@ select.form-input {
   }
   
   .add-header {
-    padding: 20px 15px;
+    padding: 20px 10px;
+    justify-content: center;
+  }
+  
+  .header-content {
+    padding: 0 10px;
   }
   
   .page-title {
@@ -501,6 +510,8 @@ select.form-input {
   .back-btn {
     position: relative;
     margin-bottom: 15px;
+    left: 0;
+    top: 0;
   }
   
   .phone-input-row {
