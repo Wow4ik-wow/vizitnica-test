@@ -7,21 +7,56 @@
   box-sizing: border-box;
 }
 
+/* === ФОН И ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ === */
+
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url("main-bg.webp");
+  background-repeat: repeat-y;
+  background-size: 1920px auto;
+  background-position: center top;
   min-height: 100vh;
   padding: 0;
   color: #333;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Декоративные муравьи */
+.decoration {
+  position: fixed;
+  z-index: 5;
+  width: 250px;
+  height: 250px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  transition: none;
+}
+
+/* Отзеркаливание правого муравья */
+.decoration.right {
+  transform: scaleX(-1);
+}
+
+/* Адаптивность для муравьев */
+@media (max-width: 900px) {
+  .decoration {
+    display: none;
+  }
 }
 
 /* Header */
 .add-header {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  color: white;
+  background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
+  color: #2c3e50;
   padding: 30px 20px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 4px solid #3b82f6;
+  position: relative;
+  z-index: 20;
 }
 
 .header-content {
@@ -33,26 +68,32 @@ body {
 .page-title {
   font-size: 2.5em;
   margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  color: #2c3e50;
 }
 
 .page-subtitle {
   font-size: 1.2em;
   opacity: 0.9;
   margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: bold;
 }
 
 .back-btn {
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #3b82f6;
+  border: 2px solid #2563eb;
   color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #2563eb;
+  border-color: #1d4ed8;
+  transform: translateY(-2px);
 }
 
 /* Контейнер формы */
@@ -60,15 +101,20 @@ body {
   max-width: 800px;
   margin: 30px auto;
   padding: 0 20px;
+  position: relative;
+  z-index: 20;
 }
 
 /* Форма */
 #serviceForm {
-  background: white;
+  background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
   padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  border: 4px solid #3b82f6;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   margin-bottom: 30px;
+  position: relative;
+  z-index: 20;
 }
 
 /* Прогресс бар */
@@ -351,27 +397,29 @@ select.form-input {
 }
 
 .btn.primary {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: #8230e0;
   color: white;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 15px rgba(130, 48, 224, 0.3);
+  border: none;
 }
 
 .btn.primary:hover {
-  background: linear-gradient(135deg, #45a049, #3d8b40);
+  background: #450570;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 6px 20px rgba(130, 48, 224, 0.4);
 }
 
 .btn.secondary {
-  background: linear-gradient(135deg, #6c757d, #5a6268);
+  background: #3b82f6;
   color: white;
-  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  border: none;
 }
 
 .btn.secondary:hover {
-  background: linear-gradient(135deg, #5a6268, #495057);
+  background: #2563eb;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
 .btn.small {
