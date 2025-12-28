@@ -266,8 +266,11 @@ async function checkAuth() {
     }
   }
 
-  if (!currentUser || currentUser.role !== "admin") {
-    showMessage("Доступ запрещён. Требуются права администратора.", "error");
+  // Разрешаем доступ для admin, user и curator
+  const allowedRoles = ["admin", "user", "curator"];
+  
+  if (!currentUser || !allowedRoles.includes(currentUser.role)) {
+    showMessage("Доступ запрещён. Требуется авторизация.", "error");
     setTimeout(() => (window.location.href = "index.html"), 3000);
     return;
   }
