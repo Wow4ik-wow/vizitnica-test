@@ -58,7 +58,7 @@ body {
 
 /* Header */
 .add-header {
-  background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
+  background: linear-gradient(135deg, rgba(243, 172, 125, 0.5) 0%, rgba(223, 212, 188, 0.5) 100%);
   color: #2c3e50;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -70,6 +70,7 @@ body {
   border-radius: 16px 16px 0 0;
   border: 4px solid #3b82f6;
   border-bottom: none;
+  backdrop-filter: blur(3px);
 }
 
 .header-content {
@@ -121,7 +122,7 @@ body {
 
 /* Форма */
 #serviceForm {
-  background: linear-gradient(135deg, #f3ac7d 0%, #dfd4bc 100%);
+  background: linear-gradient(135deg, rgba(243, 172, 125, 0.5) 0%, rgba(223, 212, 188, 0.5) 100%);
   padding: 30px;
   border-radius: 0 0 16px 16px;
   border: 4px solid #3b82f6;
@@ -130,6 +131,7 @@ body {
   margin-bottom: 30px;
   position: relative;
   z-index: 20;
+  backdrop-filter: blur(3px);
 }
 
 /* Прогресс бар */
