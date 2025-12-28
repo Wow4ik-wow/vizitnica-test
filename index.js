@@ -289,8 +289,6 @@ function renderCards(services) {
       contentHTML += `<hr style="margin: 8px 0;" />`;
     }
 
-    if (profile)
-      contentHTML += `<div><strong>Профиль деятельности:</strong> ${profile}</div>`;
     if (description)
       contentHTML += `<div><strong>Описание:</strong><br>${description.replace(
         /\n/g,
