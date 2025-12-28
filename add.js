@@ -884,6 +884,27 @@ function setupPhoneHandlers() {
   const input = document.getElementById("phoneInput");
   const btn = document.getElementById("addPhoneBtn");
 
+  // Установим новый placeholder и подсказку
+  input.placeholder = "Введите номер (380XXXXXXXXX)";
+
+  // Фокус на поле - показываем формат
+  input.addEventListener("focus", () => {
+    if (!input.value) {
+      input.value = "380";
+      // Помещаем курсор после 380
+      setTimeout(() => {
+        input.setSelectionRange(3, 3);
+      }, 10);
+    }
+  });
+
+  // Потеря фокуса - если только "380", очищаем
+  input.addEventListener("blur", () => {
+    if (input.value === "380") {
+      input.value = "";
+    }
+  });
+
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -895,13 +916,21 @@ function setupPhoneHandlers() {
 
   input.addEventListener("input", (e) => {
     let value = e.target.value.replace(/\D/g, "");
-    if (value && !value.startsWith("380")) {
-      value = "380" + value;
-    }
-    if (value.length > 12) {
-      value = value.slice(0, 12);
-    }
+
+    // Удаляем все нецифровые символы
     e.target.value = value;
+
+    // Подсвечиваем правильный формат
+    if (value.length === 12 && value.startsWith("380")) {
+      e.target.style.borderColor = "#27ae60";
+      e.target.style.boxShadow = "0 0 0 2px rgba(39, 174, 96, 0.2)";
+    } else if (value.length > 0) {
+      e.target.style.borderColor = "#f39c12";
+      e.target.style.boxShadow = "0 0 0 2px rgba(243, 156, 18, 0.2)";
+    } else {
+      e.target.style.borderColor = "";
+      e.target.style.boxShadow = "";
+    }
   });
 }
 
@@ -1104,20 +1133,25 @@ function updateSelectedTownsUI() {
 
 // Добавление телефона
 async function addPhoneNumber() {
-  // ОТЛАДКА АДМИНА
-  console.log("=== ПРОВЕРКА АДМИНА ===");
-  console.log("currentUser.role:", currentUser?.role);
-  console.log("isAdmin:", currentUser?.role === "admin");
-
   const input = document.getElementById("phoneInput");
   const container = document.getElementById("phonesContainer");
-  const val = input.value.trim();
+  let val = input.value.trim();
 
-  console.log("Введённый телефон:", val);
-  // КОНЕЦ ОТЛАДКИ
+  // Убираем все нецифровые символы
+  val = val.replace(/\D/g, "");
 
+  // Добавляем 380 если его нет в начале
+  if (val && !val.startsWith("380")) {
+    val = "380" + val;
+  }
+
+  // Проверяем правильность формата
   if (!/^380\d{9}$/.test(val)) {
-    showMessage("Неверный формат телефона. Пример: 380671112233", "error");
+    showMessage(
+      "Неверный формат телефона. Введите номер: 380XXXXXXXXX",
+      "error"
+    );
+    input.focus();
     return;
   }
 
@@ -1128,6 +1162,8 @@ async function addPhoneNumber() {
   if (existingPhones.includes(val)) {
     showMessage("Этот номер уже добавлен", "warning");
     input.value = "";
+    input.style.borderColor = "";
+    input.style.boxShadow = "";
     return;
   }
 
@@ -1141,23 +1177,20 @@ async function addPhoneNumber() {
 
   // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ АДМИНА: все дубли в базе (РАБОТАЕТ БЕЗ ПРОФИЛЯ)
   if (phoneDatabase && currentUser.role === "admin") {
-    console.log("=== ПРОВЕРКА АДМИНА ЗАПУЩЕНА ===");
     const allConflicts = checkPhoneAllProfiles(val);
-    console.log("allConflicts:", allConflicts);
 
     if (
       allConflicts &&
       allConflicts.conflicts &&
       allConflicts.conflicts.length > 0
     ) {
-      console.log("Найдены дубли, показываем уведомление");
       const userChoice = await showAdminPhoneConflictNotification(allConflicts);
       if (userChoice === "cancel") {
         input.value = "";
+        input.style.borderColor = "";
+        input.style.boxShadow = "";
         return;
       }
-    } else {
-      console.log("Дубли не найдены");
     }
   }
 
@@ -1169,26 +1202,27 @@ async function addPhoneNumber() {
 
       // Случай А: Свой повтор
       if (conflict.author === currentUser.id) {
-        const userChoice = showOwnPhoneConflictNotification(conflictData); // УБИРАЕМ await
+        const userChoice = showOwnPhoneConflictNotification(conflictData);
         if (userChoice === "cancel") {
           input.value = "";
-          return; // Не добавляем номер
+          input.style.borderColor = "";
+          input.style.boxShadow = "";
+          return;
         }
-        // Если 'edit' - пока просто добавляем номер (редактирование сделаем позже)
       }
       // Случай Б: Повтор админа
       else if (conflict.author === "АДМИН") {
         // Просто добавляем номер, ничего не показываем пользователю
-        // Пометку для админа добавим при отправке формы
       }
       // Случай В: Чужой номер
       else {
         const userChoice = await showPhoneConflictNotification(conflictData);
         if (userChoice === "cancel") {
           input.value = "";
-          return; // Не добавляем номер
+          input.style.borderColor = "";
+          input.style.boxShadow = "";
+          return;
         }
-        // Если 'dispute' - добавляем номер с пометкой для оспаривания
       }
     }
   }
@@ -1205,6 +1239,8 @@ async function addPhoneNumber() {
 
   container.appendChild(div);
   input.value = "";
+  input.style.borderColor = "";
+  input.style.boxShadow = "";
   updateProgress();
 }
 
