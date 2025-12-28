@@ -106,7 +106,7 @@ function initAnts() {
         setTimeout(() => {
           console.log("Запуск анимации муравьёв");
           initAntsAnimation();
-        }, 1000);
+        }, 500);
       } else {
         console.warn("Не найдены данные о муравьях в JSON");
       }
@@ -193,21 +193,21 @@ function initAntsAnimation() {
     requestAnimationFrame(animate);
   };
 
-  // Запуск анимации
-  const leftZone = getMovementZone(true);
-  const rightZone = getMovementZone(false);
-
-  // Устанавливаем начальные позиции
+  // Устанавливаем начальные позиции из CSS (они уже в центре)
+  // Просто убеждаемся, что position fixed установлена
   leftAnt.style.position = "fixed";
-  leftAnt.style.left = leftZone.minX + 100 + "px";
-  leftAnt.style.top = leftZone.minY + 100 + "px";
-
   rightAnt.style.position = "fixed";
-  rightAnt.style.left = rightZone.minX + 100 + "px";
-  rightAnt.style.top = rightZone.minY + 100 + "px";
 
-  moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100);
-  moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100);
+  // Ждём немного, чтобы пользователь увидел муравьёв в центре
+  setTimeout(() => {
+    // Определяем целевые зоны
+    const leftZone = getMovementZone(true);
+    const rightZone = getMovementZone(false);
+
+    // Плавно перемещаем муравьёв в их зоны
+    moveAnt(leftAnt, leftZone.minX + 100, leftZone.minY + 100, 2000);
+    moveAnt(rightAnt, rightZone.minX + 100, rightZone.minY + 100, 2000);
+  }, 500);
 
   // Перерасчет при изменении размера окна
   window.addEventListener("resize", () => {
@@ -268,7 +268,7 @@ async function checkAuth() {
 
   // Разрешаем доступ для admin, user и curator
   const allowedRoles = ["admin", "user", "curator"];
-  
+
   if (!currentUser || !allowedRoles.includes(currentUser.role)) {
     showMessage("Доступ запрещён. Требуется авторизация.", "error");
     setTimeout(() => (window.location.href = "index.html"), 3000);

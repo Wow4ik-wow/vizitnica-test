@@ -42,11 +42,15 @@ body {
   background-position: center;
   pointer-events: none;
   transition: none;
+  /* НАЧАЛЬНЫЕ ПОЗИЦИИ В ЦЕНТРЕ */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Отзеркаливание правого муравья */
 .decoration.right {
-  transform: scaleX(-1);
+  transform: translate(-50%, -50%) scaleX(-1);
 }
 
 /* Адаптивность для муравьев */
