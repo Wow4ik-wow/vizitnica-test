@@ -497,16 +497,30 @@ function applyFilters() {
       .toLowerCase()
       .split(",")
       .map((x) => x.trim());
-    const профиль = (service["Профиль деятельности"] || "").toLowerCase();
-    const вид = (service["Вид деятельности"] || "").toLowerCase();
+    const услуги = service["Услуги"] || {};
     const район = (service["Район"] || "").toLowerCase();
     const имя = (service["Имя"] || "").toLowerCase();
     const компания = (service["Компания"] || "").toLowerCase();
 
     const regionMatch = области.some((r) => r.includes(region));
     const cityMatch = города.some((c) => c.includes(city));
-    const profileMatch = !profile || профиль.includes(profile);
-    const typeMatch = !type || вид.includes(type);
+    let profileMatch = true;
+let typeMatch = true;
+
+// Проверка профиля
+if (profile) {
+  profileMatch = Object.keys(услуги).some(
+    (p) => p.toLowerCase().includes(profile)
+  );
+}
+
+// Проверка вида
+if (type) {
+  typeMatch = Object.values(услуги).some((types) =>
+    types.some((t) => t.toLowerCase().includes(type))
+  );
+}
+
     const districtMatch = !district || район.includes(district);
     const nameMatch = !name || (имя + " " + компания).includes(name);
 
@@ -546,7 +560,7 @@ function applyFilters() {
 }
 
 function populateAllLists() {
-  populateList("listProfile", allServices, "Профиль деятельности");
+  populateProfilesFromServices(allServices);
   populateDatalist("listRegion", getUniqueValues(allServices, "Область"));
   populateDatalist("listDistrict", getUniqueValues(allServices, "Район"));
   populateList("listName", allServices, "Имя", true);
@@ -679,6 +693,32 @@ function getUniqueNames(arr) {
   });
   return Array.from(set).sort((a, b) => a.localeCompare(b, "ru"));
 }
+
+function populateProfilesFromServices(services) {
+  const datalist = document.getElementById("listProfile");
+  if (!datalist) return;
+
+  datalist.innerHTML = "";
+  const profilesSet = new Set();
+
+  services.forEach((service) => {
+    const услуги = service["Услуги"];
+    if (!услуги || typeof услуги !== "object") return;
+
+    Object.keys(услуги).forEach((profile) => {
+      if (profile) profilesSet.add(profile);
+    });
+  });
+
+  Array.from(profilesSet)
+    .sort((a, b) => a.localeCompare(b, "ru"))
+    .forEach((profile) => {
+      const option = document.createElement("option");
+      option.value = profile;
+      datalist.appendChild(option);
+    });
+}
+
 // 🔹 Заполнение <select> для поля Профиль
 function populateSelectOptions(selectId, values) {
   const select = document.getElementById(selectId);
