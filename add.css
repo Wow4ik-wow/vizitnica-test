@@ -185,7 +185,7 @@ body {
 /* Поля ввода */
 .form-input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 18px 15px;
   border: 2px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
@@ -193,6 +193,23 @@ body {
   color: #333;
   transition: all 0.3s ease;
   margin-bottom: 10px;
+}
+
+textarea.form-input {
+  min-height: 100px;
+  transition: height 0.2s ease;
+}
+
+/* Стиль для textarea с автоматической высотой */
+.auto-resize-textarea {
+  overflow: hidden;
+  resize: vertical;
+}
+
+.form-input::placeholder {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .form-input:focus {
@@ -801,37 +818,4 @@ select.form-input {
 
 .modal-btn.success:hover {
   background: #219a52;
-}
-
-/* ФИКС ПЛЕЙСХОЛДЕРОВ - ПЕРЕНАСТРОЙКА ВЫСОТЫ ПОЛЕЙ */
-.form-input {
-  min-height: 46px;
-  line-height: 1.4;
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
-.form-input::placeholder {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
-  padding-top: 2px;
-}
-
-/* Для инпутов с длинными плейсхолдерами увеличиваем высоту */
-.form-input[placeholder]:not([placeholder=""]) {
-  min-height: 52px;
-}
-
-/* Особенно для мобилок */
-@media (max-width: 768px) {
-  .form-input {
-    min-height: 52px;
-  }
-  
-  .form-input[placeholder]:not([placeholder=""]) {
-    min-height: 56px;
-  }
 }

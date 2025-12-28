@@ -351,9 +351,22 @@ function setupAllEventListeners() {
   document
     .getElementById("descShort")
     .addEventListener("input", updateCharCounters);
-  document
-    .getElementById("descLong")
-    .addEventListener("input", updateLongCharCounter);
+  document.getElementById("descLong").addEventListener("input", function () {
+    updateLongCharCounter();
+    // Также вызываем авто-изменение высоты
+    const descLong = document.getElementById("descLong");
+    const lines = descLong.value.split("\n").length;
+    descLong.rows = Math.max(5, Math.min(lines, 15));
+  });
+
+  // Инициализация высоты полного описания при загрузке
+  setTimeout(() => {
+    const descLong = document.getElementById("descLong");
+    if (descLong) {
+      const lines = descLong.value.split("\n").length;
+      descLong.rows = Math.max(5, Math.min(lines, 15));
+    }
+  }, 200);
 
   // Телефоны
   setupPhoneHandlers();
@@ -1572,6 +1585,21 @@ if (descShortEl) {
   updateCharCounters();
 }
 
+// Автоматическое изменение высоты для полного описания
+const descLongEl = document.getElementById("descLong");
+if (descLongEl) {
+  // Обработчик для автоматического изменения высоты
+  descLongEl.addEventListener("input", function () {
+    // Вызываем функцию обновления высоты
+    updateLongCharCounter();
+  });
+
+  // Инициализация высоты при загрузке
+  setTimeout(() => {
+    updateLongCharCounter();
+  }, 100);
+}
+
 // === ОТПРАВКА ФОРМЫ ===
 
 // Обработка отправки формы
@@ -1859,6 +1887,19 @@ function updateLongCharCounter() {
     longCounter.style.color = "#f39c12";
   } else {
     longCounter.style.color = "#27ae60";
+  }
+
+  // Автоматическое изменение высоты textarea в зависимости от количества строк
+  // Вычисляем количество строк в тексте
+  const lines = descLong.value.split("\n").length;
+  // Устанавливаем rows равным количеству строк, но не менее 5
+  descLong.rows = Math.max(5, lines);
+  // Если строк больше 15, добавляем возможность прокрутки
+  if (lines > 15) {
+    descLong.style.overflowY = "auto";
+    descLong.rows = 15; // Ограничиваем видимые строки для очень длинных текстов
+  } else {
+    descLong.style.overflowY = "hidden";
   }
 }
 
