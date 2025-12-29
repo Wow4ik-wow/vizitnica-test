@@ -665,9 +665,22 @@ function populateList(
     });
   }
 
-  const sortedValues = Array.from(valuesSet).sort((a, b) =>
-    a.localeCompare(b, "ru")
-  );
+  // Приводим все значения к нижнему регистру для сравнения
+const lowerCaseMap = new Map();
+const uniqueValues = [];
+
+Array.from(valuesSet).forEach(val => {
+  const lowerVal = val.toLowerCase();
+  if (!lowerCaseMap.has(lowerVal)) {
+    lowerCaseMap.set(lowerVal, val);
+    uniqueValues.push(val);
+  }
+});
+
+// Сортируем оригинальные значения (с сохранением регистра)
+const sortedValues = uniqueValues.sort((a, b) =>
+  a.localeCompare(b, "ru")
+);
 
   sortedValues.forEach((val) => {
     if (val) {
