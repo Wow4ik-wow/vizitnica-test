@@ -1016,23 +1016,21 @@ filterFields.forEach((id) => {
           (service["Компания"] || "")
         ).toLowerCase();
 
-        const profileMatch =
-  !profileVal ||
-  Object.keys(услуги).some(
-    (p) => p.toLowerCase().includes(profileVal)
-  );
+        const hasProfile = !profileVal
+  || Object.keys(servicesObj).some(
+       (p) => p.toLowerCase() === profileVal
+     );
 
-const typeMatch =
-  !typeVal ||
-  Object.values(услуги).some((types) =>
-    types.some((t) => t.toLowerCase().includes(typeVal))
-  );
+const hasType = !typeVal
+  || Object.values(servicesObj).some((types) =>
+       types.some((t) => t.toLowerCase().includes(typeVal))
+     );
 
 return (
   (!regionVal || regions.includes(regionVal)) &&
   (!cityVal || cities.includes(cityVal)) &&
-  profileMatch &&
-  typeMatch &&
+  hasProfile &&
+  hasType &&
   (!districtVal || district.includes(districtVal)) &&
   (!nameVal || name.includes(nameVal))
 );
