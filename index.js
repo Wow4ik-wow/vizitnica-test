@@ -1002,40 +1002,49 @@ filterFields.forEach((id) => {
         .toLowerCase();
 
       const filtered = allServices.filter((service) => {
-        const regions = (service["Область"] || "")
-          .split(",")
-          .map((s) => s.trim().toLowerCase());
-        const cities = (service["Населённый пункт"] || "")
-          .split(",")
-          .map((s) => s.trim().toLowerCase());
-        const услуги = service["Услуги"] || {};
-        const district = (service["Район"] || "").toLowerCase();
-        const name = (
-          (service["Имя"] || "") +
-          " " +
-          (service["Компания"] || "")
-        ).toLowerCase();
+  const regions = (service["Область"] || "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase());
 
-        const hasProfile = !profileVal
-  || Object.keys(servicesObj).some(
-       (p) => p.toLowerCase() === profileVal
-     );
+  const cities = (service["Населённый пункт"] || "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase());
 
-const hasType = !typeVal
-  || Object.values(servicesObj).some((types) =>
-       types.some((t) => t.toLowerCase().includes(typeVal))
-     );
+  const district = (service["Район"] || "").toLowerCase();
 
-return (
-  (!regionVal || regions.includes(regionVal)) &&
-  (!cityVal || cities.includes(cityVal)) &&
-  hasProfile &&
-  hasType &&
-  (!districtVal || district.includes(districtVal)) &&
-  (!nameVal || name.includes(nameVal))
-);
+  const name = (
+    (service["Имя"] || "") +
+    " " +
+    (service["Компания"] || "")
+  ).toLowerCase();
 
-      });
+  const услуги = service["Услуги"] || {};
+
+  // 🔹 проверка профиля и вида
+  let profileMatch = true;
+  let typeMatch = true;
+
+  if (profileVal) {
+    profileMatch = Object.keys(услуги).some(
+      (p) => p.toLowerCase() === profileVal
+    );
+  }
+
+  if (typeVal) {
+    typeMatch = Object.values(услуги).some((types) =>
+      types.some((t) => t.toLowerCase().includes(typeVal))
+    );
+  }
+
+  return (
+    (!regionVal || regions.includes(regionVal)) &&
+    (!cityVal || cities.includes(cityVal)) &&
+    profileMatch &&
+    typeMatch &&
+    (!districtVal || district.includes(districtVal)) &&
+    (!nameVal || name.includes(nameVal))
+  );
+});
 
       if (id === "filterProfile") {
   populateProfilesFromServices(filtered);
