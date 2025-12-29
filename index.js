@@ -701,7 +701,33 @@ function populateProfilesFromServices(services) {
   datalist.innerHTML = "";
   const profilesSet = new Set();
 
+  const regionVal = document
+    .getElementById("filterRegion")
+    .value.trim()
+    .toLowerCase();
+
+  const cityVal = document
+    .getElementById("filterCity")
+    .value.trim()
+    .toLowerCase();
+
   services.forEach((service) => {
+    // Фильтрация по области
+    const regions = (service["Область"] || "")
+      .toLowerCase()
+      .split(",")
+      .map((r) => r.trim());
+
+    if (regionVal && !regions.includes(regionVal)) return;
+
+    // Фильтрация по городу
+    const cities = (service["Населённый пункт"] || "")
+      .toLowerCase()
+      .split(",")
+      .map((c) => c.trim());
+
+    if (cityVal && !cities.includes(cityVal)) return;
+
     const услуги = service["Услуги"];
     if (!услуги || typeof услуги !== "object") return;
 
@@ -718,6 +744,7 @@ function populateProfilesFromServices(services) {
       datalist.appendChild(option);
     });
 }
+
 
 // 🔹 Заполнение <select> для поля Профиль
 function populateSelectOptions(selectId, values) {
