@@ -275,21 +275,23 @@ function renderCards(services) {
       : "";
 
     // ⭐⭐ ВАЖНОЕ ИСПРАВЛЕНИЕ: Получаем типы из нового формата Услуг
-    const услуги = service["Услуги"] || {};
-    const allTypes = [];
-    
-    // Собираем ВСЕ типы из всех профилей
-    Object.values(услуги).forEach((typesArray) => {
-      if (Array.isArray(typesArray)) {
-        typesArray.forEach((typeItem) => {
-          if (typeItem && typeItem.trim()) {
-            allTypes.push(typeItem.trim());
-          }
-        });
+const услуги = service["Услуги"] || {};
+const typesSet = new Set();
+
+// Собираем ВСЕ типы из всех профилей
+Object.values(услуги).forEach((typesArray) => {
+  if (Array.isArray(typesArray)) {
+    typesArray.forEach((typeItem) => {
+      if (typeItem && typeItem.trim()) {
+        typesSet.add(typeItem.trim());
       }
     });
-    
-    const typesString = allTypes.join(", ");
+  }
+});
+
+// Преобразуем Set в массив уникальных значений
+const allTypes = Array.from(typesSet);
+const typesString = allTypes.join(", ");
 
     let contentHTML = `
       <img src="${imageUrl}" alt="Превью" style="width: 95%; margin: 8px auto; display: block; cursor: pointer; border-radius: 6px; object-fit: contain;" />
