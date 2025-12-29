@@ -745,6 +745,44 @@ function populateProfilesFromServices(services) {
     });
 }
 
+function populateTypesFromServices(services) {
+  const datalist = document.getElementById("listType");
+  if (!datalist) return;
+
+  datalist.innerHTML = "";
+  const typesSet = new Set();
+
+  const selectedProfile = document
+    .getElementById("filterProfile")
+    .value.trim()
+    .toLowerCase();
+
+  services.forEach((service) => {
+    const услуги = service["Услуги"];
+    if (!услуги || typeof услуги !== "object") return;
+
+    Object.entries(услуги).forEach(([profile, types]) => {
+      if (
+        selectedProfile &&
+        profile.toLowerCase() !== selectedProfile
+      ) {
+        return;
+      }
+
+      types.forEach((type) => {
+        if (type) typesSet.add(type);
+      });
+    });
+  });
+
+  Array.from(typesSet)
+    .sort((a, b) => a.localeCompare(b, "ru"))
+    .forEach((type) => {
+      const option = document.createElement("option");
+      option.value = type;
+      datalist.appendChild(option);
+    });
+}
 
 // 🔹 Заполнение <select> для поля Профиль
 function populateSelectOptions(selectId, values) {
@@ -993,27 +1031,9 @@ filterFields.forEach((id) => {
   populateProfilesFromServices(filtered);
 }
  else if (id === "filterType") {
-        const list = document.getElementById("listType");
-        if (!list) return; // Если элемента нет - выходим
-        list.innerHTML = "";
-
-        const valuesSet = new Set();
-        filtered.forEach((service) => {
-          const types = (service["Вид деятельности"] || "")
-            .split(",")
-            .map((t) => t.trim())
-            .filter(Boolean);
-          types.forEach((t) => valuesSet.add(t));
-        });
-
-        Array.from(valuesSet)
-          .sort((a, b) => a.localeCompare(b, "ru"))
-          .forEach((val) => {
-            const option = document.createElement("option");
-            option.value = val;
-            list.appendChild(option);
-          });
-      } else if (id === "filterDistrict") {
+  populateTypesFromServices(filtered);
+}
+ else if (id === "filterDistrict") {
         populateList("listDistrict", filtered, "Район");
       } else if (id === "filterName") {
         populateList("listName", filtered, "Имя", true);
