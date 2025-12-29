@@ -1,7 +1,9 @@
 const apiUrl =
   "https://raw.githubusercontent.com/Wow4ik-wow/vizitnica/master/data.json";
-const API_USER_URL = "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
-const API_TG_URL = "https://script.google.com/macros/s/AKfycbxjECFiBLd5Y2X760SVngkL5vPDAlQ8-5SJofbdKWofhmAD3zxzwSrw_Lm01Z4wDmA/exec";
+const API_USER_URL =
+  "https://script.google.com/macros/s/AKfycbzpraBNAzlF_oqYIDLYVjczKdY6Ui32qJNwY37HGSj6vtPs9pXseJYqG3oLAr28iZ0c/exec";
+const API_TG_URL =
+  "https://script.google.com/macros/s/AKfycbxjECFiBLd5Y2X760SVngkL5vPDAlQ8-5SJofbdKWofhmAD3zxzwSrw_Lm01Z4wDmA/exec";
 let currentUser = null;
 
 // TG логика
@@ -23,25 +25,30 @@ if (isReallyTelegramWebApp()) {
   try {
     tgUser = Telegram.WebApp.initDataUnsafe?.user || null;
     if (tgUser) {
-  currentUser = {
-    id: "tg_" + tgUser.id,
-    name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
-    username: tgUser.username || "",
-    role: "user",
-    source: "telegram",
-  };
-  localStorage.setItem("user", JSON.stringify(currentUser));
-  console.log("Авторизация через Telegram:", currentUser);
-  
-  handleTelegramUser(tgUser).then(tgUserData => {
-    if (tgUserData && tgUserData.role && tgUserData.role !== currentUser.role) {
-      currentUser.role = tgUserData.role;
+      currentUser = {
+        id: "tg_" + tgUser.id,
+        name:
+          tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+        username: tgUser.username || "",
+        role: "user",
+        source: "telegram",
+      };
       localStorage.setItem("user", JSON.stringify(currentUser));
-      updateAuthUI();
-      updateRolesVisibility();
-    }
-  });
-} else {
+      console.log("Авторизация через Telegram:", currentUser);
+
+      handleTelegramUser(tgUser).then((tgUserData) => {
+        if (
+          tgUserData &&
+          tgUserData.role &&
+          tgUserData.role !== currentUser.role
+        ) {
+          currentUser.role = tgUserData.role;
+          localStorage.setItem("user", JSON.stringify(currentUser));
+          updateAuthUI();
+          updateRolesVisibility();
+        }
+      });
+    } else {
       console.warn("Telegram WebApp не вернул данных пользователя");
     }
   } catch (e) {
@@ -62,7 +69,7 @@ function updateAuthUI() {
     const logoutBtn = document.getElementById("logoutBtn");
     const authLoginWrapper = document.querySelector(".auth-login-wrapper");
     const roleInfo = document.getElementById("roleInfo");
-    
+
     if (googleAuthBtn) googleAuthBtn.style.display = "none";
     if (logoutBtn) {
       logoutBtn.style.display = "none";
@@ -72,7 +79,7 @@ function updateAuthUI() {
       logoutBtn.style.left = "-9999px";
     }
     if (authLoginWrapper) authLoginWrapper.style.display = "none";
-    
+
     // НЕ скрываем информацию о роли в Telegram
     if (roleInfo && currentUser) {
       if (currentUser.role === "admin") {
@@ -459,7 +466,6 @@ ${
 }
 
 function applyFilters() {
-  
   const region = document
     .getElementById("filterRegion")
     .value.trim()
@@ -505,21 +511,21 @@ function applyFilters() {
     const regionMatch = области.some((r) => r.includes(region));
     const cityMatch = города.some((c) => c.includes(city));
     let profileMatch = true;
-let typeMatch = true;
+    let typeMatch = true;
 
-// Проверка профиля
-if (profile) {
-  profileMatch = Object.keys(услуги).some(
-    (p) => p.toLowerCase().includes(profile)
-  );
-}
+    // Проверка профиля
+    if (profile) {
+      profileMatch = Object.keys(услуги).some((p) =>
+        p.toLowerCase().includes(profile)
+      );
+    }
 
-// Проверка вида
-if (type) {
-  typeMatch = Object.values(услуги).some((types) =>
-    types.some((t) => t.toLowerCase().includes(type))
-  );
-}
+    // Проверка вида
+    if (type) {
+      typeMatch = Object.values(услуги).some((types) =>
+        types.some((t) => t.toLowerCase().includes(type))
+      );
+    }
 
     const districtMatch = !district || район.includes(district);
     const nameMatch = !name || (имя + " " + компания).includes(name);
@@ -540,7 +546,8 @@ if (type) {
   const countElem = document.getElementById("searchCount");
   countElem.innerText = `Найдено совпадений: ${filtered.length}`;
 
-  populateList("listProfile", filtered, "Профиль деятельности");
+  populateProfilesFromServices(filtered);
+  populateTypesFromServices(filtered);
   populateList("listDistrict", filtered, "Район");
   populateList("listName", filtered, "Имя", true);
 
@@ -762,10 +769,7 @@ function populateTypesFromServices(services) {
     if (!услуги || typeof услуги !== "object") return;
 
     Object.entries(услуги).forEach(([profile, types]) => {
-      if (
-        selectedProfile &&
-        profile.toLowerCase() !== selectedProfile
-      ) {
+      if (selectedProfile && profile.toLowerCase() !== selectedProfile) {
         return;
       }
 
@@ -1002,57 +1006,55 @@ filterFields.forEach((id) => {
         .toLowerCase();
 
       const filtered = allServices.filter((service) => {
-  const regions = (service["Область"] || "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase());
+        const regions = (service["Область"] || "")
+          .split(",")
+          .map((s) => s.trim().toLowerCase());
 
-  const cities = (service["Населённый пункт"] || "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase());
+        const cities = (service["Населённый пункт"] || "")
+          .split(",")
+          .map((s) => s.trim().toLowerCase());
 
-  const district = (service["Район"] || "").toLowerCase();
+        const district = (service["Район"] || "").toLowerCase();
 
-  const name = (
-    (service["Имя"] || "") +
-    " " +
-    (service["Компания"] || "")
-  ).toLowerCase();
+        const name = (
+          (service["Имя"] || "") +
+          " " +
+          (service["Компания"] || "")
+        ).toLowerCase();
 
-  const услуги = service["Услуги"] || {};
+        const услуги = service["Услуги"] || {};
 
-  // 🔹 проверка профиля и вида
-  let profileMatch = true;
-  let typeMatch = true;
+        // 🔹 проверка профиля и вида
+        let profileMatch = true;
+        let typeMatch = true;
 
-  if (profileVal) {
-    profileMatch = Object.keys(услуги).some(
-      (p) => p.toLowerCase() === profileVal
-    );
-  }
+        if (profileVal) {
+          profileMatch = Object.keys(услуги).some(
+            (p) => p.toLowerCase() === profileVal
+          );
+        }
 
-  if (typeVal) {
-    typeMatch = Object.values(услуги).some((types) =>
-      types.some((t) => t.toLowerCase().includes(typeVal))
-    );
-  }
+        if (typeVal) {
+          typeMatch = Object.values(услуги).some((types) =>
+            types.some((t) => t.toLowerCase().includes(typeVal))
+          );
+        }
 
-  return (
-    (!regionVal || regions.includes(regionVal)) &&
-    (!cityVal || cities.includes(cityVal)) &&
-    profileMatch &&
-    typeMatch &&
-    (!districtVal || district.includes(districtVal)) &&
-    (!nameVal || name.includes(nameVal))
-  );
-});
+        return (
+          (!regionVal || regions.includes(regionVal)) &&
+          (!cityVal || cities.includes(cityVal)) &&
+          profileMatch &&
+          typeMatch &&
+          (!districtVal || district.includes(districtVal)) &&
+          (!nameVal || name.includes(nameVal))
+        );
+      });
 
       if (id === "filterProfile") {
-  populateProfilesFromServices(filtered);
-}
- else if (id === "filterType") {
-  populateTypesFromServices(filtered);
-}
- else if (id === "filterDistrict") {
+        populateProfilesFromServices(filtered);
+      } else if (id === "filterType") {
+        populateTypesFromServices(filtered);
+      } else if (id === "filterDistrict") {
         populateList("listDistrict", filtered, "Район");
       } else if (id === "filterName") {
         populateList("listName", filtered, "Имя", true);
@@ -1071,12 +1073,12 @@ function showNotification(message) {
   if (oldNotification) {
     oldNotification.remove();
   }
-  
+
   // Создаем новое уведомление
   const notification = document.createElement("div");
   notification.id = "notification";
   notification.textContent = message;
-  
+
   // Стили для мобильной версии
   notification.style.position = "fixed";
   notification.style.top = "20px";
@@ -1091,10 +1093,10 @@ function showNotification(message) {
   notification.style.zIndex = "99999";
   notification.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
   notification.style.fontWeight = "bold";
-  
+
   // Добавляем в тело документа
   document.body.appendChild(notification);
-  
+
   // Автоскрытие через 5 секунд
   setTimeout(() => {
     if (notification.parentNode) {
@@ -1290,7 +1292,8 @@ function logout() {
 
     allServices.forEach((s) => {
       const tags = (s["Теги"] || "").toLowerCase();
-      const types = (s["Вид деятельности"] || "").split(",");
+      const услуги = s["Услуги"] || {};
+      const types = Object.values(услуги).flat();
 
       const regions = (s["Область"] || "")
         .toLowerCase()
@@ -1300,7 +1303,10 @@ function logout() {
         .toLowerCase()
         .split(",")
         .map((x) => x.trim());
-      const profile = (s["Профиль деятельности"] || "").toLowerCase();
+      const profile = Object.keys(s["Услуги"] || {})
+        .map((p) => p.toLowerCase())
+        .join(" ");
+
       const district = (s["Район"] || "").toLowerCase();
       const name = (
         (s["Имя"] || "") +
@@ -1315,7 +1321,12 @@ function logout() {
         (!districtVal || district.includes(districtVal)) &&
         (!nameVal || name.includes(nameVal));
 
-      if (match && (query === "" || tags.includes(query))) {
+      if (
+        match &&
+        (query === "" ||
+          tags.includes(query) ||
+          types.some((t) => t.toLowerCase().includes(query)))
+      ) {
         types.forEach((t) => {
           const clean = t.trim();
           if (clean) matched.add(clean);
@@ -1448,52 +1459,55 @@ function initCommonDropdown(inputId) {
       if (!input) return;
 
       // Для мобильной версии - простой крестик без обертки
-if (isMobile) {
-  // Удаляем существующий крестик если есть
-  const existingClear = input.nextElementSibling;
-  if (existingClear && existingClear.classList.contains("input-clear-mobile")) {
-    existingClear.remove();
-  }
+      if (isMobile) {
+        // Удаляем существующий крестик если есть
+        const existingClear = input.nextElementSibling;
+        if (
+          existingClear &&
+          existingClear.classList.contains("input-clear-mobile")
+        ) {
+          existingClear.remove();
+        }
 
-  const clearBtn = document.createElement("button");
-  clearBtn.className = "input-clear-mobile";
-  clearBtn.innerHTML = "×";
-  clearBtn.type = "button";
-  clearBtn.style.display = "none"; // Сначала скрыт
-  
-  input.parentNode.insertBefore(clearBtn, input.nextSibling);
+        const clearBtn = document.createElement("button");
+        clearBtn.className = "input-clear-mobile";
+        clearBtn.innerHTML = "×";
+        clearBtn.type = "button";
+        clearBtn.style.display = "none"; // Сначала скрыт
 
-  // Показываем крестик при фокусе
-  input.addEventListener("focus", function() {
-    clearBtn.style.display = "block";
-  });
+        input.parentNode.insertBefore(clearBtn, input.nextSibling);
 
-  // Скрываем крестик при потере фокуса
-  input.addEventListener("blur", function() {
-    setTimeout(() => {
-      clearBtn.style.display = "none";
-    }, 200);
-  });
+        // Показываем крестик при фокусе
+        input.addEventListener("focus", function () {
+          clearBtn.style.display = "block";
+        });
 
-  clearBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    input.value = "";
-    input.focus();
-    
-    // Скрываем дропдаун если открыт
-    const dropdown = document.querySelector(".dropdown-common-style");
-    if (dropdown) dropdown.style.display = "none";
-    
-    // Скрываем крестик после очистки
-    clearBtn.style.display = "none";
-  });
+        // Скрываем крестик при потере фокуса
+        input.addEventListener("blur", function () {
+          setTimeout(() => {
+            clearBtn.style.display = "none";
+          }, 200);
+        });
 
-  // Показываем крестик если поле не пустое при загрузке
-  if (input.value.trim() !== "") {
-    clearBtn.style.display = "block";
-  }
-}
+        clearBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          input.value = "";
+          input.focus();
+
+          // Скрываем дропдаун если открыт
+          const dropdown = document.querySelector(".dropdown-common-style");
+          if (dropdown) dropdown.style.display = "none";
+
+          // Скрываем крестик после очистки
+          clearBtn.style.display = "none";
+        });
+
+        // Показываем крестик если поле не пустое при загрузке
+        if (input.value.trim() !== "") {
+          clearBtn.style.display = "block";
+        }
+      }
       // Для десктопа - версия с оберткой
       else {
         if (input.parentNode.classList.contains("input-wrapper-dt")) return;
@@ -1533,9 +1547,9 @@ if (isMobile) {
   document.addEventListener("DOMContentLoaded", setupClearButtons);
 }
 
-// Убедимся что функция вызывается после полной загрузки  
-document.addEventListener("DOMContentLoaded", function() {
-  if (typeof setupClearButtons === 'function') {
+// Убедимся что функция вызывается после полной загрузки
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof setupClearButtons === "function") {
     setupClearButtons();
   }
 });
@@ -1572,14 +1586,16 @@ async function handleTelegramUser(tgUser) {
       id: tgUser.id,
       first_name: tgUser.first_name,
       last_name: tgUser.last_name,
-      username: tgUser.username
+      username: tgUser.username,
     });
-    
-    const url = `https://script.google.com/macros/s/AKfycbxjECFiBLd5Y2X760SVngkL5vPDAlQ8-5SJofbdKWofhmAD3zxzwSrw_Lm01Z4wDmA/exec?tgData=${encodeURIComponent(tgData)}`;
-    
+
+    const url = `https://script.google.com/macros/s/AKfycbxjECFiBLd5Y2X760SVngkL5vPDAlQ8-5SJofbdKWofhmAD3zxzwSrw_Lm01Z4wDmA/exec?tgData=${encodeURIComponent(
+      tgData
+    )}`;
+
     const response = await fetch(url);
     const result = await response.json();
-    
+
     if (result.success) {
       console.log("TG пользователь записан в GAS:", result.user);
       return result.user;
@@ -1594,22 +1610,26 @@ async function handleTelegramUser(tgUser) {
 }
 
 // Принудительный вызов крестиков
-setTimeout(function() {
-  if (typeof setupClearButtons === 'function') {
+setTimeout(function () {
+  if (typeof setupClearButtons === "function") {
     setupClearButtons();
-    console.log('Крестики инициализированы');
+    console.log("Крестики инициализированы");
   } else {
-    console.log('Функция setupClearButtons не найдена');
+    console.log("Функция setupClearButtons не найдена");
   }
 }, 1000);
 
 // Принудительная инициализация крестиков с проверкой мобильности
 function initCrossButtons() {
-  console.log('Инициализация крестиков, мобильный:', isMobile);
-  
+  console.log("Инициализация крестиков, мобильный:", isMobile);
+
   const inputIds = [
-    "filterRegion", "filterCity", "filterProfile", 
-    "filterType", "filterDistrict", "filterName"
+    "filterRegion",
+    "filterCity",
+    "filterProfile",
+    "filterType",
+    "filterDistrict",
+    "filterName",
   ];
 
   inputIds.forEach((id) => {
@@ -1618,7 +1638,7 @@ function initCrossButtons() {
 
     // Удаляем старые крестики
     const oldClear = input.nextElementSibling;
-    if (oldClear && oldClear.classList.contains('input-clear-mobile')) {
+    if (oldClear && oldClear.classList.contains("input-clear-mobile")) {
       oldClear.remove();
     }
 
@@ -1628,23 +1648,23 @@ function initCrossButtons() {
       clearBtn.innerHTML = "×";
       clearBtn.type = "button";
       clearBtn.style.display = "none";
-      
+
       input.parentNode.insertBefore(clearBtn, input.nextSibling);
 
-      input.addEventListener("focus", function() {
-        console.log('Фокус на поле', id);
+      input.addEventListener("focus", function () {
+        console.log("Фокус на поле", id);
         clearBtn.style.display = "block";
-        input.classList.add('input-fixed-absolute');
+        input.classList.add("input-fixed-absolute");
       });
 
-      input.addEventListener("blur", function() {
+      input.addEventListener("blur", function () {
         setTimeout(() => {
           clearBtn.style.display = "none";
-          input.classList.remove('input-fixed-absolute');
+          input.classList.remove("input-fixed-absolute");
         }, 200);
       });
 
-      clearBtn.addEventListener("click", function(e) {
+      clearBtn.addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
         input.value = "";
@@ -1661,5 +1681,5 @@ function initCrossButtons() {
 
 // Вызываем при загрузке и при изменении размера
 document.addEventListener("DOMContentLoaded", initCrossButtons);
-window.addEventListener('load', initCrossButtons);
+window.addEventListener("load", initCrossButtons);
 setTimeout(initCrossButtons, 1000);
