@@ -237,12 +237,10 @@ function renderCards(services) {
 
     const name = (service["Имя"] || "").trim();
     const company = (service["Компания"] || "").trim();
-    const profile = (service["Профиль деятельности"] || "").trim();
     const description = (service["Описание (до 1000 симв)"] || "").trim();
     const phones = ("" + (service["Телефоны"] ?? "")).trim();
     const city = (service["Населённый пункт"] || "").trim();
     const district = (service["Район города"] || "").trim();
-    const type = (service["Вид деятельности"] || "").trim();
     const geo = (service["Геолокация"] || "").trim();
 
     const nameCompanyLine =
@@ -284,9 +282,26 @@ function renderCards(services) {
       <div class="card-text" style="display:none; font-size: 16px; text-align: left; padding: 0 12px; margin: 0 auto; width: 100%; box-sizing: border-box;">
 `;
 
-    if (type) {
-      contentHTML += `<div style="font-weight: bold; font-size: 18px; margin-bottom: 6px;">${type}</div>`;
-    }
+    // Получаем ВСЕ типы (виды) из всех профилей
+const услуги = service["Услуги"] || {};
+const allTypes = [];
+
+// Проходим по всем профилям
+Object.values(услуги).forEach((typesArray) => {
+  if (Array.isArray(typesArray)) {
+    typesArray.forEach((typeItem) => {
+      if (typeItem && typeItem.trim()) {
+        allTypes.push(typeItem.trim());
+      }
+    });
+  }
+});
+
+// Если есть типы - показываем их через запятую
+if (allTypes.length > 0) {
+  const typesString = allTypes.join(", ");
+  contentHTML += `<div style="font-weight: bold; font-size: 18px; margin-bottom: 6px;">${typesString}</div>`;
+}
 
     if (nameCompanyLine) {
       contentHTML += `<div style="font-size: 13px; margin-bottom: 6px;">${nameCompanyLine}</div>`;
@@ -511,21 +526,23 @@ function applyFilters() {
     const regionMatch = области.some((r) => r.includes(region));
     const cityMatch = города.some((c) => c.includes(city));
     let profileMatch = true;
-    let typeMatch = true;
+let typeMatch = true;
 
-    // Проверка профиля
-    if (profile) {
-      profileMatch = Object.keys(услуги).some((p) =>
-        p.toLowerCase().includes(profile)
-      );
-    }
+if (profile) {
+  // Проверяем, есть ли такой профиль в ключах объекта "Услуги"
+  profileMatch = Object.keys(услуги).some((p) => 
+    p.toLowerCase().includes(profile)
+  );
+}
 
-    // Проверка вида
-    if (type) {
-      typeMatch = Object.values(услуги).some((types) =>
-        types.some((t) => t.toLowerCase().includes(type))
-      );
-    }
+if (type) {
+  // Проверяем, есть ли такой тип в значениях (массивах) объекта "Услуги"
+  typeMatch = Object.values(услуги).some((types) =>
+    Array.isArray(types) && types.some((t) => 
+      t.toLowerCase().includes(type)
+    )
+  );
+}
 
     const districtMatch = !district || район.includes(district);
     const nameMatch = !name || (имя + " " + компания).includes(name);
@@ -612,18 +629,12 @@ function populateList(
 
     if (!valueToAdd) return;
 
-    if (fieldName === "Вид деятельности") {
-      valueToAdd
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s)
-        .forEach((v) => valuesSet.add(useLowerCase ? v.toLowerCase() : v));
-    } else if (fieldName === "Имя" || fieldName === "Компания") {
-    } else {
-      valuesSet.add(
-        useLowerCase ? valueToAdd.trim().toLowerCase() : valueToAdd.trim()
-      );
-    }
+    if (valueToAdd) {
+  valuesSet.add(
+    useLowerCase ? valueToAdd.trim().toLowerCase() : valueToAdd.trim()
+  );
+}
+
   });
 
   if (listId === "listName") {
@@ -708,38 +719,38 @@ function populateProfilesFromServices(services) {
   datalist.innerHTML = "";
   const profilesSet = new Set();
 
-  const regionVal = document
-    .getElementById("filterRegion")
-    .value.trim()
-    .toLowerCase();
-
-  const cityVal = document
-    .getElementById("filterCity")
-    .value.trim()
-    .toLowerCase();
+  const regionVal = document.getElementById("filterRegion").value.trim().toLowerCase();
+  const cityVal = document.getElementById("filterCity").value.trim().toLowerCase();
+  const typeVal = document.getElementById("filterType").value.trim().toLowerCase();
 
   services.forEach((service) => {
-    // Фильтрация по области
     const regions = (service["Область"] || "")
       .toLowerCase()
       .split(",")
       .map((r) => r.trim());
 
-    if (regionVal && !regions.includes(regionVal)) return;
-
-    // Фильтрация по городу
     const cities = (service["Населённый пункт"] || "")
       .toLowerCase()
       .split(",")
       .map((c) => c.trim());
 
+    if (regionVal && !regions.includes(regionVal)) return;
     if (cityVal && !cities.includes(cityVal)) return;
 
     const услуги = service["Услуги"];
     if (!услуги || typeof услуги !== "object") return;
 
-    Object.keys(услуги).forEach((profile) => {
-      if (profile) profilesSet.add(profile);
+    Object.entries(услуги).forEach(([profile, types]) => {
+      if (!Array.isArray(types)) return;
+
+      // 👉 ЕСЛИ ВИД ВЫБРАН — берём ТОЛЬКО профили, где есть этот вид
+      if (typeVal) {
+        if (types.some((t) => t.toLowerCase().includes(typeVal))) {
+          profilesSet.add(profile);
+        }
+      } else {
+        profilesSet.add(profile);
+      }
     });
   });
 
@@ -751,6 +762,8 @@ function populateProfilesFromServices(services) {
       datalist.appendChild(option);
     });
 }
+
+
 
 function populateTypesFromServices(services) {
   const datalist = document.getElementById("listType");
@@ -1052,9 +1065,10 @@ filterFields.forEach((id) => {
         );
       });
 
-      if (id === "filterProfile") {
-        populateProfilesFromServices(filtered);
-      } else if (id === "filterType") {
+      if (id === "filterProfile" || id === "filterType") {
+  populateProfilesFromServices(filtered);
+}
+ else if (id === "filterType") {
         populateTypesFromServices(filtered);
       } else if (id === "filterDistrict") {
         populateList("listDistrict", filtered, "Район");
