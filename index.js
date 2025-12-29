@@ -764,18 +764,20 @@ function populateTypesFromServices(services) {
     .value.trim()
     .toLowerCase();
 
+  if (!selectedProfile) return;
+
   services.forEach((service) => {
     const услуги = service["Услуги"];
     if (!услуги || typeof услуги !== "object") return;
 
     Object.entries(услуги).forEach(([profile, types]) => {
-      if (selectedProfile && profile.toLowerCase() !== selectedProfile) {
-        return;
-      }
+      if (profile.toLowerCase() !== selectedProfile) return;
 
-      types.forEach((type) => {
-        if (type) typesSet.add(type);
-      });
+      if (Array.isArray(types)) {
+        types.forEach((type) => {
+          if (type) typesSet.add(type);
+        });
+      }
     });
   });
 
