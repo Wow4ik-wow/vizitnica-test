@@ -665,24 +665,30 @@ function populateList(
     });
   }
 
-  // Приводим все значения к нижнему регистру для сравнения
-const lowerCaseMap = new Map();
-const uniqueValues = [];
+  // Удаляем дубликаты, предпочитая вариант с большой буквы
+  const uniqueMap = new Map();
 
-Array.from(valuesSet).forEach(val => {
-  const lowerVal = val.toLowerCase();
-  if (!lowerCaseMap.has(lowerVal)) {
-    lowerCaseMap.set(lowerVal, val);
-    uniqueValues.push(val);
-  }
-});
+  // Сначала добавляем все варианты с большой буквы
+  Array.from(valuesSet).forEach((val) => {
+    if (val && val.charAt(0) === val.charAt(0).toUpperCase()) {
+      uniqueMap.set(val.toLowerCase(), val);
+    }
+  });
 
-// Сортируем оригинальные значения (с сохранением регистра)
-const sortedValues = uniqueValues.sort((a, b) =>
-  a.localeCompare(b, "ru")
-);
+  // Потом добавляем оставшиеся (с маленькой буквы)
+  Array.from(valuesSet).forEach((val) => {
+    if (val && !uniqueMap.has(val.toLowerCase())) {
+      uniqueMap.set(val.toLowerCase(), val);
+    }
+  });
 
-  sortedValues.forEach((val) => {
+  // Получаем уникальные значения
+  const uniqueValues = Array.from(uniqueMap.values());
+
+  // Сортируем
+  uniqueValues.sort((a, b) => a.localeCompare(b, "ru"));
+
+  uniqueValues.forEach((val) => {
     if (val) {
       const option = document.createElement("option");
       option.value = val;
