@@ -240,7 +240,7 @@ function renderCards(services) {
     const description = (service["Описание (до 1000 симв)"] || "").trim();
     const phones = ("" + (service["Телефоны"] ?? "")).trim();
     const city = (service["Населённый пункт"] || "").trim();
-    const district = (service["Район города"] || "").trim();
+    const district = (service["Район"] || "").trim(); // ⚠️ ВАЖНО: "Район", не "Район города"
     const geo = (service["Геолокация"] || "").trim();
 
     const nameCompanyLine =
@@ -260,9 +260,7 @@ function renderCards(services) {
         ? `<div style="margin: 10px 0;">` +
           socials
             .map(
-              (
-                s
-              ) => `<a href="${s.url}" target="_blank" style="margin: 4px; display: inline-block;">
+              (s) => `<a href="${s.url}" target="_blank" style="margin: 4px; display: inline-block;">
                   <button style="background: #3498db; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
                     ${s.name}
                   </button>
@@ -276,38 +274,39 @@ function renderCards(services) {
       ? `<div><strong>Геолокация:</strong> <a href="${geo}" target="_blank" style="color: #2c3e50;">Открыть на карте</a></div>`
       : "";
 
+    // ⭐⭐ ВАЖНОЕ ИСПРАВЛЕНИЕ: Получаем типы из нового формата Услуг
+    const услуги = service["Услуги"] || {};
+    const allTypes = [];
+    
+    // Собираем ВСЕ типы из всех профилей
+    Object.values(услуги).forEach((typesArray) => {
+      if (Array.isArray(typesArray)) {
+        typesArray.forEach((typeItem) => {
+          if (typeItem && typeItem.trim()) {
+            allTypes.push(typeItem.trim());
+          }
+        });
+      }
+    });
+    
+    const typesString = allTypes.join(", ");
+
     let contentHTML = `
       <img src="${imageUrl}" alt="Превью" style="width: 95%; margin: 8px auto; display: block; cursor: pointer; border-radius: 6px; object-fit: contain;" />
 
       <div class="card-text" style="display:none; font-size: 16px; text-align: left; padding: 0 12px; margin: 0 auto; width: 100%; box-sizing: border-box;">
 `;
 
-    // Получаем ВСЕ типы (виды) из всех профилей
-const услуги = service["Услуги"] || {};
-const allTypes = [];
-
-// Проходим по всем профилям
-Object.values(услуги).forEach((typesArray) => {
-  if (Array.isArray(typesArray)) {
-    typesArray.forEach((typeItem) => {
-      if (typeItem && typeItem.trim()) {
-        allTypes.push(typeItem.trim());
-      }
-    });
-  }
-});
-
-// Если есть типы - показываем их через запятую
-if (allTypes.length > 0) {
-  const typesString = allTypes.join(", ");
-  contentHTML += `<div style="font-weight: bold; font-size: 18px; margin-bottom: 6px;">${typesString}</div>`;
-}
+    // ⭐⭐ ИСПРАВЛЕНО: Вместо несуществующей переменной type используем typesString
+    if (typesString) {
+      contentHTML += `<div style="font-weight: bold; font-size: 18px; margin-bottom: 6px;">${typesString}</div>`;
+    }
 
     if (nameCompanyLine) {
       contentHTML += `<div style="font-size: 13px; margin-bottom: 6px;">${nameCompanyLine}</div>`;
     }
 
-    if (type || nameCompanyLine) {
+    if (typesString || nameCompanyLine) {
       contentHTML += `<hr style="margin: 8px 0;" />`;
     }
 
@@ -317,7 +316,7 @@ if (allTypes.length > 0) {
         "<br>"
       )}</div>`;
 
-    if (profile || description) {
+    if (description) {
       contentHTML += `<hr style="margin: 8px 0;" />`;
     }
 
@@ -357,7 +356,7 @@ if (allTypes.length > 0) {
       });
     }
 
-    // 2. Объединяем с существующими соцсетями (socialButtonsHTML)
+    // 2. Объединяем с существующими соцсетями
     const allSocialLinks = [
       ...socials.filter((s) => s.url),
       ...parsedSocialLinks,
@@ -390,7 +389,7 @@ if (allTypes.length > 0) {
   `;
     }
 
-    // 4. Добавляем геолокацию (geoHTML)
+    // 4. Добавляем геолокацию
     contentHTML += geoHTML;
 
     // 5. Добавляем ТЕГИ только для админов
@@ -467,6 +466,7 @@ ${
     container.appendChild(card);
     setTimeout(updateRolesVisibility, 100);
   });
+  
   // Добавляем кнопку "ВЕРНУТЬСЯ НАВЕРХ" после всех карточек
   const backToTopContainer = document.getElementById("backToTopContainer");
   backToTopContainer.innerHTML = "";
