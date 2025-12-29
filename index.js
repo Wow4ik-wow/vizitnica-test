@@ -1008,8 +1008,7 @@ filterFields.forEach((id) => {
         const cities = (service["Населённый пункт"] || "")
           .split(",")
           .map((s) => s.trim().toLowerCase());
-        const profile = (service["Профиль деятельности"] || "").toLowerCase();
-        const type = (service["Вид деятельности"] || "").toLowerCase();
+        const услуги = service["Услуги"] || {};
         const district = (service["Район"] || "").toLowerCase();
         const name = (
           (service["Имя"] || "") +
@@ -1017,14 +1016,27 @@ filterFields.forEach((id) => {
           (service["Компания"] || "")
         ).toLowerCase();
 
-        return (
-          (!regionVal || regions.includes(regionVal)) &&
-          (!cityVal || cities.includes(cityVal)) &&
-          (!profileVal || profile.includes(profileVal)) &&
-          (!typeVal || type.includes(typeVal)) &&
-          (!districtVal || district.includes(districtVal)) &&
-          (!nameVal || name.includes(nameVal))
-        );
+        const profileMatch =
+  !profileVal ||
+  Object.keys(услуги).some(
+    (p) => p.toLowerCase().includes(profileVal)
+  );
+
+const typeMatch =
+  !typeVal ||
+  Object.values(услуги).some((types) =>
+    types.some((t) => t.toLowerCase().includes(typeVal))
+  );
+
+return (
+  (!regionVal || regions.includes(regionVal)) &&
+  (!cityVal || cities.includes(cityVal)) &&
+  profileMatch &&
+  typeMatch &&
+  (!districtVal || district.includes(districtVal)) &&
+  (!nameVal || name.includes(nameVal))
+);
+
       });
 
       if (id === "filterProfile") {
